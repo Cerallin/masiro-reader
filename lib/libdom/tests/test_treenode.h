@@ -121,3 +121,10 @@ TEST(TestTreeNode, TestQueue) {
     CHECK_EQUAL(&b, node->ShiftChildren());
     CHECK_EQUAL(NULLPTR, node->ShiftChildren());
 }
+
+TEST(TestTreeNode, TestParent) {
+    DOM::TreeNode tmp;
+
+    node->SetParent(&tmp);
+    CHECK_EQUAL(&tmp, node->GetParent());
+}

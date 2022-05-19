@@ -19,7 +19,8 @@
 
 #include "treenode.h"
 
-#define IterateChildren(n) for (TreeNode *n = firstChild; n != nullptr; n = n->next)
+#define IterateChildren(n)                                                     \
+    for (TreeNode *n = firstChild; n != nullptr; n = n->next)
 
 using namespace DOM;
 
@@ -95,3 +96,7 @@ size_t TreeNode::CountChildren() {
 
     return count;
 }
+
+void TreeNode::SetParent(TreeNode *node) { parent = node; }
+
+TreeNode *TreeNode::GetParent() { return parent; }

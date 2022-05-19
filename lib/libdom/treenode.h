@@ -41,6 +41,9 @@ class TreeNode {
     TreeNode *GetChildren();
     size_t CountChildren();
 
+    void SetParent(TreeNode *node);
+    TreeNode *GetParent();
+
     // TODO: traverse
 
   private:
@@ -55,6 +58,12 @@ class TreeNode {
      *
      */
     TreeNode *next;
+
+    /**
+     * @brief Parent node.
+     *
+     */
+    TreeNode *parent;
 
     /**
      * @brief First child.
