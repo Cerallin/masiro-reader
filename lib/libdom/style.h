@@ -20,8 +20,8 @@
 #ifndef DOM_STYLE_STYLE_H
 #define DOM_STYLE_STYLE_H
 
-#include <stdint.h>
 #include <stddef.h>
+#include <stdint.h>
 
 namespace Style {
 
@@ -31,6 +31,16 @@ namespace Style {
 
 #include "style/textalign.h"
 #include "style/textindent.h"
+
+class Styles : public HasMargin,
+              public HasPadding,
+              public HasPosition,
+              public HasTextAlign,
+              public HasTextIndent {
+  public:
+    Styles() = default;
+    ~Styles() = default;
+};
 
 }; // namespace Style
 

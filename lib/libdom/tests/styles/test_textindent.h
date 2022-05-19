@@ -11,6 +11,6 @@ TEST_GROUP(TestTextIndent) {
 
 TEST(TestTextIndent, TestSetTextIndent) {
     Style::TextIndent expected = 233;
-    dom->SetTextIndent(expected);
-    CHECK_EQUAL(expected, dom->GetTextIndent());
+    dom->styles.SetTextIndent(expected);
+    CHECK_EQUAL(expected, dom->styles.GetTextIndent());
 }

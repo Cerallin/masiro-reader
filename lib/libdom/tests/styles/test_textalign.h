@@ -12,6 +12,6 @@ TEST_GROUP(TestTextAlign) {
 
 TEST(TestTextAlign, TestSetTextAlign) {
     Style::TextAlign expected = Style::AlignCenter;
-    dom->SetTextAlign(expected);
-    CHECK_EQUAL(expected, dom->GetTextAlign());
+    dom->styles.SetTextAlign(expected);
+    CHECK_EQUAL(expected, dom->styles.GetTextAlign());
 }

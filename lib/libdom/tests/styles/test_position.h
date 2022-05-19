@@ -17,6 +17,6 @@ TEST(TestPosition, TestSetPosition) {
         .top = 2,
         .bottom = 4,
     };
-    dom->SetPosition(1, 2, 3, 4);
-    MEMCMP_EQUAL(&expected, dom->GetPosition(), sizeof(Style::Position));
+    dom->styles.SetPosition(1, 2, 3, 4);
+    MEMCMP_EQUAL(&expected, dom->styles.GetPosition(), sizeof(Style::Position));
 }

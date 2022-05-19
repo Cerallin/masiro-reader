@@ -11,8 +11,8 @@ TEST_GROUP(TestPadding) {
 
 TEST(TestPadding, TestSetPadding1Param) {
     Style::Padding expected = {10, 10, 10, 10};
-    dom->SetPadding(10);
-    MEMCMP_EQUAL(&expected, dom->GetPadding(), sizeof(Style::Padding));
+    dom->styles.SetPadding(10);
+    MEMCMP_EQUAL(&expected, dom->styles.GetPadding(), sizeof(Style::Padding));
 }
 
 TEST(TestPadding, TestSetPadding2Params) {
@@ -22,8 +22,8 @@ TEST(TestPadding, TestSetPadding2Params) {
         .paddingTop = 2,
         .paddingBottom = 2,
     };
-    dom->SetPadding(1, 2);
-    MEMCMP_EQUAL(&expected, dom->GetPadding(), sizeof(Style::Padding));
+    dom->styles.SetPadding(1, 2);
+    MEMCMP_EQUAL(&expected, dom->styles.GetPadding(), sizeof(Style::Padding));
 }
 
 TEST(TestPadding, TestSetPadding4Params) {
@@ -33,6 +33,6 @@ TEST(TestPadding, TestSetPadding4Params) {
         .paddingTop = 2,
         .paddingBottom = 4,
     };
-    dom->SetPadding(1, 2, 3, 4);
-    MEMCMP_EQUAL(&expected, dom->GetPadding(), sizeof(Style::Padding));
+    dom->styles.SetPadding(1, 2, 3, 4);
+    MEMCMP_EQUAL(&expected, dom->styles.GetPadding(), sizeof(Style::Padding));
 }

@@ -28,12 +28,7 @@
 
 namespace DOM {
 
-class DOMNode : public TreeNode,
-                public Style::HasMargin,
-                public Style::HasPadding,
-                public Style::HasPosition,
-                public Style::HasTextAlign,
-                public Style::HasTextIndent {
+class DOMNode : public TreeNode {
   public:
     DOMNode(int32_t width, int32_t height);
     virtual ~DOMNode() = default;
@@ -42,8 +37,21 @@ class DOMNode : public TreeNode,
 
     void SetHeight(int32_t height);
 
+    void SetTag(DOMTag tagValue);
+
+    /**
+     * @brief Styles.
+     *
+     */
+    Style::Styles styles;
+
   private:
+    /**
+     * @brief HTML tag.
+     *
+     */
     DOMTag tag;
+
     /**
      * @brief Width of graph area.
      *

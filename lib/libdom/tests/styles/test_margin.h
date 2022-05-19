@@ -11,8 +11,8 @@ TEST_GROUP(TestMargin) {
 
 TEST(TestMargin, TestSetMargin1Param) {
     Style::Margin expected = {10, 10, 10, 10};
-    dom->SetMargin(10);
-    MEMCMP_EQUAL(&expected, dom->GetMargin(), sizeof(Style::Margin));
+    dom->styles.SetMargin(10);
+    MEMCMP_EQUAL(&expected, dom->styles.GetMargin(), sizeof(Style::Margin));
 }
 
 TEST(TestMargin, TestSetMargin2Params) {
@@ -22,8 +22,8 @@ TEST(TestMargin, TestSetMargin2Params) {
         .marginTop = 2,
         .marginBottom = 2,
     };
-    dom->SetMargin(1, 2);
-    MEMCMP_EQUAL(&expected, dom->GetMargin(), sizeof(Style::Margin));
+    dom->styles.SetMargin(1, 2);
+    MEMCMP_EQUAL(&expected, dom->styles.GetMargin(), sizeof(Style::Margin));
 }
 
 TEST(TestMargin, TestSetMargin4Params) {
@@ -33,6 +33,6 @@ TEST(TestMargin, TestSetMargin4Params) {
         .marginTop = 2,
         .marginBottom = 4,
     };
-    dom->SetMargin(1, 2, 3, 4);
-    MEMCMP_EQUAL(&expected, dom->GetMargin(), sizeof(Style::Margin));
+    dom->styles.SetMargin(1, 2, 3, 4);
+    MEMCMP_EQUAL(&expected, dom->styles.GetMargin(), sizeof(Style::Margin));
 }

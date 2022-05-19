@@ -22,9 +22,12 @@
 namespace DOM {
 
 DOMNode::DOMNode(int32_t width, int32_t height) {
+    SetTag(DOMTag::Text);
     SetWidth(width);
     SetHeight(height);
 }
+
+void DOMNode::SetTag(DOMTag tagValue) { tag = tagValue; }
 
 void DOMNode::SetWidth(int32_t width) { this->width = width; }
 
