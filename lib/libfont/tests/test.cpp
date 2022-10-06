@@ -1,6 +1,6 @@
 #include <CppUTest/CommandLineTestRunner.h>
 
-#include "tests/test_u16string.h"
+#include "tests/test_codepoint.h"
 #include "tests/test_fontface.h"
 #include "tests/test_font.h"
 
