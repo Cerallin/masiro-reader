@@ -6,4 +6,5 @@ SUBDIRS = \
           lib/libepd37 \
           lib/libfont \
           lib/libimage \
-          lib/libdom
+          lib/libdom \
+          lib/libgraphic

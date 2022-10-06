@@ -17,26 +17,20 @@
  *
  */
 
-#ifndef GRAPHIC_TEXT_H
-#define GRAPHIC_TEXT_H
+#include "imagelayer.h"
+#include <string.h>
 
-#include <stdlib.h>
+ImageLayer::ImageLayer(uint32_t width, uint32_t height, int32_t rotate)
+    : Layer(width, height, rotate){};
 
-#include "font.h"
+int ImageLayer::LoadFrom(BMPImage *image) {
+    if (this->width != image->GetWidth() ||
+        this->height != image->GetHeight()) {
+        return -1;
+    }
 
-class TextTypeSetting {
-  public:
-    static void AdjustAlign(TextTypeSetting *typeSettings, size_t len,
-                            TextAlign align, int lineWidth, Font *font);
+    memcpy(new_image, image->GetFrontImage(), width * height / 8);
+    memcpy(old_image, image->GetBackImage(), width * height / 8);
 
-    float x;             // unscaled absolute x, to be justified
-    int y;               // absolute y, determing chars in the same line
-    int iy0;             // y offset
-    int width;           // scaled bitmap width
-    int height;          // scaled bitmap height
-    int advancedWith;    // unscaled advance width
-    int leftSideBearing; // unscaled left side bearing
-    int kern;            // scaled kerning
-};
-
-#endif /* GRAPHIC_TEXT_H */
+    return 0;
+}

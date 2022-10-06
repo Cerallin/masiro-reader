@@ -17,35 +17,19 @@
  *
  */
 
-#ifndef GRAPHIC_LAYER_H
-#define GRAPHIC_LAYER_H
+#ifndef GRAPHIC_IMAGE_LAYER_H
+#define GRAPHIC_IMAGE_LAYER_H
 
-#include "epd2in13b.h"
-#include "epdpaint.h"
-#include "font.h"
 #include "bmp.h"
+#include "layer.h"
 
-#define ROTATE_DEFAULT ROTATE_270
-
-class Layer : public Paint {
+class ImageLayer : public Layer {
   public:
-    Layer(uint32_t width, uint32_t height, int32_t rotate = ROTATE_DEFAULT);
-    virtual ~Layer() = default;
-
-    /**
-     * @brief Draw a single char, with no coordinate checks
-     *
-     * @param x
-     * @param y
-     * @param codepoint
-     * @param font
-     */
-    void DrawCharAt(int32_t x, int32_t y, unsigned char *bitmap, int width,
-                    int height, Font *font);
+    ImageLayer(uint32_t width, uint32_t height,
+               int32_t rotate = ROTATE_DEFAULT);
+    virtual ~ImageLayer() = default;
 
     int LoadFrom(BMPImage *image);
-
-    void Display(Epd *epd);
 };
 
-#endif /* GRAPHIC_LAYER_H */
+#endif /* GRAPHIC_IMAGE_LAYER_H */

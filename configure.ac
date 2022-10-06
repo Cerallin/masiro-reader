@@ -43,6 +43,7 @@ AC_CONFIG_FILES([Makefile
                  lib/libfont/Makefile
                  lib/libft6336/Makefile
                  lib/libimage/Makefile
+                 lib/libgraphic/Makefile
                  src/Makefile])
 
 AC_OUTPUT

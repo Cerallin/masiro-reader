@@ -17,10 +17,11 @@
  *
  */
 
-#include "paragraph.h"
+#include "textlayer.h"
+#include "stdio.h"
 
 #include <new>
-#include "u16string.h"
+#include <string.h>
 
 #define CHAR_LF    0x000A
 #define CHAR_SPACE 0x0020
@@ -55,28 +56,54 @@ const CodePoint ch_breaks[] = {
         }                                                                      \
     }
 
-Paragraph::Paragraph(uint32_t width, uint32_t height, Font *font,
-                     TextAlign textAlign, int32_t rotate)
+TextLayer::TextLayer(uint32_t width, uint32_t height, Font *font,
+                     Graphic::TextAlign textAlign, int32_t rotate)
     : Layer(width, height, rotate), font(font), textAlign(textAlign) {}
 
-Paragraph::Paragraph(uint32_t width, uint32_t height, CodePoint *codepoints,
-                     Font *font, TextAlign textAlign, int32_t rotate)
+TextLayer::TextLayer(uint32_t width, uint32_t height, CodePoint *codepoints,
+                     Font *font, Graphic::TextAlign textAlign, int32_t rotate)
     : Layer(width, height, rotate), codepoints(codepoints), font(font),
       textAlign(textAlign) {}
 
-Paragraph::~Paragraph() {
+TextLayer::~TextLayer() {
     if (codepoints != nullptr)
         delete[] codepoints;
     if (typeSetting != nullptr)
         delete[] typeSetting;
 }
 
-int Paragraph::SetText(char *str) {
-    charNum = u16String::StrToUnicode(str, &codepoints);
-    if (!charNum)
+void TextLayer::DrawGlyph(const Graphic::TextTypeSetting *ts, Font *font,
+                          const unsigned char *bitmap) {
+    int32_t x, y;
+
+    x = font->Scale(ts->x + ts->leftSideBearing);
+    y = ts->y + ts->iy0 + ts->ascent;
+
+    LoopMatrix(ts->width, ts->height, x, y) {
+        int color = GetMatrix(bitmap, ts->width, i - x, j - y) >> 6;
+        // FIXME This is some kind of "alpha" tunnel
+        if (this->invertColor) {
+            // if (color != COLOR_WW)
+            DrawPixel(i, j, ~color);
+        } else {
+            // if (color != COLOR_BB)
+            DrawPixel(i, j, color);
+        }
+    };
+}
+
+int TextLayer::SetText(char *str) {
+    size_t len = strlen(str);
+    codepoints = new (std::nothrow) CodePoint[len + 4]();
+    int res = CodePoint::StrToUnicode(str, len, &codepoints);
+    if (res == -1)
         return -1;
 
-    typeSetting = new (std::nothrow) TextTypeSetting[charNum]();
+    CodePoint *needle;
+    for (needle = codepoints; !needle->IsEmpty(); needle++)
+        ;
+    charNum = needle - codepoints;
+    typeSetting = new (std::nothrow) Graphic::TextTypeSetting[charNum]();
     if (typeSetting == nullptr) {
         // Out of memory
         return -1;
@@ -84,27 +111,29 @@ int Paragraph::SetText(char *str) {
     return 0;
 }
 
-void Paragraph::SetTextAlign(TextAlign textAlign) { textAlign = textAlign; }
+void TextLayer::SetTextAlign(Graphic::TextAlign textAlign) {
+    textAlign = textAlign;
+}
 
-void Paragraph::SetTextPadding(TextPadding textPadding) {
+void TextLayer::SetTextPadding(Graphic::TextPadding textPadding) {
     textPadding = textPadding;
 }
 
-void Paragraph::SetTextPadding(int padding) {
+void TextLayer::SetTextPadding(int padding) {
     textPadding.paddingLeft = padding;
     textPadding.paddingRight = padding;
     textPadding.paddingTop = padding;
     textPadding.paddingBottom = padding;
 }
 
-void Paragraph::SetTextPadding(int paddingX, int paddingY) {
+void TextLayer::SetTextPadding(int paddingX, int paddingY) {
     textPadding.paddingLeft = paddingX;
     textPadding.paddingRight = paddingX;
     textPadding.paddingTop = paddingY;
     textPadding.paddingBottom = paddingY;
 }
 
-void Paragraph::SetTextPadding(int paddingLeft, int paddingTop,
+void TextLayer::SetTextPadding(int paddingLeft, int paddingTop,
                                int paddingRight, int paddingBottom) {
     textPadding.paddingLeft = paddingLeft;
     textPadding.paddingRight = paddingRight;
@@ -112,20 +141,20 @@ void Paragraph::SetTextPadding(int paddingLeft, int paddingTop,
     textPadding.paddingBottom = paddingBottom;
 }
 
-void Paragraph::Render() {
+void TextLayer::Render() {
     // Next line flag
     int flagNextLine = 0;
-    /* 获取字符的边框（边界） */
+    /* Border of a glyph */
     int ix0, iy0, ix1, iy1;
     unsigned char *bitmap;
 
     /* Smoother unscaled x */
     float x = font->Unscale(textPadding.paddingLeft), left = x;
     int y = textPadding.paddingTop;
-    int lineHeight = font->GetLineHeight(1.5f);
+    int lineHeight = font->GetLineHeight(1.2f);
 
-    int maxLineLength = GetRelativeWidth() - textPadding.paddingRight;
-    int maxHeight = GetRelativeHeight() - textPadding.paddingBottom;
+    int maxLineLength = GetWidth() - textPadding.paddingRight;
+    int maxHeight = GetHeight() - textPadding.paddingBottom;
 
     /* Codepoints always starts with 0xFEFF */
     for (auto c = codepoints + 1; c - codepoints < charNum; c++) {
@@ -144,39 +173,44 @@ void Paragraph::Render() {
         }
 
         /* Auto linefeed for latin chars */
-        if (u16String::FindNextChar(breaks, *c) != nullptr) {
-            auto next_break = u16String::FindNextBreak(c + 1, breaks);
+        if (CodePoint::StrChr(breaks, *c) != nullptr) {
+            auto next_break = CodePoint::FindNextBreak(c + 1, breaks);
             if (next_break != nullptr) {
                 int advanceWidth;
                 int sum = 0;
                 for (auto tmp = c; tmp < next_break; tmp++) {
-                    font->GetCodepointBitmapBox(*tmp, &ix0, 0, 0, 0);
-                    font->GetCodepointHMetrics(*tmp, &advanceWidth, 0);
+                    font->GetCodepointBitmapBox(tmp->GetValue(), &ix0, 0, 0, 0);
+                    font->GetCodepointHMetrics(tmp->GetValue(), &advanceWidth,
+                                               0);
                     sum += font->Unscale(ix0) + advanceWidth;
-                    sum += font->GetCodepointKernAdvance(*tmp, *(tmp + 1));
+                    sum += font->GetCodepointKernAdvance(tmp->GetValue(),
+                                                         (tmp + 1)->GetValue());
                 }
                 flagNextLine = (font->Scale(x + sum) > maxLineLength);
             }
         }
+
         // TODO: Auto lf for Chinese chars
-        else if (*(c + 2) && *(c + 2) > 0x2000 &&
-                 u16String::FindNextChar(ch_breaks, *(c + 2)) != nullptr) {
+        else if (!(c + 2)->IsEmpty() && (c + 2)->GetValue() > 0x2000 &&
+                 CodePoint::StrChr(ch_breaks, *(c + 2)) != nullptr) {
             int advanceWidth;
             int sum = 0;
             for (auto tmp = c; tmp < c + 3; tmp++) {
-                font->GetCodepointBitmapBox(*tmp, &ix0, 0, 0, 0);
-                font->GetCodepointHMetrics(*tmp, &advanceWidth, 0);
+                font->GetCodepointBitmapBox(tmp->GetValue(), &ix0, 0, 0, 0);
+                font->GetCodepointHMetrics(tmp->GetValue(), &advanceWidth, 0);
                 sum += font->Unscale(ix0) + advanceWidth;
-                sum += font->GetCodepointKernAdvance(*tmp, *(tmp + 1));
+                sum += font->GetCodepointKernAdvance(tmp->GetValue(),
+                                                     (tmp + 1)->GetValue());
             }
             flagNextLine = (font->Scale(x + sum) > maxLineLength);
         }
 
-        font->GetCodepointBitmapBox(*c, &ix0, &iy0, 0, 0);
+        font->GetCodepointBitmapBox(c->GetValue(), &ix0, &iy0, 0, 0);
         x += font->Unscale(ix0);
 
-        font->GetCodepointHMetrics(*c, &ts->advancedWith, &ts->leftSideBearing);
-        font->GetCodepointBitmap(*c, &ts->width, &ts->height, 0, 0);
+        font->GetCodepointHMetrics(c->GetValue(), &ts->advancedWith,
+                                   &ts->leftSideBearing);
+        font->GetCodepointBitmap(c->GetValue(), &ts->width, &ts->height, 0, 0);
 
         if (font->Scale(x + ts->leftSideBearing + font->Unscale(ts->width)) >=
             maxLineLength) {
@@ -190,9 +224,10 @@ void Paragraph::Render() {
         /* 调整x */
         x += ts->advancedWith;
 
-        if (*next_c) {
+        if (!next_c->IsEmpty()) {
             /* 调整字距 */
-            ts->kern = font->GetCodepointKernAdvance(*c, *next_c);
+            ts->kern = font->GetCodepointKernAdvance(c->GetValue(),
+                                                     next_c->GetValue());
             x += ts->kern;
         }
 
@@ -205,17 +240,21 @@ void Paragraph::Render() {
         }
     }
 
-    TextTypeSetting::AdjustAlign(typeSetting, charNum, textAlign, maxLineLength,
-                                 font);
+    Graphic::TextTypeSetting::AdjustAlign(typeSetting, charNum, textAlign,
+                                          maxLineLength, font);
 
     auto ts = typeSetting;
     int ascent = font->GetScaledAscent();
     for (auto c = codepoints + 1; c - codepoints < charNum; c++, ts++) {
-        bitmap = font->GetCodepointBitmap(*c, 0, 0, 0, 0);
-        DrawCharAt(font->Scale(ts->x + ts->leftSideBearing),
-                   ts->y + ts->iy0 + ascent, bitmap, ts->width, ts->height,
-                   font);
+        // FIXME not sure if this causes mem leak.
+        bitmap = font->GetCodepointBitmap(c->GetValue(), 0, 0, 0, 0);
+        ts->ascent = ascent;
+        DrawGlyph(ts, font, bitmap);
+        printf("%ld\t", c->GetValue());
+        printf("%f\n", font->Scale(ts->x + ts->leftSideBearing) + ts->width);
     }
 
     font->FreeBitmap(bitmap);
 }
+
+void TextLayer::SetFont(Font *font) { this->font = font; }

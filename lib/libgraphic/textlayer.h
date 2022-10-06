@@ -17,23 +17,32 @@
  *
  */
 
-#ifndef GRAPHIC_PARAGRAPH_H
-#define GRAPHIC_PARAGRAPH_H
-
-#include "epd2in13b.h"
+#ifndef GRAPHIC_TEXT_LAYER_H
+#define GRAPHIC_TEXT_LAYER_H
 
 #include "layer.h"
-#include "text.h"
+#include "style.h"
 
-class Paragraph : public Layer {
+class TextLayer : public Layer {
   public:
-    Paragraph(uint32_t width, uint32_t height, Font *font,
-              TextAlign textAlign = AlignLeft, int32_t rotate = ROTATE_DEFAULT);
+    TextLayer(uint32_t width, uint32_t height, Font *font,
+              Graphic::TextAlign textAlign = Graphic::AlignLeft, int32_t rotate = ROTATE_DEFAULT);
 
-    Paragraph(uint32_t width, uint32_t height, CodePoint *codepoints,
-              Font *font, TextAlign textAlign = AlignLeft,
+    TextLayer(uint32_t width, uint32_t height, CodePoint *codepoints,
+              Font *font, Graphic::TextAlign textAlign = Graphic::AlignLeft,
               int32_t rotate = ROTATE_DEFAULT);
-    virtual ~Paragraph();
+    virtual ~TextLayer();
+
+    /**
+     * @brief Draw a single char, with no coordinate checks
+     *
+     * @param x
+     * @param y
+     * @param codepoint
+     * @param font
+     */
+    void DrawGlyph(const Graphic::TextTypeSetting *typeSetting, Font *font,
+                   const unsigned char *bitmap);
 
     /**
      * @brief Set text.
@@ -43,9 +52,11 @@ class Paragraph : public Layer {
      */
     int SetText(char *str);
 
-    void SetTextAlign(TextAlign textAlign);
+    void SetFont(Font *font);
 
-    void SetTextPadding(TextPadding textPadding);
+    void SetTextAlign(Graphic::TextAlign textAlign);
+
+    void SetTextPadding(Graphic::TextPadding textPadding);
     void SetTextPadding(int padding);
     void SetTextPadding(int paddingX, int paddingY);
     void SetTextPadding(int paddingLeft, int paddingTop, int paddingRight,
@@ -60,10 +71,12 @@ class Paragraph : public Layer {
   private:
     Font *font;
     CodePoint *codepoints;
-    TextTypeSetting *typeSetting;
-    TextAlign textAlign;
-    TextPadding textPadding;
+
+    Graphic::TextTypeSetting *typeSetting;
+    Graphic::TextAlign textAlign;
+    Graphic::TextPadding textPadding;
+
     size_t charNum;
 };
 
-#endif
+#endif /* GRAPHIC_TEXT_LAYER_H */

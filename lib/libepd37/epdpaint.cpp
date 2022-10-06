@@ -65,6 +65,11 @@ Paint::Paint(unsigned char *new_image, unsigned char *old_image, uint32_t width,
       /* 1 byte = 8 pixels, so the width should be the multiple of 8 */
       width(width % 8 ? width + 8 - (width % 8) : width) {}
 
+Paint::Paint(uint32_t width, uint32_t height, int32_t rotate)
+    : height(height), rotate(rotate),
+      /* 1 byte = 8 pixels, so the width should be the multiple of 8 */
+      width(width % 8 ? width + 8 - (width % 8) : width) {}
+
 void Paint::Init() { Clear(COLOR_WW); }
 
 void Paint::Clear(int32_t colored) {

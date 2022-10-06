@@ -17,10 +17,9 @@
  *
  */
 
-#include "texttypesetting.h"
 #include "style.h"
 
-using namespace Style;
+namespace Graphic {
 
 #define ScanLine(needle, lineStart)                                            \
     for (needle = lineStart; needle->y == lineStart->y; needle++)
@@ -28,6 +27,7 @@ using namespace Style;
 void TextTypeSetting::AdjustAlign(TextTypeSetting *typeSettings, size_t len,
                                   TextAlign align, int lineWidth, Font *font) {
     int stringWidth;
+    float offset;
     TextTypeSetting *needle = typeSettings, *lineStart = typeSettings;
 
     if (align == AlignLeft) // default
@@ -41,12 +41,14 @@ void TextTypeSetting::AdjustAlign(TextTypeSetting *typeSettings, size_t len,
 
         stringWidth = font->Scale(needle->x) + needle->width;
         if (align == AlignRight) {
-            float offset = font->Unscale(lineWidth - stringWidth);
+            offset = font->Unscale(lineWidth - stringWidth);
             ScanLine(needle, lineStart) { needle->x += offset; }
         } else if (align == AlignCenter) {
-            float offset = font->Unscale(lineWidth - stringWidth);
+            offset = font->Unscale(lineWidth - stringWidth);
             ScanLine(needle, lineStart) { needle->x += offset; }
         }
         lineStart = needle;
     } while (needle - typeSettings < len);
 }
+
+} // namespace Graphic
