@@ -2,7 +2,7 @@ noinst_LTLIBRARIES = libfont.la
 
 libfont_la_SOURCES = font.cpp \
 					 fontface.cpp \
-					 u16string.cpp
+					 codepoint.cpp
 
 libfont_la_LIBADD = @LDFLAGS@
 

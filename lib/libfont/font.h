@@ -21,9 +21,8 @@
 #define FONT_FONT_H
 
 #include "fontface.h"
+#include "codepoint.h"
 #include <stdint.h>
-
-typedef uint16_t CodePoint;
 
 class Font {
   public:
