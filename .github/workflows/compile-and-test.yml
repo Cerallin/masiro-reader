@@ -24,7 +24,7 @@ jobs:
           wget -q http://www.airspayce.com/mikem/bcm2835/bcm2835-1.71.tar.gz
           tar xf bcm2835-1.71.tar.gz
           cd bcm2835-1.71
-          ./configure --host=arm-linux
+          ./configure --host=arm-linux-gnueabihf
           make
           sudo make install
           cd -
@@ -34,7 +34,7 @@ jobs:
           wget -q https://github.com/cpputest/cpputest/releases/download/v4.0/cpputest-4.0.tar.gz
           tar xf cpputest-4.0.tar.gz
           cd cpputest-4.0
-          ./configure --host=arm-linux
+          ./configure --host=arm-linux-gnueabihf
           make
           sudo make install
           cd -
@@ -43,7 +43,7 @@ jobs:
         run: autoreconf -i
 
       - name: Run configure
-        run: ./configure --host=arm-linux
+        run: ./configure --host=arm-linux-gnueabihf
 
       - name: Run make
         run: make
