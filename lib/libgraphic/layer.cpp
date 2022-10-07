@@ -19,7 +19,23 @@
 
 #include "layer.h"
 
+#include <assert.h>
+
 Layer::Layer(uint32_t width, uint32_t height, int32_t rotate)
     : Paint(width, height, rotate){};
 
 void Layer::Display(Epd *epd) { epd->DisplayFrame(old_image, new_image); }
+
+void Layer::SetFrontImage(uint8_t *front) { this->new_image = front; }
+
+void Layer::SetBackImage(uint8_t *back) { this->old_image = back; }
+
+void Layer::SetImages(uint8_t *image) {
+    this->new_image = image;
+    this->old_image = image + width * height / 8;
+}
+
+size_t Layer::GetMemSize() {
+    size_t size = width * height;
+    return size;
+}

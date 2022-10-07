@@ -33,6 +33,11 @@ class Layer : public Paint {
     virtual ~Layer() = default;
 
     void Display(Epd *epd);
+
+    void SetFrontImage(uint8_t *front);
+    void SetBackImage(uint8_t *back);
+    void SetImages(uint8_t *image);
+    size_t GetMemSize();
 };
 
 #endif /* GRAPHIC_LAYER_H */
