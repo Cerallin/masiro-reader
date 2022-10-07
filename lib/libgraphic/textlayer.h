@@ -22,6 +22,7 @@
 
 #include "layer.h"
 #include "style.h"
+#include "codepoint.h"
 
 class TextLayer : public Layer {
   public:

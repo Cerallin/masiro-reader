@@ -1,18 +1,28 @@
 #include <CppUTest/TestHarness.h>
 
-#include "imagelayer.h"
+#include "textlayer.h"
 
-ImageLayer *imageLayer;
+const char font_file[] = "../../assets/LXGWWenKaiScreen.ttf";
 
-TEST_GROUP(TestImageLayer) {
+TextLayer *textLayer;
+
+FontFace XLWenKai;
+
+TEST_GROUP(TestTextLayer) {
     void setup() {
-        imageLayer = new ImageLayer;
+        XLWenKai.LoadFont(font_file);
+        Font font(&XLWenKai);
+
+        textLayer = new TextLayer(EPD_WIDTH, EPD_HEIGHT, &font);
+    }
+
+    void teardown() {
+        delete textLayer;
     }
 };
 
-TEST(TestImageLayer, TestGetCodepointHMetrics) {
-    int advanceWidth = -1, leftSideBearing = -1;
-    font->GetCodepointHMetrics('H', &advanceWidth, &leftSideBearing);
-    CHECK_FALSE(-1 == advanceWidth);
-    CHECK_FALSE(-1 == leftSideBearing);
+TEST(TestTextLayer, TestSetText) {
+    char str[] = "hello world";
+    char *p = str;
+    CHECK_EQUAL(0, textLayer->SetText(p));
 }

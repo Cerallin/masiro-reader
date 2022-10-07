@@ -1,11 +1,14 @@
 noinst_LTLIBRARIES = libgraphic.la
 
 libgraphic_la_SOURCES = layer.cpp \
-						imagelayer.cpp \
-						textlayer.cpp \
-						style/texttypesetting.cpp
+                        imagelayer.cpp \
+                        textlayer.cpp \
+                        style/texttypesetting.cpp
 
-libgraphic_la_LIBADD = @LDFLAGS@
+libgraphic_la_LIBADD = \
+                      ../libepd37/libepd37.la \
+                      ../libfont/libfont.la \
+                      ../libimage/libimage.la
 
 AM_CPPFLAGS = -I../libepd37 -I../libimage -I../libfont
 
@@ -15,6 +18,11 @@ check_PROGRAMS = test
 
 test_SOURCES = tests/test.cpp
 
-test_LDADD = -lgraphic -limage -lepd37 -lfont -lCppUTest -L../libepd37 -L../libimage -L../libfont
+test_LDADD = \
+            -lCppUTest \
+            ../libepd37/libepd37.la \
+            ../libfont/libfont.la \
+            ../libimage/libimage.la \
+            ./libgraphic.la
 
 # test_CXXFLAGS = -fprofile-arcs -ftest-coverage

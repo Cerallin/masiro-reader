@@ -20,8 +20,7 @@
 #ifndef DOM_STYLE_STYLE_H
 #define DOM_STYLE_STYLE_H
 
-#include <stddef.h>
-#include <stdint.h>
+#include <stdlib.h>
 
 namespace Style {
 

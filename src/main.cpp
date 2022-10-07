@@ -20,19 +20,9 @@
 #include <stdio.h>
 #include <stdlib.h>
 
-#include "bmp.h"
-#include "graphic/paragraph.h"
+#include "imagelayer.h"
+#include "textlayer.h"
 
-char str[] = "LilyGo\n换行测试";
-char str1[] = "他自己唱歌\n"
-              "自己走路\n"
-              "和两只\n"
-              "温柔的黄狗说话";
-
-char str_lain[] = "きおくにないことは、なかったこと。\n"
-                  "きおくなんて、ただのきろく。\n"
-                  "きろくなんて、かきかえて、しまえばいい。\n\n"
-                  "Serial Experiments Lain";
 char str_masiro[] =
     "鉴于原创心血来潮挖坑又不填的情况过多，标点误用严重影响部分"
     "审核的血压值，现决定提高原创申请门槛。\n"
@@ -42,25 +32,9 @@ char str_masiro[] =
     "准，简体中文作品参见《中华人民共和国国家标准GB/"
     "T15834-2011标点符号用法》，繁体中文作品参见《重訂標點符號手冊》修"
     "訂版，最终审核结果以审核结果为准。";
-char str2[] =
-    "An individual human existence should be like a river-small at first, "
-    "narrowly contained within its banks, and rushing passionately past "
-    "boulders and over waterfalls. Gradually the river grows wider, the banks "
-    "recede, the waters flow more quietly, and in the end, without any visible "
-    "break, they become merged in the sea, and painlessly lose their "
-    "individual being.";
-char str3[] =
-    "Youth means a temperamental predominance of courage over timidity, of the "
-    "appetite for adventure over the love of ease. This often exists in a man "
-    "of sixty more than a boy of twenty. Nobody grows old merely by a number "
-    "of years. We grow old by deserting our ideals.";
-char str4[] =
-    "Whether sixty or sixteen, there is in every human being's heart the lure "
-    "of wonders, the unfailing childlike appetite of what's next and the joy "
-    "of the game of living. In the center of your heart and my heart there is "
-    "a wireless station: so long as it receives messages of beauty, hope, "
-    "cheer, courage and power from men and from the infinite, so long are you "
-    "young.";
+#define BUFFER_SIZE (EPD_WIDTH * EPD_HEIGHT  / 8)
+
+unsigned char buffer[BUFFER_SIZE * 2];
 
 int main(void) {
     FontFace XLWenKai;
@@ -74,16 +48,17 @@ int main(void) {
     Epd &epd = Epd::GetInstance();
 
     if (epd.Init() != 0) {
-        printf("e-Paper init failed\n");
+        fprintf(stderr, "e-Paper init failed\n");
         return -1;
     }
 
-    Paragraph paragraph(epd.u16MaxWidth, epd.u16MaxHeight, &TitleFont,
-                        AlignLeft, ROTATE_270);
-    if (paragraph.Init()) {
-        fprintf(stderr, "Out of memory.\n");
-        return 1;
-    }
+    TextLayer paragraph(epd.u16MaxWidth, epd.u16MaxHeight, &TitleFont,
+                        Graphic::AlignLeft, ROTATE_270);
+
+    paragraph.SetFrontImage(buffer);
+    paragraph.SetBackImage(buffer + BUFFER_SIZE);
+    paragraph.Init();
+
     if (paragraph.SetText(str_masiro) == -1) {
         fprintf(stderr, "Setting text wrong.\n");
     }
