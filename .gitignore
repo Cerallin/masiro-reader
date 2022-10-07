@@ -51,3 +51,5 @@ missing
 config.*
 gdb
 test
+masiro
+build

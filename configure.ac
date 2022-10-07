@@ -10,6 +10,9 @@ AM_INIT_AUTOMAKE([subdir-objects])
 
 LT_INIT
 
+SRC_DIR=`readlink -f $srcdir`
+AC_DEFINE_UNQUOTED([SRC_DIR], ["$SRC_DIR"], [source path])
+
 # Checks for programs.
 AC_PROG_CXX
 AC_PROG_CC

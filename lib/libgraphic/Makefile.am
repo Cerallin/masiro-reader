@@ -10,7 +10,10 @@ libgraphic_la_LIBADD = \
                       ../libfont/libfont.la \
                       ../libimage/libimage.la
 
-AM_CPPFLAGS = -I../libepd37 -I../libimage -I../libfont
+AM_CPPFLAGS = \
+              -I$(top_srcdir)/lib/libepd37 \
+              -I$(top_srcdir)/lib/libimage \
+              -I$(top_srcdir)/lib/libfont
 
 TESTS = test
 

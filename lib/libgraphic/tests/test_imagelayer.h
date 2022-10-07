@@ -1,5 +1,6 @@
 #include <CppUTest/TestHarness.h>
 
+#include "config.h"
 #include "imagelayer.h"
 #include <new>
 
@@ -35,7 +36,7 @@ TEST(TestImageLayer, TESTSetImages) {
 
 TEST(TestImageLayer, TestLoadFromImage) {
     BMPImage img(EPD_WIDTH, EPD_HEIGHT, front, back);
-    CHECK_EQUAL(0, img.load("../../assets/lain.bmp"));
+    CHECK_EQUAL(0, img.load(SRC_DIR "/assets/lain.bmp"));
 
     imageLayer->SetFrontImage(layer_front);
 
