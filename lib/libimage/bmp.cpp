@@ -191,16 +191,20 @@ int BMPImage::load(const char *imageFile) {
     int32_t len = imageSize / bitCount;
 
     // allocate buffer
-    front = new (std::nothrow) unsigned char[len]();
     if (front == nullptr) {
-        fprintf(stderr, "Out of memory.\n");
-        return -1;
+        front = new (std::nothrow) unsigned char[len]();
+        if (front == nullptr) {
+            fprintf(stderr, "Out of memory.\n");
+            return -1;
+        }
     }
-    back = new (std::nothrow) unsigned char[len]();
+
     if (back == nullptr) {
-        fprintf(stderr, "Out of memory.\n");
-        delete[] front;
-        return -1;
+        back = new (std::nothrow) unsigned char[len]();
+        if (back == nullptr) {
+            fprintf(stderr, "Out of memory.\n");
+            return -1;
+        }
     }
 
     ExtractImage(image, imageSize, bitCount / 8);
@@ -257,6 +261,18 @@ int32_t BMPImage::GetImageSize() { return 3 * width * height; }
 const unsigned char *BMPImage::GetFrontImage() { return front; }
 
 const unsigned char *BMPImage::GetBackImage() { return back; }
+
+void BMPImage::DeleteFrontImage() {
+    if (front != nullptr) {
+        delete[] front;
+    }
+}
+
+void BMPImage::DeleteBackImage() {
+    if (back != nullptr) {
+        delete[] back;
+    }
+}
 
 int32_t BMPImage::GetWidth() { return width; }
 

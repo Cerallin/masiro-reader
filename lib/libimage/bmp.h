@@ -36,6 +36,9 @@ class BMPImage {
     const unsigned char *GetFrontImage();
     const unsigned char *GetBackImage();
 
+    void DeleteFrontImage();
+    void DeleteBackImage();
+
     int32_t GetWidth();
     int32_t GetHeight();
 
