@@ -65,7 +65,7 @@ BMPImage::BMPImage(int32_t width, int32_t height, unsigned char *front,
                    unsigned char *back)
     : width(width), height(height), front(front), back(back) {}
 
-int BMPImage::save(const char *imageFile) {
+int BMPImage::Save(const char *imageFile) {
     FILE *fd = fopen(imageFile, "wb");
     if (fd == nullptr) {
         return -1;
@@ -132,7 +132,7 @@ int BMPImage::save(const char *imageFile) {
     return 0;
 }
 
-int BMPImage::load(const char *imageFile) {
+int BMPImage::Load(const char *imageFile) {
     int32_t tmp = 0; // long enough
     int32_t fileSize, offsetToImage, infoSize, imageSize;
 
@@ -213,7 +213,7 @@ int BMPImage::load(const char *imageFile) {
     return 0;
 }
 
-inline int GetPalatteOf(uint32_t mean) {
+inline int GetPaletteOf(uint32_t mean) {
     for (int i = 1; i < sizeof(palette); i++) {
         if (mean <= palette_squared[i])
             return ~(i - 1) & 0x03;
@@ -230,7 +230,7 @@ void BMPImage::ExtractImage(const uint8_t *image, int32_t len, int byteCount) {
             sum += image[i] * image[i];
         }
 
-        auto color = GetPalatteOf(sum / byteCount);
+        auto color = GetPaletteOf(sum / byteCount);
         auto l = i / byteCount - 1;
         auto x = l % width;
 

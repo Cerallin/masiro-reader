@@ -29,9 +29,9 @@ class BMPImage {
     BMPImage(int32_t width, int32_t height, unsigned char *front,
              unsigned char *back);
 
-    int save(const char *imageFile);
+    int Save(const char *imageFile);
 
-    int load(const char *imageFile);
+    int Load(const char *imageFile);
 
     const unsigned char *GetFrontImage();
     const unsigned char *GetBackImage();

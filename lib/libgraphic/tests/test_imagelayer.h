@@ -3,8 +3,11 @@
 #include "config.h"
 #include "imagelayer.h"
 #include <new>
+#include <unistd.h>
 
 #define TEST_BUFFER_SIZE (EPD_WIDTH * EPD_HEIGHT / 8)
+
+const char image_file[] = SRC_DIR "/assets/lain.bmp";
 
 ImageLayer *imageLayer;
 
@@ -34,9 +37,13 @@ TEST(TestImageLayer, TESTSetImages) {
     CHECK_EQUAL(layer_back, imageLayer->GetOldImage());
 }
 
+TEST(TestImageLayer, TestBMPImageFileExistence) {
+    CHECK_EQUAL(0, access(image_file, F_OK));
+}
+
 TEST(TestImageLayer, TestLoadFromImage) {
     BMPImage img(EPD_WIDTH, EPD_HEIGHT, front, back);
-    CHECK_EQUAL(0, img.load(SRC_DIR "/assets/lain.bmp"));
+    CHECK_EQUAL(0, img.Load(image_file));
 
     imageLayer->SetFrontImage(layer_front);
 
