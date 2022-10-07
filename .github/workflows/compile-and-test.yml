@@ -49,4 +49,9 @@ jobs:
         run: make
 
       - name: Run make check
+        if: always()
         run: make check
+
+      - name: Post check result
+        if: always()
+        run: cat lib/*/test-suite.log
