@@ -71,6 +71,7 @@ class Paint {
     Paint(unsigned char *new_image, unsigned char *old_image, uint32_t width,
           uint32_t height, int32_t rotate = ROTATE_0);
     Paint(uint32_t width, uint32_t height, int32_t rotate = ROTATE_0);
+    Paint(const Paint &paint);
     virtual ~Paint() = default;
 
     /**

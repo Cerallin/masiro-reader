@@ -30,6 +30,7 @@
 class Layer : public Paint {
   public:
     Layer(uint32_t width, uint32_t height, int32_t rotate = ROTATE_DEFAULT);
+    Layer(const Layer &layer);
     virtual ~Layer() = default;
 
     void Display(Epd *epd);

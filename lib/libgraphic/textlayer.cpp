@@ -65,6 +65,9 @@ TextLayer::TextLayer(uint32_t width, uint32_t height, CodePoint *codepoints,
     : Layer(width, height, rotate), codepoints(codepoints), font(font),
       textAlign(textAlign) {}
 
+TextLayer::TextLayer(const Layer &layer, Graphic::TextAlign textAlign)
+    : Layer(layer), textAlign(textAlign) {}
+
 TextLayer::~TextLayer() {
     if (codepoints != nullptr)
         delete[] codepoints;

@@ -70,6 +70,11 @@ Paint::Paint(uint32_t width, uint32_t height, int32_t rotate)
       /* 1 byte = 8 pixels, so the width should be the multiple of 8 */
       width(width % 8 ? width + 8 - (width % 8) : width) {}
 
+Paint::Paint(const Paint &paint)
+    : width(paint.width), height(paint.height), new_image(paint.new_image),
+      old_image(paint.old_image), rotate(paint.rotate),
+      invertColor(paint.invertColor) {}
+
 void Paint::Init() { Clear(COLOR_WW); }
 
 void Paint::Clear(int32_t colored) {

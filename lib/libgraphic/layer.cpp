@@ -24,6 +24,8 @@
 Layer::Layer(uint32_t width, uint32_t height, int32_t rotate)
     : Paint(width, height, rotate){};
 
+Layer::Layer(const Layer &layer) : Paint(layer) {}
+
 void Layer::Display(Epd *epd) { epd->DisplayFrame(old_image, new_image); }
 
 void Layer::SetFrontImage(uint8_t *front) { this->new_image = front; }

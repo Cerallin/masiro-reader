@@ -21,7 +21,9 @@
 #include <string.h>
 
 ImageLayer::ImageLayer(uint32_t width, uint32_t height, int32_t rotate)
-    : Layer(width, height, rotate){};
+    : Layer(width, height, rotate) {};
+
+ImageLayer::ImageLayer(const Layer &layer) : Layer(layer) {}
 
 int ImageLayer::LoadFrom(BMPImage *image) {
     if (this->width != image->GetWidth() ||

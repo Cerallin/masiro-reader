@@ -20,18 +20,23 @@
 #ifndef GRAPHIC_TEXT_LAYER_H
 #define GRAPHIC_TEXT_LAYER_H
 
+#include "codepoint.h"
 #include "layer.h"
 #include "style.h"
-#include "codepoint.h"
 
 class TextLayer : public Layer {
   public:
     TextLayer(uint32_t width, uint32_t height, Font *font,
-              Graphic::TextAlign textAlign = Graphic::AlignLeft, int32_t rotate = ROTATE_DEFAULT);
+              Graphic::TextAlign textAlign = Graphic::AlignLeft,
+              int32_t rotate = ROTATE_DEFAULT);
 
     TextLayer(uint32_t width, uint32_t height, CodePoint *codepoints,
               Font *font, Graphic::TextAlign textAlign = Graphic::AlignLeft,
               int32_t rotate = ROTATE_DEFAULT);
+
+    TextLayer(const Layer &layer,
+              Graphic::TextAlign textAlign = Graphic::AlignLeft);
+
     virtual ~TextLayer();
 
     /**
