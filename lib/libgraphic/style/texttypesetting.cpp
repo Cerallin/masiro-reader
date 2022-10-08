@@ -44,7 +44,7 @@ void TextTypeSetting::AdjustAlign(TextTypeSetting *typeSettings, size_t len,
             offset = font->Unscale(lineWidth - stringWidth);
             ScanLine(needle, lineStart) { needle->x += offset; }
         } else if (align == AlignCenter) {
-            offset = font->Unscale(lineWidth - stringWidth);
+            offset = font->Unscale(lineWidth - stringWidth) / 2;
             ScanLine(needle, lineStart) { needle->x += offset; }
         }
         lineStart = needle;
