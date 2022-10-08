@@ -11,12 +11,12 @@ CodePoint codepoints[] = {
 TEST_GROUP(TestCodePoint){};
 
 TEST(TestCodePoint, TestStrToUnicode) {
-    size_t len = strlen(str);
-    CodePoint *p = new CodePoint[len + 2]();
+    size_t srcLen = strlen(str), destLen = (srcLen + 2) * 2;
+    CodePoint *p = new CodePoint[destLen/2]();
 
-    auto num = CodePoint::StrToUnicode(str, len, &p);
+    auto num = CodePoint::StrToUnicode(str, srcLen, &p, destLen);
 
-    CHECK_EQUAL(8, num);
+    CHECK_EQUAL(9, num);
     MEMCMP_EQUAL(codepoints, p, num);
 
     delete[] p;

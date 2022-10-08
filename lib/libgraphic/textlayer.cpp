@@ -93,19 +93,21 @@ void TextLayer::DrawGlyph(const Graphic::TextTypeSetting *ts, Font *font,
 }
 
 int TextLayer::SetText(char *str) {
-    size_t len = strlen(str);
-    codepoints = new (std::nothrow) CodePoint[len + 4]();
-    int res = CodePoint::StrToUnicode(str, len, &codepoints);
-    if (res == -1)
+    size_t srcLen = strlen(str), destLen = (srcLen + 4) * 2;
+    codepoints = new (std::nothrow) CodePoint[destLen / 2]();
+    if (codepoints == nullptr) {
         return -1;
+    }
 
-    CodePoint *needle;
-    for (needle = codepoints; !needle->IsEmpty(); needle++)
-        ;
-    charNum = needle - codepoints;
+    charNum = CodePoint::StrToUnicode(str, srcLen, &codepoints, destLen);
+    if (charNum == -1) {
+        delete[] codepoints;
+        return -1;
+    }
+
     typeSetting = new (std::nothrow) Graphic::TextTypeSetting[charNum]();
     if (typeSetting == nullptr) {
-        // Out of memory
+        delete[] codepoints;
         return -1;
     }
     return 0;

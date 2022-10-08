@@ -20,8 +20,8 @@
 #ifndef CODEPOINT_H
 #define CODEPOINT_H
 
-#include <stdio.h>
 #include <stdint.h>
+#include <stdio.h>
 
 class CodePoint {
   public:
@@ -65,7 +65,8 @@ class CodePoint {
      * @param unicodeStr storage result
      * @return int
      */
-    static int StrToUnicode(char *str, size_t len, CodePoint **unicodeStr);
+    static int StrToUnicode(char *str, size_t srcLen, CodePoint **unicodeStr,
+                            size_t destLen);
 
   private:
     uint16_t value;

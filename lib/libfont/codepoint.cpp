@@ -118,17 +118,18 @@ CodePoint *CodePoint::FindNextBreak(const CodePoint *str,
     return nullptr;
 }
 
-int CodePoint::StrToUnicode(char *str, size_t len, CodePoint **unicodeStr) {
+int CodePoint::StrToUnicode(char *str, size_t srcLen, CodePoint **unicodeStr,
+                            size_t destLen) {
+    size_t srcLeft = srcLen, unicodeLeft = destLen;
+
+    char *buffer = (char *)*unicodeStr;
+    char *inbuf = str, *outbuff = buffer;
 
     iconv_t cd = iconv_open("UTF-16", "UTF-8");
     if (cd == (iconv_t)-1) {
         return -1;
     }
 
-    size_t unicodeLeft, srcLeft = strlen(str);
-    char *buffer = (char *) *unicodeStr;
-
-    char *inbuf = str, *outbuff = buffer;
     if (iconv(cd, &inbuf, &srcLeft, &outbuff, &unicodeLeft) == -1) {
         perror("iconv: ");
         return -1;
@@ -145,7 +146,7 @@ int CodePoint::StrToUnicode(char *str, size_t len, CodePoint **unicodeStr) {
     // 当CodePoint的二进制内容与uint16_t完全一致时可以这样转换
     *unicodeStr = (CodePoint *)buffer;
 
-    return (CodePoint *)outbuff - (CodePoint *)buffer - 1;
+    return (CodePoint *)outbuff - (CodePoint *)buffer;
 }
 
 CodePoint *CodePoint::FindNextChar(const CodePoint *str, CodePoint c) {
