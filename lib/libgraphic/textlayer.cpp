@@ -153,8 +153,8 @@ void TextLayer::Render() {
     int y = textPadding.paddingTop;
     int lineHeight = font->GetLineHeight(1.2f);
 
-    int maxLineLength = GetWidth() - textPadding.paddingRight;
-    int maxHeight = GetHeight() - textPadding.paddingBottom;
+    int maxLineLength = GetRelativeWidth() - textPadding.paddingRight;
+    int maxHeight = GetRelativeHeight() - textPadding.paddingBottom;
 
     /* Codepoints always starts with 0xFEFF */
     for (auto c = codepoints + 1; c - codepoints < charNum; c++) {
