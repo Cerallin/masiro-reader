@@ -31,6 +31,7 @@ class ImageLayer : public Layer {
     virtual ~ImageLayer() = default;
 
     int LoadFrom(BMPImage *image);
+    int LoadFrom(const char *imageFile);
 };
 
 #endif /* GRAPHIC_IMAGE_LAYER_H */

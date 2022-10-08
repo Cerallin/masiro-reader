@@ -36,3 +36,8 @@ int ImageLayer::LoadFrom(BMPImage *image) {
 
     return 0;
 }
+
+int ImageLayer::LoadFrom(const char *imageFile) {
+    BMPImage image(GetWidth(), GetHeight(), GetNewImage(), GetOldImage());
+    return image.Load(imageFile);
+}
