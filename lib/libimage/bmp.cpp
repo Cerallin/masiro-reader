@@ -141,6 +141,7 @@ int BMPImage::Load(const char *imageFile) {
 
     FILE *fd = fopen(imageFile, "rb");
     if (fd == nullptr) {
+        perror("BMPIMage::Load");
         return -1;
     }
 

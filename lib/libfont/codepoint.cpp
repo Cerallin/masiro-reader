@@ -131,7 +131,7 @@ int CodePoint::StrToUnicode(char *str, size_t srcLen, CodePoint **unicodeStr,
     }
 
     if (iconv(cd, &inbuf, &srcLeft, &outbuff, &unicodeLeft) == -1) {
-        perror("iconv: ");
+        perror("iconv");
         return -1;
     }
     iconv_close(cd);
