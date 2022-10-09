@@ -86,11 +86,11 @@ void TextLayer::DrawGlyph(const Graphic::TextTypeSetting *ts, Font *font,
         int color = GetMatrix(bitmap, ts->width, i - x, j - y) >> 6;
         // FIXME This is some kind of "alpha" tunnel
         if (this->invertColor) {
-            // if (color != COLOR_WW)
-            DrawPixel(i, j, ~color);
+            if (color != COLOR_WW)
+                DrawPixel(i, j, ~color);
         } else {
-            // if (color != COLOR_BB)
-            DrawPixel(i, j, color);
+            if (color != COLOR_BB)
+                DrawPixel(i, j, color);
         }
     };
 }
@@ -255,8 +255,6 @@ void TextLayer::Render() {
         bitmap = font->GetCodepointBitmap(c->GetValue(), 0, 0, 0, 0);
         ts->ascent = ascent;
         DrawGlyph(ts, font, bitmap);
-        printf("%ld\t", c->GetValue());
-        printf("%f\n", font->Scale(ts->x + ts->leftSideBearing) + ts->width);
     }
 
     font->FreeBitmap(bitmap);
