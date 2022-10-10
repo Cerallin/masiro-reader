@@ -19,39 +19,20 @@ jobs:
       - name: install libcap
         run: sudo apt install -y libcap2 libcap-dev
 
-      - name: install bcm2835
-        run: |
-          wget -q http://www.airspayce.com/mikem/bcm2835/bcm2835-1.71.tar.gz
-          tar xf bcm2835-1.71.tar.gz
-          cd bcm2835-1.71
-          ./configure --host=arm-linux-gnueabihf
-          make
-          sudo make install
-          cd -
-
-      - name: install cpputest
-        run: |
-          wget -q https://github.com/cpputest/cpputest/releases/download/v4.0/cpputest-4.0.tar.gz
-          tar xf cpputest-4.0.tar.gz
-          cd cpputest-4.0
-          ./configure --host=arm-linux-gnueabihf
-          make
-          sudo make install
-          cd -
+      - name: build and install dependencies
+        run: ./scripts/build-dependencies.sh
 
       - name: Run autoreconf
         run: autoreconf -i
 
       - name: Run configure
-        run: ./configure --host=arm-linux-gnueabihf
+        run: ./configure
 
       - name: Run make
         run: make
 
       - name: Run make check
         if: always()
-        run: make check
-
-      - name: Post check result
-        if: always()
-        run: cat lib/*/test-suite.log
+        run: |
+          make check
+          cat lib/*/test-suite.log
