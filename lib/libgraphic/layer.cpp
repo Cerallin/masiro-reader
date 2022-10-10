@@ -28,13 +28,20 @@ Layer::Layer(const Layer &layer) : Paint(layer) {}
 
 void Layer::Display(Epd *epd) { epd->DisplayFrame(old_image, new_image); }
 
-void Layer::SetFrontImage(uint8_t *front) { this->new_image = front; }
+Layer &Layer::SetFrontImage(uint8_t *front) {
+    this->new_image = front;
+    return *this;
+}
 
-void Layer::SetBackImage(uint8_t *back) { this->old_image = back; }
+Layer &Layer::SetBackImage(uint8_t *back) {
+    this->old_image = back;
+    return *this;
+}
 
-void Layer::SetImages(uint8_t *image) {
+Layer &Layer::SetImages(uint8_t *image) {
     this->new_image = image;
     this->old_image = image + width * height / 8;
+    return *this;
 }
 
 size_t Layer::GetMemSize() {

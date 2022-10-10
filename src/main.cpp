@@ -31,8 +31,7 @@ unsigned char layer_buffer[BUFFER_SIZE * 2];
 
 int main(void) {
     Layer layer(EPD_WIDTH, EPD_HEIGHT);
-    layer.SetFrontImage(layer_buffer);
-    layer.SetBackImage(layer_buffer + BUFFER_SIZE);
+    layer.SetFrontImage(layer_buffer).SetBackImage(layer_buffer + BUFFER_SIZE);
 
     ImageLayer imageLayer = layer;
     imageLayer.Init();
@@ -57,9 +56,7 @@ int main(void) {
     if (textLayer.SetText(str) == -1) {
         return 1;
     }
-    textLayer.SetInvertColor(true);
-    textLayer.SetTextPadding(0, 195, 0, 0);
-    textLayer.Render();
+    textLayer.SetInvertColor(true).SetTextPadding(0, 195, 0, 0).Render();
 
     Epd &epd = Epd::GetInstance();
 

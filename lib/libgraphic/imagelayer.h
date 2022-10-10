@@ -30,6 +30,8 @@ class ImageLayer : public Layer {
                int32_t rotate = ROTATE_DEFAULT);
     virtual ~ImageLayer() = default;
 
+    OVERRIDE_LAYER(ImageLayer);
+
     int LoadFrom(BMPImage *image);
     int LoadFrom(const char *imageFile);
 };

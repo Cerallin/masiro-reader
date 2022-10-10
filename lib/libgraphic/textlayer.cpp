@@ -116,34 +116,39 @@ int TextLayer::SetText(char *str) {
     return 0;
 }
 
-void TextLayer::SetTextAlign(Graphic::TextAlign textAlign) {
+TextLayer &TextLayer::SetTextAlign(Graphic::TextAlign textAlign) {
     textAlign = textAlign;
+    return *this;
 }
 
-void TextLayer::SetTextPadding(Graphic::TextPadding textPadding) {
+TextLayer &TextLayer::SetTextPadding(Graphic::TextPadding textPadding) {
     textPadding = textPadding;
+    return *this;
 }
 
-void TextLayer::SetTextPadding(int padding) {
+TextLayer &TextLayer::SetTextPadding(int padding) {
     textPadding.paddingLeft = padding;
     textPadding.paddingRight = padding;
     textPadding.paddingTop = padding;
     textPadding.paddingBottom = padding;
+    return *this;
 }
 
-void TextLayer::SetTextPadding(int paddingX, int paddingY) {
+TextLayer &TextLayer::SetTextPadding(int paddingX, int paddingY) {
     textPadding.paddingLeft = paddingX;
     textPadding.paddingRight = paddingX;
     textPadding.paddingTop = paddingY;
     textPadding.paddingBottom = paddingY;
+    return *this;
 }
 
-void TextLayer::SetTextPadding(int paddingLeft, int paddingTop,
-                               int paddingRight, int paddingBottom) {
+TextLayer &TextLayer::SetTextPadding(int paddingLeft, int paddingTop,
+                                     int paddingRight, int paddingBottom) {
     textPadding.paddingLeft = paddingLeft;
     textPadding.paddingRight = paddingRight;
     textPadding.paddingTop = paddingTop;
     textPadding.paddingBottom = paddingBottom;
+    return *this;
 }
 
 void TextLayer::Render() {
@@ -260,4 +265,7 @@ void TextLayer::Render() {
     font->FreeBitmap(bitmap);
 }
 
-void TextLayer::SetFont(Font *font) { this->font = font; }
+TextLayer &TextLayer::SetFont(Font *font) {
+    this->font = font;
+    return *this;
+}

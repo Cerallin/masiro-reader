@@ -39,6 +39,8 @@ class TextLayer : public Layer {
 
     virtual ~TextLayer();
 
+    OVERRIDE_LAYER(TextLayer);
+
     /**
      * @brief Draw a single char, with no coordinate checks
      *
@@ -58,15 +60,15 @@ class TextLayer : public Layer {
      */
     int SetText(char *str);
 
-    void SetFont(Font *font);
+    TextLayer &SetFont(Font *font);
 
-    void SetTextAlign(Graphic::TextAlign textAlign);
+    TextLayer &SetTextAlign(Graphic::TextAlign textAlign);
 
-    void SetTextPadding(Graphic::TextPadding textPadding);
-    void SetTextPadding(int padding);
-    void SetTextPadding(int paddingX, int paddingY);
-    void SetTextPadding(int paddingLeft, int paddingTop, int paddingRight,
-                        int paddingBottom);
+    TextLayer &SetTextPadding(Graphic::TextPadding textPadding);
+    TextLayer &SetTextPadding(int padding);
+    TextLayer &SetTextPadding(int paddingX, int paddingY);
+    TextLayer &SetTextPadding(int paddingLeft, int paddingTop, int paddingRight,
+                              int paddingBottom);
 
     /**
      * @brief Render the characters

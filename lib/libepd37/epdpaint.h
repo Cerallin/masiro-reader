@@ -77,9 +77,9 @@ class Paint {
     /**
      * @brief Refresh buffer
      *
-     * @return void
+     * @return Paint &
      */
-    void Init();
+    Paint &Init();
 
     /**
      * @brief clear the image.
@@ -108,7 +108,7 @@ class Paint {
      *
      * @param[in] height
      */
-    void SetHeight(int32_t height);
+    Paint &SetHeight(int32_t height);
 
     /**
      * @brief
@@ -120,9 +120,9 @@ class Paint {
      *
      * @param[in] rotate
      */
-    void SetRotate(int32_t rotate);
+    Paint &SetRotate(int32_t rotate);
 
-    void SetInvertColor(bool flag);
+    Paint &SetInvertColor(bool flag);
     bool GetInvertColor(void);
 
     /**

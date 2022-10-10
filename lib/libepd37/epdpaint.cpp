@@ -75,7 +75,10 @@ Paint::Paint(const Paint &paint)
       old_image(paint.old_image), rotate(paint.rotate),
       invertColor(paint.invertColor) {}
 
-void Paint::Init() { Clear(COLOR_WW); }
+Paint &Paint::Init() {
+    Clear(COLOR_WW);
+    return *this;
+}
 
 void Paint::Clear(int32_t colored) {
     for (int32_t x = 0; x < this->width; x++) {
@@ -85,9 +88,9 @@ void Paint::Clear(int32_t colored) {
     }
 }
 
-void Paint::SetInvertColor(bool flag) {
+Paint &Paint::SetInvertColor(bool flag) {
     if (invertColor == flag)
-        return;
+        return *this;
 
     invertColor = flag;
 
@@ -97,6 +100,8 @@ void Paint::SetInvertColor(bool flag) {
         new_image[i + j * w] = ~new_image[i + j * w];
         old_image[i + j * w] = ~old_image[i + j * w];
     }
+
+    return *this;
 }
 
 bool Paint::GetInvertColor() { return invertColor; }
@@ -141,11 +146,17 @@ int32_t Paint::GetRelativeHeight(void) {
 
 int32_t Paint::GetHeight(void) { return height; }
 
-void Paint::SetHeight(int32_t height) { this->height = height; }
+Paint &Paint::SetHeight(int32_t height) {
+    this->height = height;
+    return *this;
+}
 
 int32_t Paint::GetRotate(void) { return this->rotate; }
 
-void Paint::SetRotate(int32_t rotate) { this->rotate = rotate; }
+Paint &Paint::SetRotate(int32_t rotate) {
+    this->rotate = rotate;
+    return *this;
+}
 
 void Paint::DrawPixel(int32_t x, int32_t y, int32_t colored) {
     if (rotate == ROTATE_0) {
