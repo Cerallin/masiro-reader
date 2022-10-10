@@ -44,7 +44,7 @@ lib/*/*/*.trs
 
 compile
 depcomp
-*.sh
+/*.sh
 install-sh
 libtool
 test-driver
@@ -54,3 +54,4 @@ gdb
 test
 masiro
 build
+*.tar.gz
