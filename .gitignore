@@ -8,6 +8,7 @@ aclocal.m4
 configure
 configure.scan
 stamp-h1
+m4/*
 *.0
 *~
 *.gch
