@@ -2,6 +2,7 @@
 
 #include "epdpaint.h"
 #include <stdlib.h>
+#include <string.h>
 
 #define TEST_WIDTH  16
 #define TEST_HEIGHT 8

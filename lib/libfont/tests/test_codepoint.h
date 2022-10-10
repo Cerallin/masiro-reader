@@ -1,6 +1,7 @@
 #include <CppUTest/TestHarness.h>
 
 #include "codepoint.h"
+#include <string.h>
 #include <new>
 
 char str[] = "hello 你好";
