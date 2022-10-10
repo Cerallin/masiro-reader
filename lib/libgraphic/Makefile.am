@@ -11,6 +11,7 @@ libgraphic_la_LIBADD = \
                       ../libimage/libimage.la
 
 AM_CPPFLAGS = \
+              -I$(top_srcdir) \
               -I$(top_srcdir)/lib/libepd37 \
               -I$(top_srcdir)/lib/libimage \
               -I$(top_srcdir)/lib/libfont

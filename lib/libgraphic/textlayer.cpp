@@ -18,9 +18,10 @@
  */
 
 #include "textlayer.h"
-#include "stdio.h"
+#include "debug.h"
 
 #include <new>
+#include <stdio.h>
 #include <string.h>
 
 #define CHAR_LF    0x000A
@@ -152,6 +153,11 @@ TextLayer &TextLayer::SetTextPadding(int paddingLeft, int paddingTop,
 }
 
 void TextLayer::Render() {
+    // Debug checks
+    debug_is_initialized(font);
+    debug_is_initialized(codepoints);
+    debug_is_initialized(typeSetting);
+
     // Next line flag
     int flagNextLine = 0;
     /* Border of a glyph */
