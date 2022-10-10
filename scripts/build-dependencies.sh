@@ -1,35 +1,37 @@
 #!/bin/bash -e
 
-download_and_compile_bcm2835() {
+download_and_install_bcm2835() {
     [ -f bcm2835-1.71.tar.gz ] ||
         wget -q http://www.airspayce.com/mikem/bcm2835/bcm2835-1.71.tar.gz
     tar xf bcm2835-1.71.tar.gz
 
     cd bcm2835-1.71
 
-    ./configure $@
+    ./configure --prefix=$(pwd)/../libbcm2835 $@
     make -j8
+    make install
 
     cd -
 }
 
-checkout_and_compile_cpputest() {
+checkout_and_install_cpputest() {
     cd ../cpputest
     git checkout v4.0
     cd -
 
     mkdir -p cpputest-build
     cd cpputest-build
-    cmake ../../cpputest
+    cmake -DCMAKE_INSTALL_PREFIX=$(pwd)/../libcpputest ../../cpputest
     make -j8
+    make install
     cd -
 }
 
-download_and_compile_submodules() {
+download_and_install_submodules() {
     git submodule update
 
-    checkout_and_compile_cpputest
-    download_and_compile_bcm2835
+    checkout_and_install_cpputest
+    download_and_install_bcm2835
 }
 
 show_usage() {
@@ -54,7 +56,7 @@ esac
 mkdir -p build
 cd build
 
-download_and_compile_submodules $@
+download_and_install_submodules $@
 
 cd -
 
