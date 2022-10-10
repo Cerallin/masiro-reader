@@ -26,7 +26,10 @@ jobs:
         run: autoreconf -i
 
       - name: Run configure
-        run: ./configure
+        run: |
+          CXXFLAGS="-I$(pwd)/build/libbcm2835/include -I$(pwd)/build/libcpputest/include" \
+          LDFLAGS="-L$(pwd)/build/libbcm2835/lib -L$(pwd)/build/libcpputest/lib" \
+          ./configure
 
       - name: Run make
         run: make

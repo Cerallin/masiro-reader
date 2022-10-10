@@ -28,8 +28,6 @@ checkout_and_install_cpputest() {
 }
 
 download_and_install_submodules() {
-    git submodule update
-
     checkout_and_install_cpputest
     download_and_install_bcm2835
 }
@@ -52,6 +50,9 @@ case $1 in
     exit 0
     ;;
 esac
+
+git submodule init
+git submodule update
 
 mkdir -p build
 cd build
