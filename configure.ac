@@ -17,10 +17,16 @@ AC_DEFINE_UNQUOTED([SRC_DIR], ["$SRC_DIR"], [source path])
 AC_PROG_CXX
 AC_PROG_CC
 
+# Debugging code
+AC_ARG_ENABLE(debug,
+    AS_HELP_STRING([--enable-debug], [enable debugging, default: no]))
+AS_IF([! test "x$enable_debug" = xyes ], [
+    AC_DEFINE([NDEBUG], [1], [disable debugging code])
+])
+
 # Checks for libraries.
 AC_CHECK_LIB([bcm2835], [bcm2835_init])
 AC_CHECK_LIB([pthread], [pthread_create])
-# AC_CHECK_LIB([CppUTest], [CommandLineTestRunner])
 
 # Checks for header files.
 AC_CHECK_HEADERS([stddef.h stdint.h stdlib.h string.h sys/time.h unistd.h])
@@ -37,7 +43,7 @@ AC_TYPE_UINT32_T
 AC_TYPE_UINT8_T
 
 # Checks for library functions.
-AC_CHECK_FUNCS([floor gettimeofday strpbrk])
+AC_CHECK_FUNCS([floor gettimeofday strpbrk memset])
 
 AC_CONFIG_FILES([Makefile
                  lib/libbtn/Makefile
