@@ -154,9 +154,9 @@ TextLayer &TextLayer::SetTextPadding(int paddingLeft, int paddingTop,
 
 void TextLayer::Render() {
     // Debug checks
-    debug_is_initialized(font);
-    debug_is_initialized(codepoints);
-    debug_is_initialized(typeSetting);
+    assert_is_initialized(font);
+    assert_is_initialized(codepoints);
+    assert_is_initialized(typeSetting);
 
     // Next line flag
     int flagNextLine = 0;

@@ -45,6 +45,6 @@ Layer &Layer::SetImages(uint8_t *image) {
 }
 
 size_t Layer::GetMemSize() {
-    size_t size = width * height;
+    size_t size = width * height / 8;
     return size;
 }

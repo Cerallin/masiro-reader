@@ -18,26 +18,41 @@
  */
 
 #include "imagelayer.h"
+#include "debug.h"
 #include <string.h>
 
 ImageLayer::ImageLayer(uint32_t width, uint32_t height, int32_t rotate)
-    : Layer(width, height, rotate) {};
+    : Layer(width, height, rotate) {}
 
 ImageLayer::ImageLayer(const Layer &layer) : Layer(layer) {}
 
 int ImageLayer::LoadFrom(BMPImage *image) {
+    auto memSize = GetMemSize();
+
     if (this->width != image->GetWidth() ||
         this->height != image->GetHeight()) {
         return -1;
     }
 
-    memcpy(new_image, image->GetFrontImage(), width * height / 8);
-    memcpy(old_image, image->GetBackImage(), width * height / 8);
+    // Debug block
+    {
+        assert_is_initialized(image->GetFrontImage());
+        assert_is_initialized(image->GetBackImage());
+
+        assert_is_initialized(new_image);
+        assert_is_initialized(old_image);
+    }
+
+    memcpy(new_image, image->GetFrontImage(), memSize);
+    memcpy(old_image, image->GetBackImage(), memSize);
 
     return 0;
 }
 
 int ImageLayer::LoadFrom(const char *imageFile) {
+    assert_is_initialized(new_image);
+    assert_is_initialized(old_image);
+
     BMPImage image(GetWidth(), GetHeight(), GetNewImage(), GetOldImage());
     return image.Load(imageFile);
 }

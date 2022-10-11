@@ -30,7 +30,15 @@ TEST_GROUP(TestImageLayer) {
     }
 };
 
-TEST(TestImageLayer, TESTSetImages) {
+TEST(TestImageLayer, TESTSetImagesSeparately) {
+    imageLayer->SetFrontImage(layer_front);
+    imageLayer->SetBackImage(layer_back);
+
+    CHECK_EQUAL(layer_front, imageLayer->GetNewImage());
+    CHECK_EQUAL(layer_back, imageLayer->GetOldImage());
+}
+
+TEST(TestImageLayer, TestSetImages) {
     imageLayer->SetImages(layer_images);
 
     CHECK_EQUAL(layer_front, imageLayer->GetNewImage());
@@ -45,9 +53,7 @@ TEST(TestImageLayer, TestLoadFromImage) {
     BMPImage img(EPD_WIDTH, EPD_HEIGHT, front, back);
     CHECK_EQUAL(0, img.Load(image_file));
 
-    imageLayer->SetFrontImage(layer_front);
-
-    imageLayer->SetBackImage(layer_back);
+    imageLayer->SetImages(layer_images);
 
     CHECK_EQUAL(0, imageLayer->LoadFrom(&img));
     CHECK_EQUAL(layer_front, imageLayer->GetNewImage());
@@ -55,4 +61,10 @@ TEST(TestImageLayer, TestLoadFromImage) {
 
     MEMCMP_EQUAL(layer_front, imageLayer->GetNewImage(), TEST_BUFFER_SIZE);
     MEMCMP_EQUAL(layer_back, imageLayer->GetOldImage(), TEST_BUFFER_SIZE);
+}
+
+TEST(TestImageLayer, TestLoadFromImageDirectly) {
+    imageLayer->SetImages(layer_images);
+
+    CHECK_EQUAL(0, imageLayer->LoadFrom(image_file));
 }
