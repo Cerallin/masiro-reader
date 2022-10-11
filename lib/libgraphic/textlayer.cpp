@@ -195,7 +195,13 @@ void TextLayer::Render() {
                 int advanceWidth;
                 int sum = 0;
                 for (auto tmp = c; tmp < next_break; tmp++) {
+#ifndef NDEBUG
+                    font->GetCodepointBitmapBox(tmp->GetValue(), &ix0, &ix1,
+                                                &iy0, &iy1);
+                    this->DrawRectangle(ix0, iy0, ix1, iy1, COLOR_BB);
+#else
                     font->GetCodepointBitmapBox(tmp->GetValue(), &ix0, 0, 0, 0);
+#endif
                     font->GetCodepointHMetrics(tmp->GetValue(), &advanceWidth,
                                                0);
                     sum += font->Unscale(ix0) + advanceWidth;

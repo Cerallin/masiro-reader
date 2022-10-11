@@ -229,8 +229,8 @@ class Paint {
                           int32_t colored);
 
   protected:
-    uint8_t *old_image;
     uint8_t *new_image;
+    uint8_t *old_image;
     int32_t width;
     int32_t height;
     int32_t rotate;

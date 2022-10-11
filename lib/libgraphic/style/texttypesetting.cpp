@@ -24,7 +24,7 @@ namespace Graphic {
 #define ScanLine(needle, lineStart)                                            \
     for (needle = lineStart; needle->y == lineStart->y; needle++)
 
-void TextTypeSetting::AdjustAlign(TextTypeSetting *typeSettings, size_t len,
+void TextTypeSetting::AdjustAlign(TextTypeSetting *typeSettings, ssize_t len,
                                   TextAlign align, int lineWidth, Font *font) {
     int stringWidth;
     float offset;

@@ -60,19 +60,19 @@
 
 Paint::Paint(unsigned char *new_image, unsigned char *old_image, uint32_t width,
              uint32_t height, int32_t rotate)
-    : new_image(new_image), old_image(old_image), height(height),
-      rotate(rotate), invertColor(false),
+    : new_image(new_image), old_image(old_image),
       /* 1 byte = 8 pixels, so the width should be the multiple of 8 */
-      width(width % 8 ? width + 8 - (width % 8) : width) {}
+      width(width % 8 ? width + 8 - (width % 8) : width), height(height),
+      rotate(rotate), invertColor(false) {}
 
 Paint::Paint(uint32_t width, uint32_t height, int32_t rotate)
-    : height(height), rotate(rotate),
-      /* 1 byte = 8 pixels, so the width should be the multiple of 8 */
-      width(width % 8 ? width + 8 - (width % 8) : width) {}
+    : /* 1 byte = 8 pixels, so the width should be the multiple of 8 */
+      width(width % 8 ? width + 8 - (width % 8) : width), height(height),
+      rotate(rotate) {}
 
 Paint::Paint(const Paint &paint)
-    : width(paint.width), height(paint.height), new_image(paint.new_image),
-      old_image(paint.old_image), rotate(paint.rotate),
+    : new_image(paint.new_image), old_image(paint.old_image),
+      width(paint.width), height(paint.height), rotate(paint.rotate),
       invertColor(paint.invertColor) {}
 
 Paint &Paint::Init() {

@@ -77,14 +77,14 @@ class TextLayer : public Layer {
     void Render();
 
   private:
-    Font *font = nullptr;
     CodePoint *codepoints = nullptr;
+    Font *font = nullptr;
 
     Graphic::TextTypeSetting *typeSetting = nullptr;
     Graphic::TextAlign textAlign = Graphic::AlignLeft;
     Graphic::TextPadding textPadding = {0, 0, 0, 0};
 
-    size_t charNum;
+    ssize_t charNum;
 };
 
 #endif /* GRAPHIC_TEXT_LAYER_H */

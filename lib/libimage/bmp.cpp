@@ -215,7 +215,7 @@ int BMPImage::Load(const char *imageFile) {
 }
 
 inline int GetPaletteOf(uint32_t mean) {
-    for (int i = 1; i < sizeof(palette); i++) {
+    for (size_t i = 1; i < sizeof(palette); i++) {
         if (mean <= palette_squared[i])
             return ~(i - 1) & 0x03;
     }
