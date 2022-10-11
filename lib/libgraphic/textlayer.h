@@ -42,17 +42,6 @@ class TextLayer : public Layer {
     OVERRIDE_LAYER(TextLayer);
 
     /**
-     * @brief Draw a single char, with no coordinate checks
-     *
-     * @param x
-     * @param y
-     * @param codepoint
-     * @param font
-     */
-    void DrawGlyph(const Graphic::TextTypeSetting *typeSetting, Font *font,
-                   const unsigned char *bitmap);
-
-    /**
      * @brief Set text.
      *
      * @param str Unicode series starts with 0xFEFF
@@ -77,6 +66,17 @@ class TextLayer : public Layer {
     void Render();
 
   private:
+    /**
+     * @brief Draw a single char, with no coordinate checks
+     *
+     * @param x
+     * @param y
+     * @param codepoint
+     * @param font
+     */
+    void DrawGlyph(const Graphic::TextTypeSetting *typeSetting, Font *font,
+                   const unsigned char *bitmap);
+
     CodePoint *codepoints = nullptr;
     Font *font = nullptr;
 
