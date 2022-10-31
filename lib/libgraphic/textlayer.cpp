@@ -87,10 +87,10 @@ void TextLayer::DrawGlyph(const Graphic::TextTypeSetting *ts, Font *font,
         int color = GetMatrix(bitmap, ts->width, i - x, j - y) >> 6;
         // FIXME This is some kind of "alpha" tunnel
         if (this->invertColor) {
-            if (color != COLOR_WW)
+            if (color != Color::WW)
                 DrawPixel(i, j, ~color);
         } else {
-            if (color != COLOR_BB)
+            if (color != Color::BB)
                 DrawPixel(i, j, color);
         }
     };
@@ -198,7 +198,7 @@ void TextLayer::Render() {
 #ifndef NDEBUG
                     font->GetCodepointBitmapBox(tmp->GetValue(), &ix0, &ix1,
                                                 &iy0, &iy1);
-                    this->DrawRectangle(ix0, iy0, ix1, iy1, COLOR_BB);
+                    this->DrawRectangle(ix0, iy0, ix1, iy1, Color::BB);
 #else
                     font->GetCodepointBitmapBox(tmp->GetValue(), &ix0, 0, 0, 0);
 #endif

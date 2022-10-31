@@ -5,8 +5,6 @@
 #include <new>
 #include <unistd.h>
 
-#define TEST_BUFFER_SIZE (EPD_WIDTH * EPD_HEIGHT / 8)
-
 const char image_file[] = SRC_DIR "/assets/lain.bmp";
 
 ImageLayer *imageLayer;
@@ -15,10 +13,9 @@ unsigned char images[TEST_BUFFER_SIZE * 2];
 
 unsigned char *front = images, *back = images + TEST_BUFFER_SIZE;
 
-unsigned char layer_images[TEST_BUFFER_SIZE * 2];
+extern unsigned char layer_images[];
 
-unsigned char *layer_front = layer_images,
-              *layer_back = layer_images + TEST_BUFFER_SIZE;
+extern unsigned char *layer_front, *layer_back;
 
 TEST_GROUP(TestImageLayer) {
     void setup() {
@@ -30,26 +27,11 @@ TEST_GROUP(TestImageLayer) {
     }
 };
 
-TEST(TestImageLayer, TESTSetImagesSeparately) {
-    imageLayer->SetFrontImage(layer_front);
-    imageLayer->SetBackImage(layer_back);
-
-    CHECK_EQUAL(layer_front, imageLayer->GetNewImage());
-    CHECK_EQUAL(layer_back, imageLayer->GetOldImage());
-}
-
-TEST(TestImageLayer, TestSetImages) {
-    imageLayer->SetImages(layer_images);
-
-    CHECK_EQUAL(layer_front, imageLayer->GetNewImage());
-    CHECK_EQUAL(layer_back, imageLayer->GetOldImage());
-}
-
-TEST(TestImageLayer, TestBMPImageFileExistence) {
+TEST(TestImageLayer, TESTBMPImageFileExistence) {
     CHECK_EQUAL(0, access(image_file, F_OK));
 }
 
-TEST(TestImageLayer, TestLoadFromImage) {
+TEST(TestImageLayer, TESTLoadFromImage) {
     BMPImage img(EPD_WIDTH, EPD_HEIGHT, front, back);
     CHECK_EQUAL(0, img.Load(image_file));
 
@@ -63,7 +45,7 @@ TEST(TestImageLayer, TestLoadFromImage) {
     MEMCMP_EQUAL(layer_back, imageLayer->GetOldImage(), TEST_BUFFER_SIZE);
 }
 
-TEST(TestImageLayer, TestLoadFromImageDirectly) {
+TEST(TestImageLayer, TESTLoadFromImageDirectly) {
     imageLayer->SetImages(layer_images);
 
     CHECK_EQUAL(0, imageLayer->LoadFrom(image_file));

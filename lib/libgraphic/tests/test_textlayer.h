@@ -3,12 +3,10 @@
 #include "config.h"
 #include "textlayer.h"
 
-#define TEST_BUFFER_SIZE (EPD_WIDTH * EPD_HEIGHT / 8)
-
 const char font_file[] = SRC_DIR "/assets/LXGWWenKaiScreen.ttf";
 char testStr[] = "hello world\n";
 
-extern unsigned char images[TEST_BUFFER_SIZE * 2];
+extern unsigned char images[];
 extern unsigned char *front, *back;
 
 TextLayer *textLayer;
