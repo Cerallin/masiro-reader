@@ -83,6 +83,11 @@ void TextLayer::drawGlyph(const Graphic::TextTypeSetting *ts, Font *font,
     x = font->Scale(ts->x + ts->leftSideBearing);
     y = ts->y + ts->iy0 + ts->ascent;
 
+#ifndef NDEBUG
+    fprintf(stderr, "%d %d %d %d\n", x, y, x + ts->width, y + ts->height);
+    this->DrawRectangle(x, y, x + ts->width, y + ts->height, invertColor ? Color::WB : Color::BW);
+#endif
+
     LoopMatrix(ts->width, ts->height, x, y) {
         int color = GetMatrix(bitmap, ts->width, i - x, j - y) >> 6;
         // FIXME This is some kind of "alpha" tunnel
@@ -155,12 +160,7 @@ TextLayer &TextLayer::SetTextPadding(int paddingLeft, int paddingTop,
 void TextLayer::calcCodePointSize(const CodePoint *codepoint, int *ix0,
                                   int *iy0, int *ix1, int *iy1,
                                   int *advanceWidth) {
-#ifndef NDEBUG
     font->GetCodepointBitmapBox(codepoint->GetValue(), ix0, ix1, iy0, iy1);
-    // this->DrawRectangle(*ix0, *iy0, *ix1, *iy1, Color::BB);
-#else
-    font->GetCodepointBitmapBox(codepoint->GetValue(), ix0, 0, 0, 0);
-#endif
     font->GetCodepointHMetrics(codepoint->GetValue(), advanceWidth, 0);
 }
 
@@ -178,14 +178,11 @@ void TextLayer::calcCodePointTypeSetting(const CodePoint *c,
 
 int TextLayer::calcLineWidth(const CodePoint *start,
                              const CodePoint *nextBreak) {
-    int advanceWidth;
-
-    /* Border of a glyph */
-    int ix0, iy0, ix1, iy1;
+    int ix0, advanceWidth;
 
     int sum = 0;
     for (auto tmp = start; tmp < nextBreak; tmp++) {
-        this->calcCodePointSize(tmp, &ix0, &iy0, &ix1, &iy1, &advanceWidth);
+        this->calcCodePointSize(tmp, &ix0, 0, 0, 0, &advanceWidth);
         sum += font->Unscale(ix0) + advanceWidth;
         sum += font->GetCodepointKernAdvance(tmp->GetValue(),
                                              (tmp + 1)->GetValue());
@@ -287,8 +284,8 @@ void TextLayer::Render() {
 
     unsigned char *bitmap;
 
+    // TODO: maxLineLength as a property.
     int maxLineLength = GetRelativeWidth() - textPadding.paddingRight;
-    int maxHeight = GetRelativeHeight() - textPadding.paddingBottom;
 
     Graphic::TextTypeSetting::AdjustAlign(typeSetting, charNum, textAlign,
                                           maxLineLength, font);
@@ -296,7 +293,7 @@ void TextLayer::Render() {
     auto ts = typeSetting;
     int ascent = font->GetScaledAscent();
     for (auto c = codepoints + 1; c - codepoints < charNum; c++, ts++) {
-        // FIXME not sure if this causes mem leak.
+        // FIXME: not sure if this causes mem leak.
         bitmap = font->GetCodepointBitmap(c->GetValue(), 0, 0, 0, 0);
         ts->ascent = ascent;
         drawGlyph(ts, font, bitmap);
