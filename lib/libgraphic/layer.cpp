@@ -37,8 +37,6 @@ Layer::Layer(const Layer &layer)
       width(layer.width), height(layer.height), rotate(layer.rotate),
       invertColor(layer.invertColor) {}
 
-void Layer::Display(Epd *epd) { epd->DisplayFrame(old_image, new_image); }
-
 Layer &Layer::SetFrontImage(uint8_t *front) {
     this->new_image = front;
     return *this;

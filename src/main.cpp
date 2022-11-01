@@ -65,7 +65,7 @@ int main(void) {
         return -1;
     }
 
-    layer.Display(&epd);
+    epd.DisplayFrame(layer.GetOldImage(), layer.GetNewImage());
 
     epd.PowerOff();
 

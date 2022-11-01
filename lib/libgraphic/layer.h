@@ -62,13 +62,6 @@ class Layer {
     virtual ~Layer() = default;
 
     /**
-     * @brief Display whole image to epd
-     *
-     * @param epd Epd instance
-     */
-    void Display(Epd *epd);
-
-    /**
      * @brief Set front image
      *
      * @param front image pointer

@@ -45,6 +45,10 @@ extern "C" {
  * @brief Display resolution
  */
 #define EPD_WIDTH  240
+
+/**
+ * @brief Display resolution
+ */
 #define EPD_HEIGHT 416
 
 /**
