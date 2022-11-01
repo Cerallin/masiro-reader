@@ -56,7 +56,10 @@ int main(void) {
     if (textLayer.SetText(str) == -1) {
         return 1;
     }
-    textLayer.SetInvertColor(true).SetTextPadding(0, 195, 0, 0).Render();
+    textLayer.SetInvertColor(true)
+        .SetTextPadding(0, 195, 0, 0)
+        .CalcTypeSetting()
+        .Render();
 
     Epd &epd = Epd::GetInstance();
 

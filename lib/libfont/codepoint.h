@@ -32,7 +32,7 @@ class CodePoint {
     void SetValue(uint16_t cp);
     void SetValue(const CodePoint *cp);
 
-    uint16_t GetValue();
+    uint16_t GetValue() const;
 
     bool IsEmpty() const;
     bool IsLatin() const;

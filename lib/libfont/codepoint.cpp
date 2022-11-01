@@ -34,7 +34,7 @@ void CodePoint::SetValue(uint16_t cp) { this->value = cp; }
 
 void CodePoint::SetValue(const CodePoint *cp) { this->value = cp->value; }
 
-uint16_t CodePoint::GetValue() { return this->value; }
+uint16_t CodePoint::GetValue() const { return this->value; }
 
 bool CodePoint::IsEmpty() const { return this->value == 0; }
 

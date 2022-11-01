@@ -76,7 +76,7 @@ TextLayer::~TextLayer() {
         delete[] typeSetting;
 }
 
-void TextLayer::DrawGlyph(const Graphic::TextTypeSetting *ts, Font *font,
+void TextLayer::drawGlyph(const Graphic::TextTypeSetting *ts, Font *font,
                           const unsigned char *bitmap) {
     int32_t x, y;
 
@@ -152,7 +152,49 @@ TextLayer &TextLayer::SetTextPadding(int paddingLeft, int paddingTop,
     return *this;
 }
 
-void TextLayer::Render() {
+void TextLayer::calcCodePointSize(const CodePoint *codepoint, int *ix0,
+                                  int *iy0, int *ix1, int *iy1,
+                                  int *advanceWidth) {
+#ifndef NDEBUG
+    font->GetCodepointBitmapBox(codepoint->GetValue(), ix0, ix1, iy0, iy1);
+    // this->DrawRectangle(*ix0, *iy0, *ix1, *iy1, Color::BB);
+#else
+    font->GetCodepointBitmapBox(codepoint->GetValue(), ix0, 0, 0, 0);
+#endif
+    font->GetCodepointHMetrics(codepoint->GetValue(), advanceWidth, 0);
+}
+
+void TextLayer::calcCodePointTypeSetting(const CodePoint *c,
+                                         Graphic::TextTypeSetting *ts, int x,
+                                         int y, int iy0) {
+    font->GetCodepointHMetrics(c->GetValue(), &ts->advancedWith,
+                               &ts->leftSideBearing);
+    font->GetCodepointBitmap(c->GetValue(), &ts->width, &ts->height, 0, 0);
+
+    ts->x = x;
+    ts->y = y;
+    ts->iy0 = iy0;
+}
+
+int TextLayer::calcLineWidth(const CodePoint *start,
+                             const CodePoint *nextBreak) {
+    int advanceWidth;
+
+    /* Border of a glyph */
+    int ix0, iy0, ix1, iy1;
+
+    int sum = 0;
+    for (auto tmp = start; tmp < nextBreak; tmp++) {
+        this->calcCodePointSize(tmp, &ix0, &iy0, &ix1, &iy1, &advanceWidth);
+        sum += font->Unscale(ix0) + advanceWidth;
+        sum += font->GetCodepointKernAdvance(tmp->GetValue(),
+                                             (tmp + 1)->GetValue());
+    }
+
+    return sum;
+}
+
+TextLayer &TextLayer::CalcTypeSetting() {
     // Debug checks
     assert_is_initialized(font);
     assert_is_initialized(codepoints);
@@ -160,13 +202,11 @@ void TextLayer::Render() {
 
     // Next line flag
     int flagNextLine = 0;
-    /* Border of a glyph */
-    int ix0, iy0, ix1, iy1;
-    unsigned char *bitmap;
 
     /* Smoother unscaled x */
     float x = font->Unscale(textPadding.paddingLeft), left = x;
     int y = textPadding.paddingTop;
+    // TODO: customize lineHeight
     int lineHeight = font->GetLineHeight(1.2f);
 
     int maxLineLength = GetRelativeWidth() - textPadding.paddingRight;
@@ -174,7 +214,7 @@ void TextLayer::Render() {
 
     /* Codepoints always starts with 0xFEFF */
     for (auto c = codepoints + 1; c - codepoints < charNum; c++) {
-        auto next_c = c + 1;
+        auto nextCodePoint = c + 1;
         auto ts = &this->typeSetting[c - codepoints - 1];
 
         /* Handle LF */
@@ -190,66 +230,40 @@ void TextLayer::Render() {
 
         /* Auto linefeed for latin chars */
         if (CodePoint::StrChr(breaks, *c) != nullptr) {
-            auto next_break = CodePoint::FindNextBreak(c + 1, breaks);
-            if (next_break != nullptr) {
-                int advanceWidth;
-                int sum = 0;
-                for (auto tmp = c; tmp < next_break; tmp++) {
-#ifndef NDEBUG
-                    font->GetCodepointBitmapBox(tmp->GetValue(), &ix0, &ix1,
-                                                &iy0, &iy1);
-                    this->DrawRectangle(ix0, iy0, ix1, iy1, Color::BB);
-#else
-                    font->GetCodepointBitmapBox(tmp->GetValue(), &ix0, 0, 0, 0);
-#endif
-                    font->GetCodepointHMetrics(tmp->GetValue(), &advanceWidth,
-                                               0);
-                    sum += font->Unscale(ix0) + advanceWidth;
-                    sum += font->GetCodepointKernAdvance(tmp->GetValue(),
-                                                         (tmp + 1)->GetValue());
-                }
-                flagNextLine = (font->Scale(x + sum) > maxLineLength);
+            auto nextBreak = CodePoint::FindNextBreak(c + 1, breaks);
+            if (nextBreak != nullptr) {
+                flagNextLine = (font->Scale(x + calcLineWidth(c, nextBreak)) >
+                                maxLineLength);
             }
         }
 
         // TODO: Auto lf for Chinese chars
-        else if (!(c + 2)->IsEmpty() && (c + 2)->GetValue() > 0x2000 &&
-                 CodePoint::StrChr(ch_breaks, *(c + 2)) != nullptr) {
-            int advanceWidth;
-            int sum = 0;
-            for (auto tmp = c; tmp < c + 3; tmp++) {
-                font->GetCodepointBitmapBox(tmp->GetValue(), &ix0, 0, 0, 0);
-                font->GetCodepointHMetrics(tmp->GetValue(), &advanceWidth, 0);
-                sum += font->Unscale(ix0) + advanceWidth;
-                sum += font->GetCodepointKernAdvance(tmp->GetValue(),
-                                                     (tmp + 1)->GetValue());
+        else {
+            auto ctmp = c + 2;
+            if (!ctmp->IsEmpty() && ctmp->GetValue() > 0x2000 &&
+                CodePoint::StrChr(ch_breaks, *ctmp) != nullptr) {
+                int sum = calcLineWidth(c, c + 3);
+                flagNextLine = (font->Scale(x + sum) > maxLineLength);
             }
-            flagNextLine = (font->Scale(x + sum) > maxLineLength);
         }
 
+        int ix0, iy0;
         font->GetCodepointBitmapBox(c->GetValue(), &ix0, &iy0, 0, 0);
         x += font->Unscale(ix0);
-
-        font->GetCodepointHMetrics(c->GetValue(), &ts->advancedWith,
-                                   &ts->leftSideBearing);
-        font->GetCodepointBitmap(c->GetValue(), &ts->width, &ts->height, 0, 0);
+        calcCodePointTypeSetting(c, ts, x, y, iy0);
 
         if (font->Scale(x + ts->leftSideBearing + font->Unscale(ts->width)) >=
             maxLineLength) {
             NextLine(x, y, left - ts->leftSideBearing, lineHeight);
         }
 
-        ts->x = x;
-        ts->y = y;
-        ts->iy0 = iy0;
-
         /* 调整x */
         x += ts->advancedWith;
 
-        if (!next_c->IsEmpty()) {
+        if (!nextCodePoint->IsEmpty()) {
             /* 调整字距 */
             ts->kern = font->GetCodepointKernAdvance(c->GetValue(),
-                                                     next_c->GetValue());
+                                                     nextCodePoint->GetValue());
             x += ts->kern;
         }
 
@@ -262,6 +276,20 @@ void TextLayer::Render() {
         }
     }
 
+    return *this;
+}
+
+void TextLayer::Render() {
+    // Debug checks
+    assert_is_initialized(font);
+    assert_is_initialized(codepoints);
+    assert_is_initialized(typeSetting);
+
+    unsigned char *bitmap;
+
+    int maxLineLength = GetRelativeWidth() - textPadding.paddingRight;
+    int maxHeight = GetRelativeHeight() - textPadding.paddingBottom;
+
     Graphic::TextTypeSetting::AdjustAlign(typeSetting, charNum, textAlign,
                                           maxLineLength, font);
 
@@ -271,7 +299,7 @@ void TextLayer::Render() {
         // FIXME not sure if this causes mem leak.
         bitmap = font->GetCodepointBitmap(c->GetValue(), 0, 0, 0, 0);
         ts->ascent = ascent;
-        DrawGlyph(ts, font, bitmap);
+        drawGlyph(ts, font, bitmap);
     }
 
     font->FreeBitmap(bitmap);
