@@ -23,6 +23,10 @@
 #include "bmp.h"
 #include "layer.h"
 
+#ifdef __cplusplus
+extern "C" {
+#endif
+
 class ImageLayer : public Layer {
   public:
     ImageLayer(const Layer &layer);
@@ -35,5 +39,9 @@ class ImageLayer : public Layer {
     int LoadFrom(BMPImage *image);
     int LoadFrom(const char *imageFile);
 };
+
+#ifdef __cplusplus
+} /* extern "C" */
+#endif
 
 #endif /* GRAPHIC_IMAGE_LAYER_H */

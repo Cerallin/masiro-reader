@@ -24,6 +24,10 @@
 #include "layer.h"
 #include "style.h"
 
+#ifdef __cplusplus
+extern "C" {
+#endif
+
 class TextLayer : public Layer {
   public:
     TextLayer(uint32_t width, uint32_t height, Font *font,
@@ -86,5 +90,9 @@ class TextLayer : public Layer {
 
     ssize_t charNum;
 };
+
+#ifdef __cplusplus
+} /* extern "C" */
+#endif
 
 #endif /* GRAPHIC_TEXT_LAYER_H */
