@@ -184,30 +184,30 @@ int Epd::Init(void) {
     return 0;
 }
 
-void Epd::SendCommand(uint8_t u8Command) {
+void Epd::SendCommand(uint8_t u8Command) const {
     DigitalWrite(u8DataCmdPin, LOW);
     SpiTransfer(u8Command);
 }
 
-void Epd::SendData(uint8_t u8Data) {
+void Epd::SendData(uint8_t u8Data) const {
     DigitalWrite(u8DataCmdPin, HIGH);
     SpiTransfer(u8Data);
 }
 
-void Epd::WaitUntilIdle(void) {
+void Epd::WaitUntilIdle(void) const {
     while (DigitalRead(u8BusyPin) == 0) { // 0: busy, 1: idle
         DelayMs(100);
     }
 }
 
-void Epd::Reset(void) {
+void Epd::Reset(void) const {
     DigitalWrite(u8ResetPin, LOW);
     DelayMs(200);
     DigitalWrite(u8ResetPin, HIGH);
     DelayMs(200);
 }
 
-void Epd::ResolutionSetting(uint16_t u16Width, uint16_t u16Height) {
+void Epd::ResolutionSetting(uint16_t u16Width, uint16_t u16Height) const {
     if (u16Width > EPD_WIDTH && u16Height > EPD_HEIGHT)
         return;
 
@@ -219,7 +219,7 @@ void Epd::ResolutionSetting(uint16_t u16Width, uint16_t u16Height) {
     SendData(u16Height & 0xFF);
 }
 
-void Epd::GateSourceStartSetting(uint16_t x, uint16_t y) {
+void Epd::GateSourceStartSetting(uint16_t x, uint16_t y) const {
     if (x > EPD_WIDTH && y > EPD_HEIGHT)
         return;
 
@@ -230,7 +230,7 @@ void Epd::GateSourceStartSetting(uint16_t x, uint16_t y) {
     SendData(y & 0xFF);
 }
 
-void Epd::ClearFullFrame(void) {
+void Epd::ClearFullFrame(void) const {
     GateSourceStartSetting(0, 0);
     ResolutionSetting(EPD_WIDTH, EPD_HEIGHT);
 
@@ -251,7 +251,7 @@ void Epd::ClearFullFrame(void) {
 }
 
 void Epd::DisplayFrame(const uint8_t *u8FrameBufferOld,
-                       const uint8_t *u8FrameBufferNew) {
+                       const uint8_t *u8FrameBufferNew) const {
     GateSourceStartSetting(0, 0);
     ResolutionSetting(EPD_WIDTH, EPD_HEIGHT);
 
@@ -271,7 +271,7 @@ void Epd::DisplayFrame(const uint8_t *u8FrameBufferOld,
     WaitUntilIdle();
 }
 
-void Epd::DisplayFrame(const uint8_t *u8FrameBuffer) {
+void Epd::DisplayFrame(const uint8_t *u8FrameBuffer) const {
     GateSourceStartSetting(0, 0);
     ResolutionSetting(EPD_WIDTH, EPD_HEIGHT);
 
@@ -292,7 +292,7 @@ void Epd::DisplayFrame(const uint8_t *u8FrameBuffer) {
 }
 
 void Epd::LocalRefresh(uint16_t x, uint16_t y, uint16_t w, uint16_t h,
-                       const uint8_t *u8FrameBufferBlack) {
+                       const uint8_t *u8FrameBufferBlack) const {
     GateSourceStartSetting(x, y);
     ResolutionSetting(w, h);
 
@@ -312,17 +312,17 @@ void Epd::LocalRefresh(uint16_t x, uint16_t y, uint16_t w, uint16_t h,
     WaitUntilIdle();
 }
 
-void Epd::PowerOff(void) {
+void Epd::PowerOff(void) const {
     SendCommand(POWER_OFF);
     WaitUntilIdle();
 }
 
-void Epd::PowerOn(void) {
+void Epd::PowerOn(void) const {
     SendCommand(POWER_ON);
     WaitUntilIdle();
 }
 
-void Epd::Sleep(void) {
+void Epd::Sleep(void) const {
     SendCommand(POWER_OFF);
     WaitUntilIdle();
     SendCommand(DEEP_SLEEP);

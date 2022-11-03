@@ -19,7 +19,7 @@ extern unsigned char *layer_front, *layer_back;
 
 TEST_GROUP(TestImageLayer) {
     void setup() {
-        imageLayer = new ImageLayer(EPD_WIDTH, EPD_HEIGHT, ROTATE_270);
+        imageLayer = new ImageLayer(EPD_WIDTH, EPD_HEIGHT, Graphic::ROTATE_270);
     }
 
     void teardown() {

@@ -22,6 +22,7 @@
 
 #include "bmp.h"
 #include "config.h"
+#include "frame.h"
 #include "imagelayer.h"
 #include "textlayer.h"
 
@@ -68,7 +69,7 @@ int main(void) {
         return -1;
     }
 
-    epd.DisplayFrame(layer.GetOldImage(), layer.GetNewImage());
+    Frame(&layer).Display(&epd);
 
     epd.PowerOff();
 

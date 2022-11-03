@@ -21,7 +21,7 @@
 
 #include "debug.h"
 
-Rotate Layer::ROTATE_DEFAULT = ROTATE_270;
+Graphic::Rotate Layer::ROTATE_DEFAULT = Graphic::ROTATE_270;
 
 Layer::Layer(uint32_t width, uint32_t height, int32_t rotate,
              bool invertColor) {
@@ -53,13 +53,13 @@ Layer &Layer::SetImages(uint8_t *image) {
     return *this;
 }
 
-size_t Layer::GetMemSize() {
+size_t Layer::GetMemSize() const {
     size_t size = width * height / 8;
     return size;
 }
 
 Layer &Layer::Init() {
-    Clear(Color::WW);
+    Clear(Graphic::Color::WW);
     return *this;
 }
 
@@ -87,7 +87,7 @@ Layer &Layer::SetInvertColor(bool flag) {
     return *this;
 }
 
-bool Layer::GetInvertColor() { return invertColor; }
+bool Layer::GetInvertColor() const { return invertColor; }
 
 void Layer::DrawAbsolutePixel(int32_t x, int32_t y, int32_t color) {
     if (invertColor) {
@@ -107,30 +107,30 @@ void Layer::DrawAbsolutePixel(int32_t x, int32_t y, int32_t color) {
     }
 }
 
-uint8_t *Layer::GetNewImage(void) { return this->new_image; }
+uint8_t *Layer::GetNewImage(void) const { return this->new_image; }
 
-uint8_t *Layer::GetOldImage(void) { return this->old_image; }
+uint8_t *Layer::GetOldImage(void) const { return this->old_image; }
 
-int32_t Layer::GetWidth(void) { return width; }
+int32_t Layer::GetWidth(void) const { return width; }
 
-int32_t Layer::GetRelativeWidth(void) {
-    if (rotate == ROTATE_0 || rotate == ROTATE_180)
+int32_t Layer::GetRelativeWidth(void) const {
+    if (rotate == Graphic::ROTATE_0 || rotate == Graphic::ROTATE_180)
         return this->width;
     else
         return this->height;
 }
 
-int32_t Layer::GetRelativeHeight(void) {
-    if (rotate == ROTATE_0 || rotate == ROTATE_180)
+int32_t Layer::GetRelativeHeight(void) const {
+    if (rotate == Graphic::ROTATE_0 || rotate == Graphic::ROTATE_180)
         return this->height;
     else
         return this->width;
 }
 
-int32_t Layer::GetHeight(void) { return height; }
+int32_t Layer::GetHeight(void) const { return height; }
 
 Layer &Layer::SetRelativeHeight(int32_t len) {
-    if (rotate == ROTATE_0 || rotate == ROTATE_180)
+    if (rotate == Graphic::ROTATE_0 || rotate == Graphic::ROTATE_180)
         this->height = len;
     else
         this->width = len;
@@ -139,7 +139,7 @@ Layer &Layer::SetRelativeHeight(int32_t len) {
 }
 
 Layer &Layer::SetRelativeWidth(int32_t len) {
-    if (rotate == ROTATE_0 || rotate == ROTATE_180)
+    if (rotate == Graphic::ROTATE_0 || rotate == Graphic::ROTATE_180)
         this->width = len;
     else
         this->height = len;
@@ -147,7 +147,7 @@ Layer &Layer::SetRelativeWidth(int32_t len) {
     return *this;
 }
 
-int32_t Layer::GetRotate(void) { return this->rotate; }
+int32_t Layer::GetRotate(void) const { return this->rotate; }
 
 Layer &Layer::SetRotate(int32_t rotate) {
     this->rotate = rotate;
@@ -155,13 +155,13 @@ Layer &Layer::SetRotate(int32_t rotate) {
 }
 
 void Layer::DrawPixel(int32_t x, int32_t y, int32_t color) {
-    if (rotate == ROTATE_0) {
+    if (rotate == Graphic::ROTATE_0) {
         DrawAbsolutePixel(x, y, color);
-    } else if (rotate == ROTATE_90) {
+    } else if (rotate == Graphic::ROTATE_90) {
         DrawAbsolutePixel(width - y, x, color);
-    } else if (rotate == ROTATE_180) {
+    } else if (rotate == Graphic::ROTATE_180) {
         DrawAbsolutePixel(width - x, height - y, color);
-    } else if (rotate == ROTATE_270) {
+    } else if (rotate == Graphic::ROTATE_270) {
         DrawAbsolutePixel(y, height - x, color);
     }
 }

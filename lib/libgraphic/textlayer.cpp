@@ -85,17 +85,18 @@ void TextLayer::drawGlyph(const Graphic::TextTypeSetting *ts, Font *font,
 
 #ifndef NDEBUG
     fprintf(stderr, "%d %d %d %d\n", x, y, x + ts->width, y + ts->height);
-    this->DrawRectangle(x, y, x + ts->width, y + ts->height, invertColor ? Color::WB : Color::BW);
+    this->DrawRectangle(x, y, x + ts->width, y + ts->height,
+                        invertColor ? Graphic::Color::WB : Graphic::Color::BW);
 #endif
 
     LoopMatrix(ts->width, ts->height, x, y) {
         int color = GetMatrix(bitmap, ts->width, i - x, j - y) >> 6;
         // FIXME This is some kind of "alpha" tunnel
         if (this->invertColor) {
-            if (color != Color::WW)
+            if (color != Graphic::Color::WW)
                 DrawPixel(i, j, ~color);
         } else {
-            if (color != Color::BB)
+            if (color != Graphic::Color::BB)
                 DrawPixel(i, j, color);
         }
     };

@@ -33,19 +33,19 @@ class BMPImage {
 
     int Load(const char *imageFile);
 
-    const unsigned char *GetFrontImage();
-    const unsigned char *GetBackImage();
+    const unsigned char *GetFrontImage() const;
+    const unsigned char *GetBackImage() const;
 
     void DeleteFrontImage();
     void DeleteBackImage();
 
-    int32_t GetWidth();
-    int32_t GetHeight();
+    int32_t GetWidth() const;
+    int32_t GetHeight() const;
 
   private:
-    int32_t GetOffset();
-    int32_t GetImageSize();
-    int32_t GetFileSize();
+    int32_t getOffset() const;
+    int32_t getImageSize() const;
+    int32_t getFileSize() const;
 
     void ExtractImage(const uint8_t *image, int32_t len, int byteCount);
 

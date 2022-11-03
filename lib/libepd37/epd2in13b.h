@@ -44,7 +44,7 @@ extern "C" {
 /**
  * @brief Display resolution
  */
-#define EPD_WIDTH  240
+#define EPD_WIDTH 240
 
 /**
  * @brief Display resolution
@@ -126,56 +126,56 @@ class Epd : EpdIf {
      *
      * @param[in] u8Command command id
      */
-    void SendCommand(uint8_t u8Command);
+    void SendCommand(uint8_t u8Command) const;
 
     /**
      * @brief basic function for sending data
      *
      * @param[in] u8Data valid data
      */
-    void SendData(uint8_t u8Data);
+    void SendData(uint8_t u8Data) const;
 
     /**
      * @brief Wait until the u8BusyPin goes HIGH
      */
-    void WaitUntilIdle(void);
+    void WaitUntilIdle(void) const;
 
     /**
      * @brief module reset.
      *
      * @note often used to awaken the module in deep sleep, @see Epd::Sleep();
      */
-    void Reset(void);
+    void Reset(void) const;
 
     /**
      * @brief  start gate/source position.
      */
-    void GateSourceStartSetting(uint16_t x, uint16_t y);
+    void GateSourceStartSetting(uint16_t x, uint16_t y) const;
 
     /**
      * @brief resolution setting.
      */
-    void ResolutionSetting(uint16_t u16Width, uint16_t u16Height);
+    void ResolutionSetting(uint16_t u16Width, uint16_t u16Height) const;
 
     /**
      * @brief Clear EPD.
      */
-    void ClearFullFrame(void);
+    void ClearFullFrame(void) const;
 
     /**
      * @brief display the frame buffers
      *
      * @param[in] u8FrameBufferBlack frame buffer
      */
-    void DisplayFrame(const uint8_t *u8FrameBuffer);
+    void DisplayFrame(const uint8_t *u8FrameBuffer) const;
     void DisplayFrame(const uint8_t *u8FrameBufferOld,
-                      const uint8_t *u8FrameBufferNew);
+                      const uint8_t *u8FrameBufferNew) const;
 
     /**
      * @brief Displays content in the specified area.
      */
     void LocalRefresh(uint16_t x, uint16_t y, uint16_t w, uint16_t h,
-                      const uint8_t *u8FrameBufferBlack);
+                      const uint8_t *u8FrameBufferBlack) const;
 
     /**
      * @brief After this command is transmitted, the chip would enter the
@@ -186,11 +186,11 @@ class Epd : EpdIf {
      *       executed if check code = 0xA5.
      *       You can use @see Epd::Init() to awaken
      */
-    void Sleep(void);
+    void Sleep(void) const;
 
-    void PowerOff(void);
+    void PowerOff(void) const;
 
-    void PowerOn(void);
+    void PowerOn(void) const;
 
   private:
     uint8_t u8ResetPin;

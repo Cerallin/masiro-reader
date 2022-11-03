@@ -1,6 +1,7 @@
 noinst_LTLIBRARIES = libgraphic.la
 
-libgraphic_la_SOURCES = layer.cpp \
+libgraphic_la_SOURCES = frame.cpp\
+                        layer.cpp \
                         imagelayer.cpp \
                         textlayer.cpp \
                         style/texttypesetting.cpp

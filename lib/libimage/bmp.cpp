@@ -73,12 +73,12 @@ int BMPImage::Save(const char *imageFile) {
 
     /* Header */
     fwrite_uint16(BMP_FILE_HEADER); // BMP file header
-    fwrite_int32(GetFileSize());    // file size
+    fwrite_int32(getFileSize());    // file size
 
     fwrite_int16(0x0000); // Reserved 2 bytes
     fwrite_int16(0x0000); // Another reserved 2 bytes
 
-    fwrite_uint32(GetOffset()); // Offset bits
+    fwrite_uint32(getOffset()); // Offset bits
 
     /* Information */
     fwrite_int32(BMP_FILE_INFO_SIZE); // Info size
@@ -94,7 +94,7 @@ int BMPImage::Save(const char *imageFile) {
 
     fwrite_int32(0x00); // Compression type
 
-    fwrite_int32(GetImageSize()); // Image size
+    fwrite_int32(getImageSize()); // Image size
 
     fwrite_int32(0x0EC4); // XPelsPerMeter
     fwrite_int32(0x0EC4); // YPelsPerMeter
@@ -253,15 +253,15 @@ void BMPImage::ExtractImage(const uint8_t *image, int32_t len, int byteCount) {
     }
 }
 
-int32_t BMPImage::GetFileSize() { return GetOffset() + GetImageSize(); }
+int32_t BMPImage::getFileSize() const { return getOffset() + getImageSize(); }
 
-int32_t BMPImage::GetOffset() { return 14 + 40; }
+int32_t BMPImage::getOffset() const { return 14 + 40; }
 
-int32_t BMPImage::GetImageSize() { return 3 * width * height; }
+int32_t BMPImage::getImageSize() const { return 3 * width * height; }
 
-const unsigned char *BMPImage::GetFrontImage() { return front; }
+const unsigned char *BMPImage::GetFrontImage() const { return front; }
 
-const unsigned char *BMPImage::GetBackImage() { return back; }
+const unsigned char *BMPImage::GetBackImage() const { return back; }
 
 void BMPImage::DeleteFrontImage() {
     if (front != nullptr) {
@@ -275,6 +275,6 @@ void BMPImage::DeleteBackImage() {
     }
 }
 
-int32_t BMPImage::GetWidth() { return width; }
+int32_t BMPImage::GetWidth() const { return width; }
 
-int32_t BMPImage::GetHeight() { return height; }
+int32_t BMPImage::GetHeight() const { return height; }

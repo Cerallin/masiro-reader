@@ -3,8 +3,8 @@
 #include "config.h"
 #include "layer.h"
 #include <new>
-#include <unistd.h>
 #include <string.h>
+#include <unistd.h>
 
 #define TEST_WIDTH  16
 #define TEST_HEIGHT 8
@@ -18,17 +18,15 @@ unsigned char layer_images[TEST_BUFFER_SIZE * 2];
 unsigned char *layer_front = layer_images,
               *layer_back = layer_images + TEST_BUFFER_SIZE;
 
-TEST_GROUP(TestLayer) {
-    void setup() {
-        layer = new Layer(TEST_WIDTH, TEST_HEIGHT, ROTATE_270);
-        layer->SetFrontImage(layer_front);
-        layer->SetBackImage(layer_back);
-    }
+TEST_GROUP(TestLayer){void setup(){
+    layer = new Layer(TEST_WIDTH, TEST_HEIGHT, Graphic::ROTATE_270);
+layer->SetFrontImage(layer_front);
+layer->SetBackImage(layer_back);
+}
 
-    void teardown() {
-        delete layer;
-    }
-};
+void teardown() { delete layer; }
+}
+;
 
 TEST(TestLayer, TestInit) {
     CHECK_EQUAL(false, layer->GetInvertColor());
@@ -40,17 +38,16 @@ TEST(TestLayer, TestInit) {
 
 TEST(TestLayer, TestClear) {
     memset((void *)layer_back, 0xFF, TEST_BUFFER_SIZE / 2);
-    memset((void *)(layer_back + TEST_BUFFER_SIZE / 2), 0x00, TEST_BUFFER_SIZE / 2);
-    layer->Clear(Color::BB);
+    memset((void *)(layer_back + TEST_BUFFER_SIZE / 2), 0x00,
+           TEST_BUFFER_SIZE / 2);
+    layer->Clear(Graphic::Color::BB);
     MEMCMP_EQUAL(layer_back, layer_front, TEST_BUFFER_SIZE);
 }
 
-TEST(TestLayer, TestGetWidth) {
-    CHECK_EQUAL(TEST_WIDTH, layer->GetWidth());
-}
+TEST(TestLayer, TestGetWidth) { CHECK_EQUAL(TEST_WIDTH, layer->GetWidth()); }
 
 TEST(TestLayer, TestGetRelativeWidth) {
-    layer->SetRotate(ROTATE_90);
+    layer->SetRotate(Graphic::ROTATE_90);
     CHECK_EQUAL(TEST_HEIGHT, layer->GetRelativeWidth());
 }
 
@@ -64,10 +61,9 @@ TEST(TestLayer, TestSetRelativeHeight) {
 }
 
 TEST(TestLayer, TestSetRotate) {
-    layer->SetRotate(ROTATE_270);
-    CHECK_EQUAL(ROTATE_270, layer->GetRotate());
+    layer->SetRotate(Graphic::ROTATE_270);
+    CHECK_EQUAL(Graphic::ROTATE_270, layer->GetRotate());
 }
-
 
 TEST(TestLayer, TestInvertColor) {
     layer->SetInvertColor(true);
@@ -84,17 +80,16 @@ TEST(TestLayer, TestGetOldImage) {
 
 TEST(TestLayer, TestDrawAbsolutePixel) {
     layer->Init();
-    layer->DrawAbsolutePixel(3, 0, Color::BB);
+    layer->DrawAbsolutePixel(3, 0, Graphic::Color::BB);
     BITS_EQUAL(0xEF, layer_front[0], 0xFF);
 }
 
 TEST(TestLayer, TestDrawPixel) {
     layer->Init();
-    layer->SetRotate(ROTATE_270);
-    layer->DrawPixel(TEST_HEIGHT, 3, Color::BB);
+    layer->SetRotate(Graphic::ROTATE_270);
+    layer->DrawPixel(TEST_HEIGHT, 3, Graphic::Color::BB);
     BITS_EQUAL(0xEF, layer_front[0], 0xFF);
 }
-
 
 TEST(TestLayer, TESTSetImagesSeparately) {
     layer->SetFrontImage(layer_front);
@@ -111,7 +106,6 @@ TEST(TestLayer, TESTSetImages) {
     CHECK_EQUAL(layer_back, layer->GetOldImage());
 }
 
-
 TEST(TestLayer, TESTGetMemSize) {
     CHECK_EQUAL(TEST_BUFFER_SIZE, layer->GetMemSize());
 }
@@ -122,17 +116,17 @@ TEST(TestLayer, TESTSetHeight) {
 }
 
 TEST(TestLayer, TESTSetRotate) {
-    layer->SetRotate(ROTATE_180);
-    CHECK_EQUAL(ROTATE_180, layer->GetRotate());
+    layer->SetRotate(Graphic::ROTATE_180);
+    CHECK_EQUAL(Graphic::ROTATE_180, layer->GetRotate());
 
-    layer->SetRotate(ROTATE_0);
-    CHECK_EQUAL(ROTATE_0, layer->GetRotate());
+    layer->SetRotate(Graphic::ROTATE_0);
+    CHECK_EQUAL(Graphic::ROTATE_0, layer->GetRotate());
 
-    layer->SetRotate(ROTATE_270);
-    CHECK_EQUAL(ROTATE_270, layer->GetRotate());
+    layer->SetRotate(Graphic::ROTATE_270);
+    CHECK_EQUAL(Graphic::ROTATE_270, layer->GetRotate());
 
-    layer->SetRotate(ROTATE_90);
-    CHECK_EQUAL(ROTATE_90, layer->GetRotate());
+    layer->SetRotate(Graphic::ROTATE_90);
+    CHECK_EQUAL(Graphic::ROTATE_90, layer->GetRotate());
 }
 
 TEST(TestLayer, TESTSetInvertColor) {

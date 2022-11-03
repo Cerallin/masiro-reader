@@ -40,6 +40,8 @@ extern "C" {
 /***        type definitions                                                ***/
 /******************************************************************************/
 
+namespace Graphic {
+
 enum Rotate {
     ROTATE_0 = 1,
     ROTATE_90 = 2,
@@ -53,6 +55,8 @@ enum Color {
     BW = 2,
     BB = 3,
 };
+
+} // namespace Graphic
 
 class Layer {
   public:
@@ -90,7 +94,7 @@ class Layer {
      *
      * @returns size in bytes
      */
-    size_t GetMemSize();
+    size_t GetMemSize() const;
 
     /**
      * @brief Refresh image buffer
@@ -109,22 +113,22 @@ class Layer {
     /**
      * @brief Get width, NOT affected by rotate
      */
-    int32_t GetWidth();
+    int32_t GetWidth() const;
 
     /**
      * @brief Get relative width, affected by rotate
      */
-    int32_t GetRelativeWidth();
+    int32_t GetRelativeWidth() const;
 
     /**
      * @brief Get height, NOT affected by rotate
      */
-    int32_t GetHeight();
+    int32_t GetHeight() const;
 
     /**
      * @brief Get relative height, affected by rotate
      */
-    int32_t GetRelativeHeight();
+    int32_t GetRelativeHeight() const;
 
     /**
      * @brief Set relative width, affected by rotate
@@ -139,7 +143,7 @@ class Layer {
     /**
      * @brief Get rotate
      */
-    int32_t GetRotate();
+    int32_t GetRotate() const;
 
     /**
      * @brief
@@ -151,21 +155,21 @@ class Layer {
     Layer &SetRotate(int32_t rotate);
 
     Layer &SetInvertColor(bool flag);
-    bool GetInvertColor(void);
+    bool GetInvertColor(void) const;
 
     /**
      * @brief Get new image
      *
      * @returns new image pointer
      */
-    uint8_t *GetNewImage(void);
+    uint8_t *GetNewImage(void) const;
 
     /**
      * @brief Get old image
      *
      * @returns old image pointer
      */
-    uint8_t *GetOldImage();
+    uint8_t *GetOldImage() const;
 
     /**
      * @brief
@@ -205,8 +209,7 @@ class Layer {
      * @param[in] width
      * @param[in] color
      */
-    void DrawHorizontalLine(int32_t x, int32_t y, int32_t width,
-                            int32_t color);
+    void DrawHorizontalLine(int32_t x, int32_t y, int32_t width, int32_t color);
 
     /**
      * @brief this draws a vertical line on the frame buffer.
@@ -216,8 +219,7 @@ class Layer {
      * @param[in] height
      * @param[in] color
      */
-    void DrawVerticalLine(int32_t x, int32_t y, int32_t height,
-                          int32_t color);
+    void DrawVerticalLine(int32_t x, int32_t y, int32_t height, int32_t color);
 
     /**
      * @brief this draws a rectangle.
@@ -261,8 +263,7 @@ class Layer {
      * @param[in] radius
      * @param[in] color
      */
-    void DrawFilledCircle(int32_t x, int32_t y, int32_t radius,
-                          int32_t color);
+    void DrawFilledCircle(int32_t x, int32_t y, int32_t radius, int32_t color);
 
   protected:
     uint8_t *new_image = nullptr;
@@ -272,7 +273,7 @@ class Layer {
     int32_t rotate;
     bool invertColor;
 
-    static Rotate ROTATE_DEFAULT;
+    static Graphic::Rotate ROTATE_DEFAULT;
 };
 
 /******************************************************************************/
