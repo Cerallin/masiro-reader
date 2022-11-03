@@ -24,15 +24,6 @@
 #include <new>
 #include <stdio.h>
 
-FontFace::FontFace() {
-    fontBuffer = nullptr;
-}
-
-FontFace::~FontFace() {
-    if (fontBuffer != nullptr)
-        delete[] fontBuffer;
-}
-
 int FontFace::LoadFont(const char *fontFilePath) {
     FILE *fontFile = fopen(fontFilePath, "rb");
     if (!fontFile) {
@@ -44,15 +35,14 @@ int FontFace::LoadFont(const char *fontFilePath) {
     auto size = ftell(fontFile);
     fseek(fontFile, 0, SEEK_SET);
 
-    fontBuffer = new (std::nothrow) unsigned char[size];
-    if (fontBuffer == nullptr) {
-        return -1;
-    }
+    fontBuffer = std::make_unique<unsigned char[]>(size);
 
-    fread(fontBuffer, size, 1, fontFile);
+    printf("Loading font from %s\n", fontBuffer.get());
+
+    fread(fontBuffer.get(), size, 1, fontFile);
     fclose(fontFile);
 
-    if (!stbtt_InitFont(&fontInfo, fontBuffer, 0)) {
+    if (!stbtt_InitFont(&fontInfo, fontBuffer.get(), 0)) {
         return -1;
     }
 

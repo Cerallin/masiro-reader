@@ -48,7 +48,7 @@ const CodePoint ch_breaks[] = {
         x = left;                                                              \
         y += lineHeight;                                                       \
         if (y + lineHeight > maxHeight) {                                      \
-            charNum = c - codepoints;                                          \
+            charNum = c - cps;                                                 \
             break;                                                             \
         }                                                                      \
         if (x == CHAR_SPACE) {                                                 \
@@ -68,13 +68,6 @@ TextLayer::TextLayer(uint32_t width, uint32_t height, CodePoint *codepoints,
 
 TextLayer::TextLayer(const Layer &layer, Graphic::TextAlign textAlign)
     : Layer(layer), textAlign(textAlign) {}
-
-TextLayer::~TextLayer() {
-    if (codepoints != nullptr)
-        delete[] codepoints;
-    if (typeSetting != nullptr)
-        delete[] typeSetting;
-}
 
 void TextLayer::drawGlyph(const Graphic::TextTypeSetting *ts, Font *font,
                           const unsigned char *bitmap) {
@@ -104,22 +97,19 @@ void TextLayer::drawGlyph(const Graphic::TextTypeSetting *ts, Font *font,
 
 int TextLayer::SetText(char *str) {
     size_t srcLen = strlen(str), destLen = (srcLen + 4) * 2;
-    codepoints = new (std::nothrow) CodePoint[destLen / 2]();
+    codepoints = std::make_unique<CodePoint[]>(destLen / 2);
     if (codepoints == nullptr) {
         return -1;
     }
 
-    charNum = CodePoint::StrToUnicode(str, srcLen, &codepoints, destLen);
+    auto cps = codepoints.get();
+    charNum = CodePoint::StrToUnicode(str, srcLen, &cps, destLen);
     if (charNum == -1) {
-        delete[] codepoints;
+        codepoints.~unique_ptr();
         return -1;
     }
 
-    typeSetting = new (std::nothrow) Graphic::TextTypeSetting[charNum]();
-    if (typeSetting == nullptr) {
-        delete[] codepoints;
-        return -1;
-    }
+    typeSetting = std::make_unique<Graphic::TextTypeSetting[]>(charNum);
     return 0;
 }
 
@@ -211,9 +201,10 @@ TextLayer &TextLayer::CalcTypeSetting() {
     int maxHeight = GetRelativeHeight() - textPadding.paddingBottom;
 
     /* Codepoints always starts with 0xFEFF */
-    for (auto c = codepoints + 1; c - codepoints < charNum; c++) {
+    auto cps = codepoints.get();
+    for (auto c = cps + 1; c - cps < charNum; c++) {
         auto nextCodePoint = c + 1;
-        auto ts = &this->typeSetting[c - codepoints - 1];
+        auto ts = &this->typeSetting[c - cps - 1];
 
         /* Handle LF */
         if (*c < CHAR_SPACE) { // space
@@ -288,12 +279,13 @@ void TextLayer::Render() {
     // TODO: maxLineLength as a property.
     int maxLineLength = GetRelativeWidth() - textPadding.paddingRight;
 
-    Graphic::TextTypeSetting::AdjustAlign(typeSetting, charNum, textAlign,
+    Graphic::TextTypeSetting::AdjustAlign(typeSetting.get(), charNum, textAlign,
                                           maxLineLength, font);
 
-    auto ts = typeSetting;
+    auto ts = typeSetting.get();
+    auto cps = codepoints.get();
     int ascent = font->GetScaledAscent();
-    for (auto c = codepoints + 1; c - codepoints < charNum; c++, ts++) {
+    for (auto c = cps + 1; c - cps < charNum; c++, ts++) {
         // FIXME: not sure if this causes mem leak.
         bitmap = font->GetCodepointBitmap(c->GetValue(), 0, 0, 0, 0);
         ts->ascent = ascent;

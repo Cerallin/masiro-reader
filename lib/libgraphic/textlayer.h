@@ -24,6 +24,8 @@
 #include "layer.h"
 #include "style.h"
 
+#include <memory>
+
 #ifdef __cplusplus
 extern "C" {
 #endif
@@ -41,7 +43,7 @@ class TextLayer : public Layer {
     TextLayer(const Layer &layer,
               Graphic::TextAlign textAlign = Graphic::AlignLeft);
 
-    virtual ~TextLayer();
+    virtual ~TextLayer() = default;
 
     OVERRIDE_LAYER(TextLayer);
 
@@ -89,13 +91,13 @@ class TextLayer : public Layer {
     int calcLineWidth(const CodePoint *start, const CodePoint *nextBreak);
 
     void calcCodePointTypeSetting(const CodePoint *c,
-                                             Graphic::TextTypeSetting *ts,
-                                             int x, int y, int iy0);
+                                  Graphic::TextTypeSetting *ts, int x, int y,
+                                  int iy0);
 
-    CodePoint *codepoints = nullptr;
+    std::unique_ptr<CodePoint[]> codepoints = nullptr;
     Font *font = nullptr;
 
-    Graphic::TextTypeSetting *typeSetting = nullptr;
+    std::unique_ptr<Graphic::TextTypeSetting[]> typeSetting = nullptr;
     Graphic::TextAlign textAlign = Graphic::AlignLeft;
     Graphic::TextPadding textPadding = {0, 0, 0, 0};
 

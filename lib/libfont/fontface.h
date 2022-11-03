@@ -21,17 +21,18 @@
 #define FONT_FONT_FACE_H
 
 #include "stb_truetype.h"
+#include <memory>
 
 class FontFace {
   public:
-    FontFace();
-    ~FontFace();
+    FontFace() = default;
+    ~FontFace() = default;
 
     int LoadFont(const char *fontFilePath);
     const stbtt_fontinfo *GetFontInfo();
 
   private:
-    unsigned char *fontBuffer;
+    std::unique_ptr<unsigned char[]> fontBuffer = nullptr;
     stbtt_fontinfo fontInfo;
 };
 
