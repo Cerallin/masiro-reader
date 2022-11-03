@@ -290,26 +290,26 @@ class Layer {
     for (auto i = x; i < x + w; i++)                                           \
         for (auto j = y; j < y + h; j++)
 
-#define OVERRIDE_0_ARGS_FUNC(MyClass, BaseClass, Method)                       \
-    MyClass &Method() { return (MyClass &)BaseClass::Method(); };
+#define OVERRIDE_0_ARGS_FUNC(Subclass, BaseClass, Method)                       \
+    Subclass &Method() { return (Subclass &)BaseClass::Method(); };
 
-#define OVERRIDE_1_ARGS_FUNC(MyClass, BaseClass, Method, type1)                \
-    MyClass &Method(type1 arg1) { return (MyClass &)BaseClass::Method(arg1); };
+#define OVERRIDE_1_ARGS_FUNC(Subclass, BaseClass, Method, type1)                \
+    Subclass &Method(type1 arg1) { return (Subclass &)BaseClass::Method(arg1); };
 
-#define OVERRIDE_2_ARGS_FUNC(MyClass, BaseClass, Method, type1, type2)         \
-    MyClass &Method(type1 arg1, type2 arg2) {                                  \
-        return (MyClass &)BaseClass::Method(arg1, arg2);                       \
+#define OVERRIDE_2_ARGS_FUNC(Subclass, BaseClass, Method, type1, type2)         \
+    Subclass &Method(type1 arg1, type2 arg2) {                                  \
+        return (Subclass &)BaseClass::Method(arg1, arg2);                       \
     };
 
-#define OVERRIDE_LAYER(MyClass)                                                \
-    OVERRIDE_1_ARGS_FUNC(MyClass, Layer, SetFrontImage, uint8_t *);            \
-    OVERRIDE_1_ARGS_FUNC(MyClass, Layer, SetBackImage, uint8_t *);             \
-    OVERRIDE_1_ARGS_FUNC(MyClass, Layer, SetImages, uint8_t *);                \
-    OVERRIDE_0_ARGS_FUNC(MyClass, Layer, Init);                                \
-    OVERRIDE_1_ARGS_FUNC(MyClass, Layer, SetRelativeWidth, int32_t);           \
-    OVERRIDE_1_ARGS_FUNC(MyClass, Layer, SetRelativeHeight, int32_t);          \
-    OVERRIDE_1_ARGS_FUNC(MyClass, Layer, SetRotate, int32_t);                  \
-    OVERRIDE_1_ARGS_FUNC(MyClass, Layer, SetInvertColor, bool);
+#define OVERRIDE_LAYER(Subclass)                                                \
+    OVERRIDE_1_ARGS_FUNC(Subclass, Layer, SetFrontImage, uint8_t *);            \
+    OVERRIDE_1_ARGS_FUNC(Subclass, Layer, SetBackImage, uint8_t *);             \
+    OVERRIDE_1_ARGS_FUNC(Subclass, Layer, SetImages, uint8_t *);                \
+    OVERRIDE_0_ARGS_FUNC(Subclass, Layer, Init);                                \
+    OVERRIDE_1_ARGS_FUNC(Subclass, Layer, SetRelativeWidth, int32_t);           \
+    OVERRIDE_1_ARGS_FUNC(Subclass, Layer, SetRelativeHeight, int32_t);          \
+    OVERRIDE_1_ARGS_FUNC(Subclass, Layer, SetRotate, int32_t);                  \
+    OVERRIDE_1_ARGS_FUNC(Subclass, Layer, SetInvertColor, bool);
 
 #ifdef __cplusplus
 } /* extern "C" */
