@@ -65,29 +65,8 @@ class Layer {
     Layer(const Layer &layer);
     virtual ~Layer() = default;
 
-    /**
-     * @brief Set front image
-     *
-     * @param front image pointer
-     * @returns Self
-     */
-    Layer &SetFrontImage(uint8_t *front);
-
-    /**
-     * @brief Set back image
-     *
-     * @param back image pointer
-     * @returns Self
-     */
-    Layer &SetBackImage(uint8_t *back);
-
-    /**
-     * @brief Set both front and back image
-     *
-     * @param image image pointer, should be 2 * size long array.
-     * @returns Self
-     */
-    Layer &SetImages(uint8_t *image);
+    #define _Class Layer
+    #include "traits/layersetters.h"
 
     /**
      * @brief Get size of an image (front or back)
@@ -95,13 +74,6 @@ class Layer {
      * @returns size in bytes
      */
     size_t GetMemSize() const;
-
-    /**
-     * @brief Refresh image buffer
-     *
-     * @return Self
-     */
-    Layer &Init();
 
     /**
      * @brief Clear all pixels
@@ -131,30 +103,10 @@ class Layer {
     int32_t GetRelativeHeight() const;
 
     /**
-     * @brief Set relative width, affected by rotate
-     */
-    Layer &SetRelativeWidth(int32_t width);
-
-    /**
-     * @brief Set relative height, affected by rotate
-     */
-    Layer &SetRelativeHeight(int32_t height);
-
-    /**
      * @brief Get rotate
      */
     int32_t GetRotate() const;
 
-    /**
-     * @brief
-     *
-     * @param[in] rotate
-     *
-     * @return self
-     */
-    Layer &SetRotate(int32_t rotate);
-
-    Layer &SetInvertColor(bool flag);
     bool GetInvertColor(void) const;
 
     /**
@@ -289,27 +241,6 @@ class Layer {
 #define LoopMatrix(w, h, x, y)                                                 \
     for (auto i = x; i < x + w; i++)                                           \
         for (auto j = y; j < y + h; j++)
-
-#define OVERRIDE_0_ARGS_FUNC(Subclass, BaseClass, Method)                       \
-    Subclass &Method() { return (Subclass &)BaseClass::Method(); };
-
-#define OVERRIDE_1_ARGS_FUNC(Subclass, BaseClass, Method, type1)                \
-    Subclass &Method(type1 arg1) { return (Subclass &)BaseClass::Method(arg1); };
-
-#define OVERRIDE_2_ARGS_FUNC(Subclass, BaseClass, Method, type1, type2)         \
-    Subclass &Method(type1 arg1, type2 arg2) {                                  \
-        return (Subclass &)BaseClass::Method(arg1, arg2);                       \
-    };
-
-#define OVERRIDE_LAYER(Subclass)                                                \
-    OVERRIDE_1_ARGS_FUNC(Subclass, Layer, SetFrontImage, uint8_t *);            \
-    OVERRIDE_1_ARGS_FUNC(Subclass, Layer, SetBackImage, uint8_t *);             \
-    OVERRIDE_1_ARGS_FUNC(Subclass, Layer, SetImages, uint8_t *);                \
-    OVERRIDE_0_ARGS_FUNC(Subclass, Layer, Init);                                \
-    OVERRIDE_1_ARGS_FUNC(Subclass, Layer, SetRelativeWidth, int32_t);           \
-    OVERRIDE_1_ARGS_FUNC(Subclass, Layer, SetRelativeHeight, int32_t);          \
-    OVERRIDE_1_ARGS_FUNC(Subclass, Layer, SetRotate, int32_t);                  \
-    OVERRIDE_1_ARGS_FUNC(Subclass, Layer, SetInvertColor, bool);
 
 #ifdef __cplusplus
 } /* extern "C" */

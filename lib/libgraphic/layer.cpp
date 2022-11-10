@@ -17,9 +17,11 @@
  *
  */
 
+#include "debug.h"
+
 #include "layer.h"
 
-#include "debug.h"
+#include "traits/layersetters.cpp"
 
 Graphic::Rotate Layer::ROTATE_DEFAULT = Graphic::ROTATE_270;
 
@@ -37,51 +39,14 @@ Layer::Layer(const Layer &layer)
       width(layer.width), height(layer.height), rotate(layer.rotate),
       invertColor(layer.invertColor) {}
 
-Layer &Layer::SetFrontImage(uint8_t *front) {
-    this->new_image = front;
-    return *this;
-}
-
-Layer &Layer::SetBackImage(uint8_t *back) {
-    this->old_image = back;
-    return *this;
-}
-
-Layer &Layer::SetImages(uint8_t *image) {
-    this->new_image = image;
-    this->old_image = image + width * height / 8;
-    return *this;
-}
-
 size_t Layer::GetMemSize() const {
     size_t size = width * height / 8;
     return size;
 }
 
-Layer &Layer::Init() {
-    Clear(Graphic::Color::WW);
-    return *this;
-}
-
 Layer &Layer::Clear(int32_t color) {
     LoopMatrix(this->width, this->height, 0, 0) {
         DrawAbsolutePixel(i, j, color);
-    }
-
-    return *this;
-}
-
-Layer &Layer::SetInvertColor(bool flag) {
-    if (invertColor == flag)
-        return *this;
-
-    invertColor = flag;
-
-    int32_t w = width / 8;
-
-    LoopMatrix(w, height, 0, 0) {
-        new_image[i + j * w] = ~new_image[i + j * w];
-        old_image[i + j * w] = ~old_image[i + j * w];
     }
 
     return *this;
@@ -129,30 +94,7 @@ int32_t Layer::GetRelativeHeight(void) const {
 
 int32_t Layer::GetHeight(void) const { return height; }
 
-Layer &Layer::SetRelativeHeight(int32_t len) {
-    if (rotate == Graphic::ROTATE_0 || rotate == Graphic::ROTATE_180)
-        this->height = len;
-    else
-        this->width = len;
-
-    return *this;
-}
-
-Layer &Layer::SetRelativeWidth(int32_t len) {
-    if (rotate == Graphic::ROTATE_0 || rotate == Graphic::ROTATE_180)
-        this->width = len;
-    else
-        this->height = len;
-
-    return *this;
-}
-
 int32_t Layer::GetRotate(void) const { return this->rotate; }
-
-Layer &Layer::SetRotate(int32_t rotate) {
-    this->rotate = rotate;
-    return *this;
-}
 
 void Layer::DrawPixel(int32_t x, int32_t y, int32_t color) {
     if (rotate == Graphic::ROTATE_0) {

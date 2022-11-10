@@ -21,6 +21,8 @@
 #include "debug.h"
 #include <string.h>
 
+#include "traits/layersetters.cpp"
+
 ImageLayer::ImageLayer(uint32_t width, uint32_t height, int32_t rotate)
     : Layer(width, height, rotate) {}
 

@@ -24,6 +24,8 @@
 #include <stdio.h>
 #include <string.h>
 
+#include "traits/layersetters.cpp"
+
 #define CHAR_LF    0x000A
 #define CHAR_SPACE 0x0020
 

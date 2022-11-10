@@ -34,7 +34,9 @@ class ImageLayer : public Layer {
                int32_t rotate = ROTATE_DEFAULT);
     virtual ~ImageLayer() = default;
 
-    OVERRIDE_LAYER(ImageLayer);
+    #undef _Class
+    #define _Class ImageLayer
+    #include "traits/layersetters.h"
 
     int LoadFrom(BMPImage *image);
     int LoadFrom(const char *imageFile);

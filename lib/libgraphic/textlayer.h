@@ -45,7 +45,9 @@ class TextLayer : public Layer {
 
     virtual ~TextLayer() = default;
 
-    OVERRIDE_LAYER(TextLayer);
+    #undef _Class
+    #define _Class TextLayer
+    #include "traits/layersetters.h"
 
     /**
      * @brief Set text.
