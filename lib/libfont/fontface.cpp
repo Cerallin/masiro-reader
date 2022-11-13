@@ -17,6 +17,8 @@
  *
  */
 
+#include "debug.h"
+
 #define STB_TRUETYPE_IMPLEMENTATION
 #define STBTT_STATIC // make stb private
 #include "fontface.h"
@@ -28,6 +30,7 @@ int FontFace::LoadFont(const char *fontFilePath) {
     FILE *fontFile = fopen(fontFilePath, "rb");
     if (!fontFile) {
         perror("LoadFont");
+        setState(ERROR);
         return -1;
     }
 
@@ -37,16 +40,24 @@ int FontFace::LoadFont(const char *fontFilePath) {
 
     fontBuffer = std::make_unique<unsigned char[]>(size);
 
-    printf("Loading font from %s\n", fontBuffer.get());
+    debug("Loading font from %s\n", fontBuffer.get());
 
     fread(fontBuffer.get(), size, 1, fontFile);
     fclose(fontFile);
 
     if (!stbtt_InitFont(&fontInfo, fontBuffer.get(), 0)) {
+        setState(ERROR);
         return -1;
     }
 
+    setState(LOADED);
     return 0;
 }
 
 const stbtt_fontinfo *FontFace::GetFontInfo() { return &fontInfo; }
+
+FontFaceState FontFace::GetState() { return this->state; }
+
+void FontFace::setState(FontFaceState newState) {
+    this->state = newState;
+}

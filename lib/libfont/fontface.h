@@ -23,6 +23,12 @@
 #include "stb_truetype.h"
 #include <memory>
 
+enum FontFaceState {
+    TO_LOAD,
+    LOADED,
+    ERROR,
+}; // namespace Font
+
 class FontFace {
   public:
     FontFace() = default;
@@ -31,9 +37,15 @@ class FontFace {
     int LoadFont(const char *fontFilePath);
     const stbtt_fontinfo *GetFontInfo();
 
+    FontFaceState GetState();
+
   private:
     std::unique_ptr<unsigned char[]> fontBuffer = nullptr;
     stbtt_fontinfo fontInfo;
+
+    FontFaceState state = TO_LOAD;
+
+    void setState(FontFaceState newState);
 };
 
 #endif /* FONT_H */
