@@ -27,12 +27,12 @@
 extern "C" {
 #endif
 
-class ImageLayer : public Layer {
+class ImageLayer : public Layer  {
   public:
     ImageLayer(const Layer &layer);
     ImageLayer(uint32_t width, uint32_t height,
                int32_t rotate = ROTATE_DEFAULT);
-    virtual ~ImageLayer() = default;
+    ~ImageLayer() = default;
 
     #undef _Class
     #define _Class ImageLayer

@@ -63,7 +63,7 @@ class Layer {
     Layer(uint32_t width, uint32_t height, int32_t rotate = ROTATE_DEFAULT,
           bool invertColor = false);
     Layer(const Layer &layer);
-    virtual ~Layer() = default;
+    ~Layer() = default;
 
     #define _Class Layer
     #include "traits/layersetters.h"

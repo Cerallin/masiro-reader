@@ -43,7 +43,7 @@ class TextLayer : public Layer {
     TextLayer(const Layer &layer,
               Graphic::TextAlign textAlign = Graphic::AlignLeft);
 
-    virtual ~TextLayer() = default;
+    ~TextLayer() = default;
 
     #undef _Class
     #define _Class TextLayer
