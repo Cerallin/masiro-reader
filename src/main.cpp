@@ -26,13 +26,16 @@
 #include "imagelayer.h"
 #include "textlayer.h"
 
-#define BUFFER_SIZE (EPD_WIDTH * EPD_HEIGHT / 8)
+constexpr size_t BUFFER_SIZE = (EPD_WIDTH * EPD_HEIGHT / 8);
 
 unsigned char layer_buffer[BUFFER_SIZE * 2];
 
+constexpr auto front_buff = layer_buffer,
+               back_buff = layer_buffer + BUFFER_SIZE;
+
 int main(void) {
     Layer layer(EPD_WIDTH, EPD_HEIGHT);
-    layer.SetFrontImage(layer_buffer).SetBackImage(layer_buffer + BUFFER_SIZE);
+    layer.SetFrontImage(front_buff).SetBackImage(back_buff);
 
     ImageLayer imageLayer = layer;
     imageLayer.Init();

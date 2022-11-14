@@ -21,8 +21,8 @@
 
 #include <stdint.h>
 
-#define BMP_FILE_HEADER    0x4D42
-#define BMP_FILE_INFO_SIZE 40
+constexpr int16_t BMP_FILE_HEADER = 0x4D42;
+constexpr int32_t BMP_FILE_INFO_SIZE = 40;
 
 class BMPImage {
   public:
@@ -43,9 +43,9 @@ class BMPImage {
     int32_t GetHeight() const;
 
   private:
-    int32_t getOffset() const;
-    int32_t getImageSize() const;
-    int32_t getFileSize() const;
+    constexpr int32_t getOffset() const;
+    constexpr int32_t getImageSize() const;
+    constexpr int32_t getFileSize() const;
 
     void ExtractImage(const uint8_t *image, int32_t len, int byteCount);
 

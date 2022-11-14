@@ -44,12 +44,12 @@ extern "C" {
 /**
  * @brief Display resolution
  */
-#define EPD_WIDTH 240
+constexpr size_t EPD_WIDTH = 240;
 
 /**
  * @brief Display resolution
  */
-#define EPD_HEIGHT 416
+constexpr size_t EPD_HEIGHT = 416;
 
 /**
  * @brief EPD2IN13B commands

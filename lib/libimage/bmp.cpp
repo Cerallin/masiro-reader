@@ -24,28 +24,13 @@
 #include <new>
 #include <stdio.h>
 
-#define fwrite__(type, num)                                                    \
-    {                                                                          \
-        type tmp = (num);                                                      \
-        fwrite(&tmp, sizeof(type), 1, fd);                                     \
-    }
+template <typename T> constexpr size_t fread__(T *num, FILE *fd) {
+    return fread(num, sizeof(T), 1, fd);
+}
 
-#define fread__(type, num) fread(num, sizeof(type), 1, fd);
-
-#define fread_int8(num)    fread__(int8_t, num)
-#define fread_int16(num)   fread__(int16_t, num)
-#define fread_int32(num)   fread__(int32_t, num)
-#define fread_uint8(num)   fread__(uint8_t, num)
-#define fread_uint16(num)  fread__(uint16_t, num)
-#define fread_uint32(num)  fread__(uint32_t, num)
-#define fwrite_int8(num)   fwrite__(int8_t, num)
-#define fwrite_int16(num)  fwrite__(int16_t, num)
-#define fwrite_int32(num)  fwrite__(int32_t, num)
-#define fwrite_uint8(num)  fwrite__(uint8_t, num)
-#define fwrite_uint16(num) fwrite__(uint16_t, num)
-#define fwrite_uint32(num) fwrite__(uint32_t, num)
-
-#define square(x) (uint16_t)((uint16_t)(x) * (uint16_t)(x))
+template <typename T> constexpr size_t fwrite__(T num, FILE *fd) {
+    return fwrite(&num, sizeof(T), 1, fd);
+}
 
 const uint8_t palette[] = {
     0x00, // White
@@ -72,35 +57,35 @@ int BMPImage::Save(const char *imageFile) {
     }
 
     /* Header */
-    fwrite_uint16(BMP_FILE_HEADER); // BMP file header
-    fwrite_int32(getFileSize());    // file size
+    fwrite__<uint16_t>(BMP_FILE_HEADER, fd); // BMP file header
+    fwrite__<int32_t>(getFileSize(), fd);    // file size
 
-    fwrite_int16(0x0000); // Reserved 2 bytes
-    fwrite_int16(0x0000); // Another reserved 2 bytes
+    fwrite__<int16_t>(0x0000, fd); // Reserved 2 bytes
+    fwrite__<int16_t>(0x0000, fd); // Another reserved 2 bytes
 
-    fwrite_uint32(getOffset()); // Offset bits
+    fwrite__<uint32_t>(getOffset(), fd); // Offset bits
 
     /* Information */
-    fwrite_int32(BMP_FILE_INFO_SIZE); // Info size
+    fwrite__<int32_t>(BMP_FILE_INFO_SIZE, fd); // Info size
 
-    fwrite_int32(width); // Width (px)
+    fwrite__<int32_t>(width, fd); // Width (px)
 
     // upside-down
-    fwrite_int32(-height); // Height (px)
+    fwrite__<int32_t>(-height, fd); // Height (px)
 
-    fwrite_int16(0x01); // Planes
+    fwrite__<int16_t>(0x01, fd); // Planes
 
-    fwrite_int16(24); // Bit count
+    fwrite__<int16_t>(24, fd); // Bit count
 
-    fwrite_int32(0x00); // Compression type
+    fwrite__<int32_t>(0x00, fd); // Compression type
 
-    fwrite_int32(getImageSize()); // Image size
+    fwrite__<int32_t>(getImageSize(), fd); // Image size
 
-    fwrite_int32(0x0EC4); // XPelsPerMeter
-    fwrite_int32(0x0EC4); // YPelsPerMeter
+    fwrite__<int32_t>(0x0EC4, fd); // XPelsPerMeter
+    fwrite__<int32_t>(0x0EC4, fd); // YPelsPerMeter
 
-    fwrite_int32(0x00); // Use all colors
-    fwrite_int32(0x00); // Use all colors as important
+    fwrite__<int32_t>(0x00, fd); // Use all colors
+    fwrite__<int32_t>(0x00, fd); // Use all colors as important
 
     /* Skip palette */
 
@@ -119,9 +104,9 @@ int BMPImage::Save(const char *imageFile) {
             color = palette[color & 0x03];
 
             // Pretend to be a RGB Image
-            fwrite_uint8(color);
-            fwrite_uint8(color);
-            fwrite_uint8(color);
+            fwrite__<uint8_t>(color, fd);
+            fwrite__<uint8_t>(color, fd);
+            fwrite__<uint8_t>(color, fd);
 
             f_data <<= 1;
             b_data <<= 1;
@@ -145,16 +130,16 @@ int BMPImage::Load(const char *imageFile) {
         return -1;
     }
 
-    fread_int16(&tmp);
+    fread__<int16_t>((int16_t *)&tmp, fd);
     assert(tmp == BMP_FILE_HEADER);
 
-    fread_int32(&fileSize);                   // File size
+    fread__<int32_t>(&fileSize, fd);          // File size
     fseek(fd, sizeof(int16_t) * 2, SEEK_CUR); // Skip reserved bytes
-    fread_int32(&offsetToImage);
-    fread_int32(&infoSize);
+    fread__<int32_t>(&offsetToImage, fd);
+    fread__<int32_t>(&infoSize, fd);
 
-    fread_int32(&width);
-    fread_int32(&height);
+    fread__<int32_t>(&width, fd);
+    fread__<int32_t>(&height, fd);
 
     if (height < 0) {
         isUpsideDown = true;
@@ -163,21 +148,21 @@ int BMPImage::Load(const char *imageFile) {
 
     fseek(fd, sizeof(int16_t), SEEK_CUR); // Skip planes
 
-    fread_int16(&bitCount);
+    fread__<int16_t>(&bitCount, fd);
 
     if (bitCount < 8) {
         fprintf(stderr, "Unsupported BMP image!\n");
         return -1;
     }
 
-    fread_int32(&tmp); // Compression type
+    fread__<int32_t>(&tmp, fd); // Compression type
 
     if (tmp) {
         fprintf(stderr, "Compressed BMP images are not supported!\n");
         return -1;
     }
 
-    fread_int32(&imageSize);
+    fread__<int32_t>(&imageSize, fd);
 
     // Load image
     fseek(fd, offsetToImage, SEEK_SET);
@@ -253,11 +238,13 @@ void BMPImage::ExtractImage(const uint8_t *image, int32_t len, int byteCount) {
     }
 }
 
-int32_t BMPImage::getFileSize() const { return getOffset() + getImageSize(); }
+constexpr int32_t BMPImage::getFileSize() const {
+    return getOffset() + getImageSize();
+}
 
-int32_t BMPImage::getOffset() const { return 14 + 40; }
+constexpr int32_t BMPImage::getOffset() const { return 14 + 40; }
 
-int32_t BMPImage::getImageSize() const { return 3 * width * height; }
+constexpr int32_t BMPImage::getImageSize() const { return 3 * width * height; }
 
 const unsigned char *BMPImage::GetFrontImage() const { return front; }
 
