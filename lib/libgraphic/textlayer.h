@@ -45,9 +45,9 @@ class TextLayer : public Layer {
 
     ~TextLayer() = default;
 
-    #undef _Class
-    #define _Class TextLayer
-    #include "traits/layersetters.h"
+#undef _Class
+#define _Class TextLayer
+#include "traits/layersetters.h"
 
     /**
      * @brief Set text.
@@ -76,15 +76,8 @@ class TextLayer : public Layer {
     void Render();
 
   private:
-    /**
-     * @brief Draw a single char, with no coordinate checks
-     *
-     * @param x
-     * @param y
-     * @param codepoint
-     * @param font
-     */
-    void drawGlyph(const Graphic::TextTypeSetting *typeSetting, Font *font,
+    void drawGlyph(const CodePoint *cp,
+                   const Graphic::TextTypeSetting *typeSetting, Font *font,
                    const unsigned char *bitmap);
 
     void calcCodePointSize(const CodePoint *codepoint, int *ix0, int *iy0,

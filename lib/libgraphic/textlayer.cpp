@@ -71,11 +71,12 @@ TextLayer::TextLayer(uint32_t width, uint32_t height, CodePoint *codepoints,
 TextLayer::TextLayer(const Layer &layer, Graphic::TextAlign textAlign)
     : Layer(layer), textAlign(textAlign) {}
 
-void TextLayer::drawGlyph(const Graphic::TextTypeSetting *ts, Font *font,
+void TextLayer::drawGlyph(const CodePoint *cp,
+                          const Graphic::TextTypeSetting *ts, Font *font,
                           const unsigned char *bitmap) {
     int32_t x, y;
 
-    x = font->Scale(ts->x + ts->leftSideBearing);
+    x = font->Scale(cp, ts->x + ts->leftSideBearing);
     y = ts->y + ts->iy0 + ts->ascent;
 
 #ifndef NDEBUG
@@ -153,16 +154,15 @@ TextLayer &TextLayer::SetTextPadding(int paddingLeft, int paddingTop,
 void TextLayer::calcCodePointSize(const CodePoint *codepoint, int *ix0,
                                   int *iy0, int *ix1, int *iy1,
                                   int *advanceWidth) {
-    font->GetCodepointBitmapBox(codepoint->GetValue(), ix0, ix1, iy0, iy1);
-    font->GetCodepointHMetrics(codepoint->GetValue(), advanceWidth, 0);
+    font->GetCodepointBitmapBox(codepoint, ix0, ix1, iy0, iy1);
+    font->GetCodepointHMetrics(codepoint, advanceWidth, 0);
 }
 
-void TextLayer::calcCodePointTypeSetting(const CodePoint *c,
+void TextLayer::calcCodePointTypeSetting(const CodePoint *codepoint,
                                          Graphic::TextTypeSetting *ts, int x,
                                          int y, int iy0) {
-    font->GetCodepointHMetrics(c->GetValue(), &ts->advancedWith,
-                               &ts->leftSideBearing);
-    font->GetCodepointBitmap(c->GetValue(), &ts->width, &ts->height, 0, 0);
+    font->GetCodepointHMetrics(codepoint, &ts->advancedWith, &ts->leftSideBearing);
+    font->GetCodepointBitmap(codepoint, &ts->width, &ts->height, 0, 0);
 
     ts->x = x;
     ts->y = y;
@@ -176,9 +176,8 @@ int TextLayer::calcLineWidth(const CodePoint *start,
     int sum = 0;
     for (auto tmp = start; tmp < nextBreak; tmp++) {
         this->calcCodePointSize(tmp, &ix0, 0, 0, 0, &advanceWidth);
-        sum += font->Unscale(ix0) + advanceWidth;
-        sum += font->GetCodepointKernAdvance(tmp->GetValue(),
-                                             (tmp + 1)->GetValue());
+        sum += font->Unscale(tmp, ix0) + advanceWidth;
+        sum += font->GetCodepointKernAdvance(tmp, (tmp + 1));
     }
 
     return sum;
@@ -193,20 +192,21 @@ TextLayer &TextLayer::CalcTypeSetting() {
     // Next line flag
     int flagNextLine = 0;
 
+    auto cps = codepoints.get();
+
     /* Smoother unscaled x */
-    float x = font->Unscale(textPadding.paddingLeft), left = x;
+    float x = font->Unscale(cps, textPadding.paddingLeft), left = x;
     int y = textPadding.paddingTop;
     // TODO: customize lineHeight
-    int lineHeight = font->GetLineHeight(1.2f);
-
+    int lineHeight;
     int maxLineLength = GetRelativeWidth() - textPadding.paddingRight;
     int maxHeight = GetRelativeHeight() - textPadding.paddingBottom;
 
     /* Codepoints always starts with 0xFEFF */
-    auto cps = codepoints.get();
     for (auto c = cps + 1; c - cps < charNum; c++) {
         auto nextCodePoint = c + 1;
         auto ts = &this->typeSetting[c - cps - 1];
+        lineHeight = font->GetLineHeight(c, 1.2f);
 
         /* Handle LF */
         if (*c < CHAR_SPACE) { // space
@@ -223,8 +223,9 @@ TextLayer &TextLayer::CalcTypeSetting() {
         if (CodePoint::StrChr(breaks, *c) != nullptr) {
             auto nextBreak = CodePoint::FindNextBreak(c + 1, breaks);
             if (nextBreak != nullptr) {
-                flagNextLine = (font->Scale(x + calcLineWidth(c, nextBreak)) >
-                                maxLineLength);
+                flagNextLine =
+                    (font->Scale(c, x + calcLineWidth(c, nextBreak)) >
+                     maxLineLength);
             }
         }
 
@@ -234,17 +235,17 @@ TextLayer &TextLayer::CalcTypeSetting() {
             if (!ctmp->IsEmpty() && ctmp->GetValue() > 0x2000 &&
                 CodePoint::StrChr(ch_breaks, *ctmp) != nullptr) {
                 int sum = calcLineWidth(c, c + 3);
-                flagNextLine = (font->Scale(x + sum) > maxLineLength);
+                flagNextLine = (font->Scale(ctmp, x + sum) > maxLineLength);
             }
         }
 
         int ix0, iy0;
-        font->GetCodepointBitmapBox(c->GetValue(), &ix0, &iy0, 0, 0);
-        x += font->Unscale(ix0);
+        font->GetCodepointBitmapBox(c, &ix0, &iy0, 0, 0);
+        x += font->Unscale(c, ix0);
         calcCodePointTypeSetting(c, ts, x, y, iy0);
 
-        if (font->Scale(x + ts->leftSideBearing + font->Unscale(ts->width)) >=
-            maxLineLength) {
+        if (font->Scale(c, x + ts->leftSideBearing +
+                               font->Unscale(c, ts->width)) >= maxLineLength) {
             NextLine(x, y, left - ts->leftSideBearing, lineHeight);
         }
 
@@ -253,8 +254,7 @@ TextLayer &TextLayer::CalcTypeSetting() {
 
         if (!nextCodePoint->IsEmpty()) {
             /* 调整字距 */
-            ts->kern = font->GetCodepointKernAdvance(c->GetValue(),
-                                                     nextCodePoint->GetValue());
+            ts->kern = font->GetCodepointKernAdvance(c, nextCodePoint);
             x += ts->kern;
         }
 
@@ -281,20 +281,20 @@ void TextLayer::Render() {
     // TODO: maxLineLength as a property.
     int maxLineLength = GetRelativeWidth() - textPadding.paddingRight;
 
-    Graphic::TextTypeSetting::AdjustAlign(typeSetting.get(), charNum, textAlign,
+    Graphic::TextTypeSetting::AdjustAlign(codepoints.get(), typeSetting.get(), charNum, textAlign,
                                           maxLineLength, font);
 
     auto ts = typeSetting.get();
     auto cps = codepoints.get();
-    int ascent = font->GetScaledAscent();
     for (auto c = cps + 1; c - cps < charNum; c++, ts++) {
+        int ascent = font->GetScaledAscent(c);
         // FIXME: not sure if this causes mem leak.
-        bitmap = font->GetCodepointBitmap(c->GetValue(), 0, 0, 0, 0);
+        bitmap = font->GetCodepointBitmap(c, 0, 0, 0, 0);
         ts->ascent = ascent;
-        drawGlyph(ts, font, bitmap);
+        drawGlyph(c, ts, font, bitmap);
     }
 
-    font->FreeBitmap(bitmap);
+    // font->FreeBitmap(bitmap);
 }
 
 TextLayer &TextLayer::SetFont(Font *font) {

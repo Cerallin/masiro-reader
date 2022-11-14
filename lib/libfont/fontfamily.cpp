@@ -19,24 +19,38 @@
 
 #include "fontfamily.h"
 
+#define matchAndReturn(ff, cp)                                                 \
+    {                                                                          \
+        if (ff->FindGlyphIndex(cp))                                            \
+            return ff->GetFontInfo();                                          \
+    }
+
+constexpr size_t FF_LIST_SIZE = 4;
+
 FontFamily::FontFamily(FontFace *defaultFontFace) {
-    regularFontFace = defaultFontFace;
-    fallbackFontFace = nullptr;
-    italicFontFace = nullptr;
-    italicFallbackFontFace = nullptr;
+    ffList.reserve(FF_LIST_SIZE);
+    ffList.push_back(defaultFontFace);
 }
 
-FontFamily::FontFamily(FontFace *defaultFontFace, FontFace *italicFontFace) {
-    regularFontFace = defaultFontFace;
-    fallbackFontFace = nullptr;
-    italicFontFace = italicFontFace;
-    italicFallbackFontFace = nullptr;
+std::vector<FontFace *> FontFamily::GetFontFace() { return ffList; }
+
+const FontFace *FontFamily::GetFontFace(int codepoint, bool italic) {
+    for (const FontFace *ff : ffList) {
+        if (ff->FindGlyphIndex(codepoint)) {
+            return ff;
+        }
+    }
+
+    return nullptr;
 }
 
-FontFamily::FontFamily(FontFace *defaultFontFace, FontFace *fallbackFontFace,
-                       FontFace *italicFontFace, FontFace *italicFallback) {
-    regularFontFace = defaultFontFace;
-    fallbackFontFace = fallbackFontFace;
-    italicFontFace = italicFontFace;
-    italicFallbackFontFace = italicFallback;
+ssize_t FontFamily::GetFontFaceIndex(int codepoint, bool italic) {
+    for (size_t i = 0; i < ffList.size(); i++) {
+        const auto ff = ffList[i];
+        if (ff->FindGlyphIndex(codepoint)) {
+            return i;
+        }
+    }
+
+    return -1;
 }

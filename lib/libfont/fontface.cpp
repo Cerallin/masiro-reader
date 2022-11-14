@@ -54,10 +54,12 @@ int FontFace::LoadFont(const char *fontFilePath) {
     return 0;
 }
 
-const stbtt_fontinfo *FontFace::GetFontInfo() { return &fontInfo; }
+const stbtt_fontinfo *FontFace::GetFontInfo() const { return &fontInfo; }
 
-FontFaceState FontFace::GetState() { return this->state; }
-
-void FontFace::setState(FontFaceState newState) {
-    this->state = newState;
+int FontFace::FindGlyphIndex(int codepoint) const {
+    return stbtt_FindGlyphIndex(&fontInfo, codepoint);
 }
+
+FontFaceState FontFace::GetState() const { return this->state; }
+
+void FontFace::setState(FontFaceState newState) { this->state = newState; }

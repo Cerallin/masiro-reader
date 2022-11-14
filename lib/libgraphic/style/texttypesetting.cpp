@@ -22,12 +22,20 @@
 namespace Graphic {
 
 #define ScanLine(needle, lineStart)                                            \
-    for (needle = lineStart; needle->y == lineStart->y; needle++)
+    for (needle = lineStart; needle->y == lineStart->y; needle++, cp++)
 
-void TextTypeSetting::AdjustAlign(TextTypeSetting *typeSettings, ssize_t len,
+#define BackSpace(needle, cp)                                                  \
+    {                                                                          \
+        needle--;                                                              \
+        cp--;                                                                  \
+    }
+
+void TextTypeSetting::AdjustAlign(const CodePoint *codepoints,
+                                  TextTypeSetting *typeSettings, ssize_t len,
                                   TextAlign align, int lineWidth, Font *font) {
     int stringWidth;
     float offset;
+    const CodePoint *cp = codepoints;
     TextTypeSetting *needle = typeSettings, *lineStart = typeSettings;
 
     if (align == AlignLeft) // default
@@ -35,16 +43,14 @@ void TextTypeSetting::AdjustAlign(TextTypeSetting *typeSettings, ssize_t len,
 
     do {
         ScanLine(needle, lineStart) {} // Search for EOL
-        // If this line is set here, it would be interesting.
-        // lineStart = needle;
-        needle--;
+        BackSpace(needle, cp);
 
-        stringWidth = font->Scale(needle->x) + needle->width;
+        stringWidth = font->Scale(cp, needle->x) + needle->width;
         if (align == AlignRight) {
-            offset = font->Unscale(lineWidth - stringWidth);
+            offset = font->Unscale(cp, lineWidth - stringWidth);
             ScanLine(needle, lineStart) { needle->x += offset; }
         } else if (align == AlignCenter) {
-            offset = font->Unscale(lineWidth - stringWidth) / 2;
+            offset = font->Unscale(cp, lineWidth - stringWidth) / 2;
             ScanLine(needle, lineStart) { needle->x += offset; }
         }
         lineStart = needle;

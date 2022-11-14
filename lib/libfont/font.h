@@ -20,41 +20,46 @@
 #ifndef FONT_FONT_H
 #define FONT_FONT_H
 
-#include "fontface.h"
 #include "codepoint.h"
+#include "fontfamily.h"
+#include "fontmetrics.h"
+
 #include <stdint.h>
 
 class Font {
   public:
-    Font(FontFace *fontFace, float fontSize = 32.0f);
-    ~Font();
+    Font(FontFamily *fontFace, float fontSize = 32.0f);
+    ~Font() = default;
 
-    void GetCodepointHMetrics(int codepoint, int *advanceWidth,
+    void GetCodepointHMetrics(const CodePoint *codepoint, int *advanceWidth,
                               int *leftSideBearing);
-    void GetCodepointBitmapBox(int codepoint, int *ix0, int *iy0, int *ix1,
-                               int *iy1);
-    unsigned char *GetCodepointBitmap(int codepoint, int *width, int *height,
-                                      int *xoff, int *yoff);
-    int GetCodepointKernAdvance(int cp1, int cp2);
+    void GetCodepointBitmapBox(const CodePoint *codepoint, int *ix0, int *iy0,
+                               int *ix1, int *iy1);
+    unsigned char *GetCodepointBitmap(const CodePoint *codepoint, int *width,
+                                      int *height, int *xoff, int *yoff);
+    int GetCodepointKernAdvance(const CodePoint *cp1, const CodePoint *cp2);
 
     void FreeBitmap(unsigned char *bitmap);
 
-    FontFace *GetFontFace();
+    FontFamily *GetFontFamily();
 
-    int GetScaledAscent();
-    int GetLineHeight(float scale = 1.f);
+    int GetScaledAscent(const CodePoint *codepoint);
+    int GetLineHeight(const CodePoint *codepoint, float scale = 1.f);
 
-    float Scale(float num);
-    float Unscale(float num);
+    float Scale(const CodePoint *codepoint, float num);
+    float Unscale(const CodePoint *codepoint, float num);
 
   private:
-    FontFace *fontFace;
-    float fontSize;
-    float fontScale;
+    FontFamily *fontFamily;
 
-    int ascent;
-    int descent;
-    int lineGap;
+    std::unique_ptr<unsigned char[]> bitmap = nullptr;
+    std::vector<FontMetrics> metricsList;
+
+    float fontSize;
+
+    inline float getFontScale(const CodePoint *codepoint);
+    inline const FontFace *getFontFace(const CodePoint *codepoint);
+    inline const FontMetrics *getMetrics(const CodePoint *codepoint);
 };
 
 #endif /* FONT_FONT_H */

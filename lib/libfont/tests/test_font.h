@@ -5,25 +5,32 @@
 
 extern const char font_file[];
 
-FontFace *fontFace;
+const CodePoint CHAR_H('H'), CHAR_E('E');
+
+extern FontFace *fontFace;
+extern FontFamily *fontfamily;
 Font *font;
 
 TEST_GROUP(TestFont) {
     void setup() {
         fontFace = new FontFace;
         CHECK_EQUAL(0, fontFace->LoadFont(font_file));
-        font = new Font(fontFace, 32.0f);
+
+        fontfamily = new FontFamily(fontFace);
+
+        font = new Font(fontfamily, 32.0f);
     }
 
     void teardown() {
-        delete fontFace;
         delete font;
+        delete fontfamily;
+        delete fontFace;
     }
 };
 
 TEST(TestFont, TestGetCodepointHMetrics) {
     int advanceWidth = -1, leftSideBearing = -1;
-    font->GetCodepointHMetrics('H', &advanceWidth, &leftSideBearing);
+    font->GetCodepointHMetrics(&CHAR_H, &advanceWidth, &leftSideBearing);
     CHECK_FALSE(-1 == advanceWidth);
     CHECK_FALSE(-1 == leftSideBearing);
 }
@@ -31,7 +38,7 @@ TEST(TestFont, TestGetCodepointHMetrics) {
 TEST(TestFont, TestGetCodepointBitmapBox) {
     int ix0, iy0, ix1, iy1;
     ix0 = iy0 = ix1 = iy1 = 0xFF;
-    font->GetCodepointBitmapBox('H', &ix0, &iy0, &ix1, &iy1);
+    font->GetCodepointBitmapBox(&CHAR_H, &ix0, &iy0, &ix1, &iy1);
     CHECK_FALSE(0xFF == ix0);
     CHECK_FALSE(0xFF == iy0);
     CHECK_FALSE(0xFF == ix1);
@@ -41,16 +48,13 @@ TEST(TestFont, TestGetCodepointBitmapBox) {
 TEST(TestFont, TestGetCodepointBitmap) {
     int width, height;
     width = height = 0xFF;
-    auto bitmap = font->GetCodepointBitmap('H', &width, &height, 0, 0);
+    auto bitmap = font->GetCodepointBitmap(&CHAR_H, &width, &height, 0, 0);
     CHECK_FALSE(0xFF == width);
     CHECK_FALSE(0xFF == height);
-    font->FreeBitmap(bitmap);
 }
 
 TEST(TestFont, TestGetCodepointKernAdvance) {
     int kern = 0xFF;
-    kern = font->GetCodepointKernAdvance('H', 'E');
+    kern = font->GetCodepointKernAdvance(&CHAR_H, &CHAR_E);
     CHECK_FALSE(0xFF == kern);
 }
-
-TEST(TestFont, TestGetFontFace) { CHECK_EQUAL(fontFace, font->GetFontFace()); }

@@ -20,22 +20,22 @@
 #ifndef FONT_FONT_FAMILY_H
 #define FONT_FONT_FAMILY_H
 
-#include "font.h"
+#include "fontface.h"
+
+#include <vector>
 
 class FontFamily {
   public:
     FontFamily(FontFace *defaultFontFace);
-    FontFamily(FontFace *defaultFontFace, FontFace *italicFontFace);
-    FontFamily(FontFace *defaultFontFace, FontFace *fallbackFontFace,
-               FontFace *italicFontFace, FontFace *italicFallbackFontFace);
+    ~FontFamily() = default;
 
-    virtual ~FontFamily() = default;
+    std::vector<FontFace *> GetFontFace();
+    const FontFace *GetFontFace(int codepoint, bool italic = false);
+
+    ssize_t GetFontFaceIndex(int codepoint, bool italic = false);
 
   private:
-    FontFace *regularFontFace;
-    FontFace *fallbackFontFace;
-    FontFace *italicFontFace;
-    FontFace *italicFallbackFontFace;
+    std::vector<FontFace *> ffList;
 };
 
 #endif /* FONT_FONT_FAMILY_H */

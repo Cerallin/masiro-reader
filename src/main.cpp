@@ -50,7 +50,9 @@ int main(void) {
         return 1;
     }
 
-    Font TitleFont(&XLWenKai, 28.0f);
+    FontFamily fontFamily(&XLWenKai);
+
+    Font TitleFont(&fontFamily, 28.0f);
     textLayer.SetFont(&TitleFont);
 
     char str[] = "Serial Experiments Lain";

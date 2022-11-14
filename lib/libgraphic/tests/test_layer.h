@@ -6,10 +6,10 @@
 #include <string.h>
 #include <unistd.h>
 
-#define TEST_WIDTH  16
-#define TEST_HEIGHT 8
+constexpr size_t TEST_WIDTH = 16;
+constexpr size_t TEST_HEIGHT = 8;
 
-#define TEST_BUFFER_SIZE (TEST_WIDTH / 8 * TEST_HEIGHT)
+constexpr size_t TEST_BUFFER_SIZE = TEST_WIDTH / 8 * TEST_HEIGHT;
 
 Layer *layer;
 

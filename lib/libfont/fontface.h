@@ -35,9 +35,11 @@ class FontFace {
     ~FontFace() = default;
 
     int LoadFont(const char *fontFilePath);
-    const stbtt_fontinfo *GetFontInfo();
+    const stbtt_fontinfo *GetFontInfo() const;
 
-    FontFaceState GetState();
+    int FindGlyphIndex(int codepoint) const;
+
+    FontFaceState GetState() const;
 
   private:
     std::unique_ptr<unsigned char[]> fontBuffer = nullptr;

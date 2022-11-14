@@ -21,60 +21,88 @@
 #include "font.h"
 
 #include <math.h>
-#include <new>
 #include <stdio.h>
 #include <string.h>
 
-Font::Font(FontFace *fontFace, float fontSize)
-    : fontFace(fontFace), fontSize(fontSize) {
-    auto fontInfo = fontFace->GetFontInfo();
+#include "fontface.h"
 
-    fontScale = stbtt_ScaleForPixelHeight(fontFace->GetFontInfo(), fontSize);
-    /**
-     * 获取垂直方向上的度量
-     * ascent：字体从基线到顶部的高度；
-     * descent：基线到底部的高度，通常为负值；
-     * lineGap：两个字体之间的间距；
-     */
-    stbtt_GetFontVMetrics(fontInfo, &ascent, &descent, &lineGap);
+Font::Font(FontFamily *fontFamily, float fontSize)
+    : fontFamily(fontFamily), fontSize(fontSize) {
+    const auto ffList = fontFamily->GetFontFace();
+
+    metricsList.reserve(ffList.size());
+    for (const auto ff : ffList) {
+        auto fontInfo = ff->GetFontInfo();
+        auto scale = stbtt_ScaleForPixelHeight(fontInfo, fontSize);
+
+        FontMetrics metrics(scale);
+        metrics.FontVMetrics(fontInfo);
+
+        metricsList.push_back(metrics);
+    }
 };
 
-Font::~Font(){};
-
-void Font::GetCodepointHMetrics(int codepoint, int *advanceWidth,
+void Font::GetCodepointHMetrics(const CodePoint *codepoint, int *advanceWidth,
                                 int *leftSideBearing) {
-    stbtt_GetCodepointHMetrics(fontFace->GetFontInfo(), codepoint, advanceWidth,
+    stbtt_GetCodepointHMetrics(getFontFace(codepoint)->GetFontInfo(),
+                               codepoint->GetValue(), advanceWidth,
                                leftSideBearing);
 }
 
-void Font::GetCodepointBitmapBox(int codepoint, int *ix0, int *iy0, int *ix1,
-                                 int *iy1) {
-    stbtt_GetCodepointBitmapBox(fontFace->GetFontInfo(), codepoint, 0,
-                                fontScale, ix0, iy0, ix1, iy1);
+void Font::GetCodepointBitmapBox(const CodePoint *codepoint, int *ix0, int *iy0,
+                                 int *ix1, int *iy1) {
+    auto fontInfo = getFontFace(codepoint)->GetFontInfo();
+    stbtt_GetCodepointBitmapBox(fontInfo, codepoint->GetValue(), 0,
+                                getFontScale(codepoint), ix0, iy0, ix1, iy1);
+    stbtt_FindGlyphIndex(fontInfo, codepoint->GetValue());
 }
 
-unsigned char *Font::GetCodepointBitmap(int codepoint, int *width, int *height,
-                                        int *xoff, int *yoff) {
-    return stbtt_GetCodepointBitmap(fontFace->GetFontInfo(), 0, fontScale,
-                                    codepoint, width, height, xoff, yoff);
+unsigned char *Font::GetCodepointBitmap(const CodePoint *codepoint, int *width,
+                                        int *height, int *xoff, int *yoff) {
+    return stbtt_GetCodepointBitmap(
+        getFontFace(codepoint)->GetFontInfo(), 0, getFontScale(codepoint),
+        codepoint->GetValue(), width, height, xoff, yoff);
 }
 
-int Font::GetCodepointKernAdvance(int cp1, int cp2) {
-    return stbtt_GetCodepointKernAdvance(fontFace->GetFontInfo(), cp1, cp2);
+int Font::GetCodepointKernAdvance(const CodePoint *cp1, const CodePoint *cp2) {
+    // FIXME what if cp1 and cp2 are found in different font faces?
+    auto ff1 = getFontFace(cp1);
+    return stbtt_GetCodepointKernAdvance(ff1->GetFontInfo(), cp1->GetValue(),
+                                         cp2->GetValue());
 }
 
-void Font::FreeBitmap(unsigned char *bitmap) {
-    stbtt_FreeBitmap(bitmap, fontFace->GetFontInfo()->userdata);
+// void Font::FreeBitmap(unsigned char *bitmap) {
+//     stbtt_FreeBitmap(bitmap, fontFace->GetFontInfo()->userdata);
+// }
+
+int Font::GetScaledAscent(const CodePoint *codepoint) {
+    auto metrics = getMetrics(codepoint);
+    return Scale(codepoint, metrics->ascent);
 }
 
-FontFace *Font::GetFontFace() { return fontFace; }
-
-int Font::GetScaledAscent() { return Scale(ascent); }
-
-int Font::GetLineHeight(float scale) {
-    return roundeven(scale * fontScale * (ascent - descent + lineGap));
+int Font::GetLineHeight(const CodePoint *codepoint, float scale) {
+    auto metrics = getMetrics(codepoint);
+    return roundeven(scale * metrics->GetLineHeight());
 }
 
-float Font::Scale(float num) { return roundevenf(num * fontScale); }
+float Font::Scale(const CodePoint *codepoint, float num) {
+    return roundevenf(num * getFontScale(codepoint));
+}
 
-float Font::Unscale(float num) { return roundevenf(num / fontScale); }
+float Font::Unscale(const CodePoint *codepoint, float num) {
+    return roundevenf(num / getFontScale(codepoint));
+}
+
+inline float Font::getFontScale(const CodePoint *codepoint) {
+    auto metrics = getMetrics(codepoint);
+    return metrics->scale;
+}
+
+inline const FontFace *Font::getFontFace(const CodePoint *codepoint) {
+    return fontFamily->GetFontFace(codepoint->GetValue());
+}
+
+inline const FontMetrics *Font::getMetrics(const CodePoint *codepoint) {
+    auto index = fontFamily->GetFontFaceIndex(codepoint->GetValue());
+    return &metricsList[index];
+}

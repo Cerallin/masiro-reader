@@ -42,8 +42,9 @@ class TextPadding {
 
 class TextTypeSetting {
   public:
-    static void AdjustAlign(TextTypeSetting *typeSettings, ssize_t len,
-                            TextAlign align, int lineWidth, Font *font);
+    static void AdjustAlign(const CodePoint *codepoints, TextTypeSetting *typeSettings,
+                            ssize_t len, TextAlign align, int lineWidth,
+                            Font *font);
 
     float x;             // unscaled absolute x, to be justified
     int y;               // absolute y, determing chars in the same line
