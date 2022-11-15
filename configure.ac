@@ -24,6 +24,21 @@ AS_IF([! test "x$enable_debug" = xyes ], [
     AC_DEFINE([NDEBUG], [1], [disable debugging code])
 ])
 
+# Check Qt
+AX_HAVE_QT
+
+# Using fake epd
+AC_ARG_WITH(fake-epd,
+    AS_HELP_STRING([--with-fake-epd], [using Qt form as fake display, default: no]))
+AS_IF([ test "x$with_fake_epd" = xyes ], [
+    AS_IF([ ! test "x$have_qt" = xyes ], [
+        AC_MSG_ERROR([Enabled fake epd without Qt installed])
+    ])
+
+    AC_DEFINE([FAKE_EPD], [1], [disable fake epd])
+])
+AM_CONDITIONAL([FAKE_EPD], [ test "x$with_fake_epd" = xyes ])
+
 # Checks for libraries.
 AC_CHECK_LIB([bcm2835], [bcm2835_init])
 AC_CHECK_LIB([pthread], [pthread_create])
@@ -38,6 +53,7 @@ AC_TYPE_INT16_T
 AC_TYPE_INT32_T
 AC_TYPE_INT8_T
 AC_TYPE_SIZE_T
+AC_TYPE_SSIZE_T
 AC_TYPE_UINT16_T
 AC_TYPE_UINT32_T
 AC_TYPE_UINT8_T

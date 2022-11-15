@@ -3,11 +3,9 @@ AUTOMAKE_OPTIONS = foreign
 ACLOCAL_AMFLAGS = -I m4
 
 SUBDIRS = \
-          lib/libepd37 \
           lib/libfont \
           lib/libimage \
-          lib/libdom \
-          lib/libgraphic
+          lib/libdom
 
 ################ LIBRARIES #################
 
@@ -23,10 +21,18 @@ bin_PROGRAMS = masiro
 
 masiro_SOURCES = src/main.cpp
 
-AM_CPPFLAGS = \
-              -I$(top_srcdir)/lib/libepd37 \
-              -I$(top_srcdir)/lib/libfont \
+AM_CPPFLAGS = -I$(top_srcdir)/lib/libfont \
               -I$(top_srcdir)/lib/libimage \
               -I$(top_srcdir)/lib/libgraphic
+
+if FAKE_EPD
+    # TODO fake epd
+else
+    SUBDIRS += lib/libepd37
+    AM_CPPFLAGS += -I$(top_srcdir)/lib/libepd37
+endif #FAKE_EPD
+
+# Should be built after libepd37
+SUBDIRS += lib/libgraphic
 
 masiro_LDADD = $(top_builddir)/libmasiro.la
