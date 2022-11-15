@@ -7,7 +7,7 @@ download_and_install_bcm2835() {
 
     cd bcm2835-1.71
 
-    ./configure --prefix=$(pwd)/../libbcm2835 $@
+    CFLAGS="-fPIC -DPIC" ./configure --prefix=$(pwd)/../libbcm2835 $@
     make -j8
     make install
 
