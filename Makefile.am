@@ -21,6 +21,8 @@ bin_PROGRAMS = masiro
 
 masiro_SOURCES = src/main.cpp
 
+masiro_LDADD = $(top_builddir)/libmasiro.la
+
 AM_CPPFLAGS = -I$(top_srcdir)/lib/libfont \
               -I$(top_srcdir)/lib/libimage \
               -I$(top_srcdir)/lib/libgraphic
@@ -34,5 +36,3 @@ endif #FAKE_EPD
 
 # Should be built after libepd37
 SUBDIRS += lib/libgraphic
-
-masiro_LDADD = $(top_builddir)/libmasiro.la

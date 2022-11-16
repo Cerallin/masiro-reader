@@ -56,8 +56,8 @@ int FontFace::LoadFont(const char *fontFilePath) {
 
 const stbtt_fontinfo *FontFace::GetFontInfo() const { return &fontInfo; }
 
-int FontFace::FindGlyphIndex(int codepoint) const {
-    return stbtt_FindGlyphIndex(&fontInfo, codepoint);
+int FontFace::FindGlyphIndex(const CodePoint *codepoint) const {
+    return stbtt_FindGlyphIndex(&fontInfo, codepoint->GetValue());
 }
 
 FontFaceState FontFace::GetState() const { return this->state; }

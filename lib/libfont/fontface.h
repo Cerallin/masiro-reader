@@ -20,7 +20,9 @@
 #ifndef FONT_FONT_FACE_H
 #define FONT_FONT_FACE_H
 
+#include "codepoint.h"
 #include "stb_truetype.h"
+
 #include <memory>
 
 enum FontFaceState {
@@ -37,7 +39,7 @@ class FontFace {
     int LoadFont(const char *fontFilePath);
     const stbtt_fontinfo *GetFontInfo() const;
 
-    int FindGlyphIndex(int codepoint) const;
+    int FindGlyphIndex(const CodePoint *codepoint) const;
 
     FontFaceState GetState() const;
 

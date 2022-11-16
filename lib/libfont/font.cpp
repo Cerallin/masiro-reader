@@ -99,10 +99,10 @@ inline float Font::getFontScale(const CodePoint *codepoint) {
 }
 
 inline const FontFace *Font::getFontFace(const CodePoint *codepoint) {
-    return fontFamily->GetFontFace(codepoint->GetValue());
+    return fontFamily->GetFontFace(codepoint);
 }
 
 inline const FontMetrics *Font::getMetrics(const CodePoint *codepoint) {
-    auto index = fontFamily->GetFontFaceIndex(codepoint->GetValue());
+    auto index = fontFamily->GetFontFaceIndex(codepoint);
     return &metricsList[index];
 }

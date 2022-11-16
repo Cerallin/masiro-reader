@@ -20,6 +20,7 @@
 #ifndef FONT_FONT_FAMILY_H
 #define FONT_FONT_FAMILY_H
 
+#include "codepoint.h"
 #include "fontface.h"
 
 #include <vector>
@@ -29,13 +30,37 @@ class FontFamily {
     FontFamily(FontFace *defaultFontFace);
     ~FontFamily() = default;
 
-    std::vector<FontFace *> GetFontFace();
-    const FontFace *GetFontFace(int codepoint, bool italic = false);
+    /**
+     * @brief Get all font faces.
+     *
+     * @return font face vector
+     */
+    std::vector<const FontFace *> GetFontFace() const;
 
-    ssize_t GetFontFaceIndex(int codepoint, bool italic = false);
+    /**
+     * @brief Add a font face
+     *
+     * @param fontFace to insert
+     */
+    void AddFontFace(const FontFace *fontFace);
+
+    /**
+     * @brief Get specific font face
+     *
+     * @return nullptr if not found
+     */
+    const FontFace *GetFontFace(const CodePoint *codepoint,
+                                bool italic = false) const;
+
+    /**
+     * @brief Get index of the vector
+     *
+     * @returns -1 if not found.
+    */
+    ssize_t GetFontFaceIndex(const CodePoint *codepoint, bool italic = false);
 
   private:
-    std::vector<FontFace *> ffList;
+    std::vector<const FontFace *> ffList;
 };
 
 #endif /* FONT_FONT_FAMILY_H */

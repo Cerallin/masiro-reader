@@ -19,12 +19,6 @@
 
 #include "fontfamily.h"
 
-#define matchAndReturn(ff, cp)                                                 \
-    {                                                                          \
-        if (ff->FindGlyphIndex(cp))                                            \
-            return ff->GetFontInfo();                                          \
-    }
-
 constexpr size_t FF_LIST_SIZE = 4;
 
 FontFamily::FontFamily(FontFace *defaultFontFace) {
@@ -32,9 +26,14 @@ FontFamily::FontFamily(FontFace *defaultFontFace) {
     ffList.push_back(defaultFontFace);
 }
 
-std::vector<FontFace *> FontFamily::GetFontFace() { return ffList; }
+std::vector<const FontFace *> FontFamily::GetFontFace() const { return ffList; }
 
-const FontFace *FontFamily::GetFontFace(int codepoint, bool italic) {
+void FontFamily::AddFontFace(const FontFace *fontFace) {
+    ffList.push_back(fontFace);
+}
+
+const FontFace *FontFamily::GetFontFace(const CodePoint *codepoint,
+                                        bool italic) const {
     for (const FontFace *ff : ffList) {
         if (ff->FindGlyphIndex(codepoint)) {
             return ff;
@@ -44,7 +43,7 @@ const FontFace *FontFamily::GetFontFace(int codepoint, bool italic) {
     return nullptr;
 }
 
-ssize_t FontFamily::GetFontFaceIndex(int codepoint, bool italic) {
+ssize_t FontFamily::GetFontFaceIndex(const CodePoint *codepoint, bool italic) {
     for (size_t i = 0; i < ffList.size(); i++) {
         const auto ff = ffList[i];
         if (ff->FindGlyphIndex(codepoint)) {
