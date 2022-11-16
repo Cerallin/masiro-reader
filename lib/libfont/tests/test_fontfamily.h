@@ -28,6 +28,7 @@ TEST(TestFontFamily, TestGetFontFace) {
 }
 
 TEST(TestFontFamily, TestGetFontFaceIndex) {
-    CHECK_EQUAL(0, fontfamily->GetFontFaceIndex('H'));
-    CHECK_EQUAL(-1, fontfamily->GetFontFaceIndex(0xFFFF));
+    CodePoint CHAR_H('H'), CHAR_UNDEF(0xFFFF);
+    CHECK_EQUAL(0, fontfamily->GetFontFaceIndex(&CHAR_H));
+    CHECK_EQUAL(-1, fontfamily->GetFontFaceIndex(&CHAR_UNDEF));
 }

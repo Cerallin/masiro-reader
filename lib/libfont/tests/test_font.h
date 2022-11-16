@@ -48,7 +48,7 @@ TEST(TestFont, TestGetCodepointBitmapBox) {
 TEST(TestFont, TestGetCodepointBitmap) {
     int width, height;
     width = height = 0xFF;
-    auto bitmap = font->GetCodepointBitmap(&CHAR_H, &width, &height, 0, 0);
+    font->GetCodepointBitmap(&CHAR_H, &width, &height, 0, 0);
     CHECK_FALSE(0xFF == width);
     CHECK_FALSE(0xFF == height);
 }
