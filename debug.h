@@ -1,6 +1,8 @@
 #ifndef DEBUG_H
 #define DEBUG_H
 
+#include "config.h"
+
 #include <assert.h>
 #include <stdio.h>
 

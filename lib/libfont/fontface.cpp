@@ -40,7 +40,7 @@ int FontFace::LoadFont(const char *fontFilePath) {
 
     fontBuffer = std::make_unique<unsigned char[]>(size);
 
-    debug("Loading font from %s\n", fontBuffer.get());
+    debug("Loading font from %s\n", fontFilePath);
 
     fread(fontBuffer.get(), size, 1, fontFile);
     fclose(fontFile);

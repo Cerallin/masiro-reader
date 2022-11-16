@@ -80,7 +80,7 @@ void TextLayer::drawGlyph(const CodePoint *cp,
     y = ts->y + ts->iy0 + ts->ascent;
 
 #ifndef NDEBUG
-    fprintf(stderr, "%d %d %d %d\n", x, y, x + ts->width, y + ts->height);
+    debug("%d %d %d %d\n", x, y, x + ts->width, y + ts->height);
     this->DrawRectangle(x, y, x + ts->width, y + ts->height,
                         invertColor ? Graphic::Color::WB : Graphic::Color::BW);
 #endif
