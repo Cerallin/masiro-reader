@@ -1,7 +1,9 @@
 #include <CppUTest/TestHarness.h>
 
 #include "config.h"
+
 #include "fontface.h"
+
 #include <unistd.h>
 
 const char font_file[] = SRC_DIR "/assets/LXGWWenKaiScreen.ttf";

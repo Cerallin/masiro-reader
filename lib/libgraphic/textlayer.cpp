@@ -17,8 +17,9 @@
  *
  */
 
-#include "textlayer.h"
 #include "debug.h"
+
+#include "textlayer.h"
 
 #include <new>
 #include <stdio.h>

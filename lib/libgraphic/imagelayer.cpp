@@ -17,11 +17,12 @@
  *
  */
 
-#include "imagelayer.h"
 #include "debug.h"
-#include <cstring>
 
+#include "imagelayer.h"
 #include "traits/layersetters.cpp"
+
+#include <cstring>
 
 ImageLayer::ImageLayer(uint32_t width, uint32_t height, int32_t rotate)
     : Layer(width, height, rotate) {}

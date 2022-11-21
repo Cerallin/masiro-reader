@@ -1,7 +1,9 @@
 #include <CppUTest/TestHarness.h>
 
 #include "config.h"
+
 #include "layer.h"
+
 #include <new>
 #include <string.h>
 #include <unistd.h>
