@@ -47,11 +47,13 @@ class BMPImage {
     constexpr int32_t getImageSize() const;
     constexpr int32_t getFileSize() const;
 
-    void ExtractImage(const uint8_t *image, int32_t len, int byteCount);
+    void extractImage(const uint8_t *image, int32_t len, int byteCount);
 
     int32_t width;
     int32_t height;
+
     bool isUpsideDown;
+
     unsigned char *front;
     unsigned char *back;
 };

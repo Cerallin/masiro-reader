@@ -18,27 +18,28 @@ FontFamily *fontFamily;
 
 Font *font;
 
-TEST_GROUP(TestTextLayer){void setup(){XLWenKai = new FontFace();
-if (XLWenKai->LoadFont(font_file) == -1) {
-    fprintf(stderr, "Font file not found.\n");
-}
+TEST_GROUP(TestTextLayer){
+    void setup() {
+        XLWenKai = new FontFace();
+        if (XLWenKai->LoadFont(font_file) == -1) {
+            fprintf(stderr, "Font file not found.\n");
+        }
 
-fontFamily = new FontFamily(XLWenKai);
-font = new Font(fontFamily);
+        fontFamily = new FontFamily(XLWenKai);
+        font = new Font(fontFamily);
 
-textLayer = new TextLayer(EPD_WIDTH, EPD_HEIGHT, font);
-textLayer->SetFrontImage(layer_front);
-textLayer->SetBackImage(layer_back);
-}
+        textLayer = new TextLayer(EPD_WIDTH, EPD_HEIGHT, font);
+        textLayer->SetFrontImage(layer_front);
+        textLayer->SetBackImage(layer_back);
+    }
 
-void teardown() {
-    delete textLayer;
-    delete fontFamily;
-    delete XLWenKai;
-    delete font;
-}
-}
-;
+    void teardown() {
+        delete textLayer;
+        delete fontFamily;
+        delete XLWenKai;
+        delete font;
+    }
+};
 
 TEST(TestTextLayer, TestSetText) {
     char *p = testStr;

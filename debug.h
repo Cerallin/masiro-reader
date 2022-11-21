@@ -3,6 +3,7 @@
 
 #include "config.h"
 
+#include <inttypes.h>
 #include <assert.h>
 #include <stdio.h>
 

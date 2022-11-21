@@ -40,10 +40,10 @@ const uint8_t palette[] = {
 };
 
 const uint16_t palette_squared[] = {
-    0x0000,
-    0x0F80,
-    0x3F00,
-    0xFE00,
+    0x0001, // 0x00 ^ 2
+    0x0F81, // 0x3F ^ 2
+    0x3F01, // 0x7F ^ 2
+    0xFE01, // 0xFF ^ 2
 };
 
 BMPImage::BMPImage(int32_t width, int32_t height, unsigned char *front,
@@ -163,6 +163,7 @@ int BMPImage::Load(const char *imageFile) {
     }
 
     fread__<int32_t>(&imageSize, fd);
+    imageSize++;
 
     // Load image
     fseek(fd, offsetToImage, SEEK_SET);
@@ -193,15 +194,21 @@ int BMPImage::Load(const char *imageFile) {
         }
     }
 
-    ExtractImage(image, imageSize, bitCount / 8);
+    extractImage(image, imageSize, bitCount / 8);
 
     delete[] image;
     return 0;
 }
 
-inline int GetPaletteOf(uint32_t mean) {
+template <typename TInt> int getColorOf(const uint8_t *image, int byteCount) {
+    TInt actual = 0;
+    for (int i = 0; i < byteCount; i++) {
+        actual += image[i] * image[i];
+    }
+
     for (size_t i = 1; i < sizeof(palette); i++) {
-        if (mean <= palette_squared[i])
+        TInt assumed = byteCount * palette_squared[i];
+        if (actual < assumed)
             return ~(i - 1) & 0x03;
     }
 
@@ -209,28 +216,27 @@ inline int GetPaletteOf(uint32_t mean) {
     return ~3 & 0x03;
 }
 
-void BMPImage::ExtractImage(const uint8_t *image, int32_t len, int byteCount) {
-    for (int32_t i = 0; i < len;) {
-        uint32_t sum = 0;
-        for (int n = 0; n < byteCount; n++, i++) {
-            sum += image[i] * image[i];
-        }
+inline void paint(uint8_t *image, int offset, bool color) {
+    if (color) {
+        *image &= ~(0x80 >> (offset % 8));
+    } else {
+        *image |= 0x80 >> (offset % 8);
+    }
+}
 
-        auto color = GetPaletteOf(sum / byteCount);
-        auto l = i / byteCount - 1;
-        auto x = l % width;
+void BMPImage::extractImage(const uint8_t *image, int32_t len, int byteCount) {
+    int offset, wCount;
+    assert(len % byteCount == 0);
 
-        if (color & 0x01) {
-            front[l / 8] &= ~(0x80 >> (x % 8));
-        } else {
-            front[l / 8] |= 0x80 >> (x % 8);
-        }
+    for (int32_t i = 0; i < len; i += byteCount) {
+        int color = getColorOf<uint32_t>(image + i, byteCount);
 
-        if (color & 0x02) {
-            back[l / 8] &= ~(0x80 >> (x % 8));
-        } else {
-            back[l / 8] |= 0x80 >> (x % 8);
-        }
+        offset = i / byteCount - 1;
+        wCount = offset % width,
+        offset /= 8;
+
+        paint(front + offset, wCount, color & 0x01);
+        paint(back + offset, wCount, color & 0x02);
     }
 
     if (!isUpsideDown) {
@@ -244,7 +250,9 @@ constexpr int32_t BMPImage::getFileSize() const {
 
 constexpr int32_t BMPImage::getOffset() const { return 14 + 40; }
 
-constexpr int32_t BMPImage::getImageSize() const { return 3 * width * height; }
+constexpr int32_t BMPImage::getImageSize() const {
+    return 3 * width * height - 1;
+}
 
 const unsigned char *BMPImage::GetFrontImage() const { return front; }
 
