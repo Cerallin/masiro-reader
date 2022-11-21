@@ -19,7 +19,7 @@
 
 #include "imagelayer.h"
 #include "debug.h"
-#include <string.h>
+#include <cstring>
 
 #include "traits/layersetters.cpp"
 
@@ -45,8 +45,8 @@ int ImageLayer::LoadFrom(BMPImage *image) {
         assert_is_initialized(old_image);
     }
 
-    memcpy(new_image, image->GetFrontImage(), memSize);
-    memcpy(old_image, image->GetBackImage(), memSize);
+    std::memcpy(new_image, image->GetFrontImage(), memSize);
+    std::memcpy(old_image, image->GetBackImage(), memSize);
 
     return 0;
 }

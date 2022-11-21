@@ -9,13 +9,11 @@ const char image_file[] = SRC_DIR "/assets/lain.bmp";
 
 ImageLayer *imageLayer;
 
-unsigned char images[TEST_BUFFER_SIZE * 2];
+constexpr size_t EPD_BUFFER_SIZE = EPD_WIDTH * EPD_HEIGHT / 8;
 
-unsigned char *front = images, *back = images + TEST_BUFFER_SIZE;
+unsigned char images[EPD_BUFFER_SIZE * 2];
 
-extern unsigned char layer_images[];
-
-extern unsigned char *layer_front, *layer_back;
+constexpr unsigned char *front = images, *back = images + EPD_BUFFER_SIZE;
 
 TEST_GROUP(TestImageLayer) {
     void setup() {
@@ -32,21 +30,21 @@ TEST(TestImageLayer, TESTBMPImageFileExistence) {
 }
 
 TEST(TestImageLayer, TESTLoadFromImage) {
-    BMPImage img(EPD_WIDTH, EPD_HEIGHT, front, back);
+    unsigned char tmp_buff[EPD_BUFFER_SIZE * 2];
+    BMPImage img(EPD_WIDTH, EPD_HEIGHT, tmp_buff, tmp_buff + EPD_BUFFER_SIZE);
     CHECK_EQUAL(0, img.Load(image_file));
 
-    imageLayer->SetImages(layer_images);
+    imageLayer->SetImages(images);
 
     CHECK_EQUAL(0, imageLayer->LoadFrom(&img));
-    CHECK_EQUAL(layer_front, imageLayer->GetNewImage());
-    CHECK_EQUAL(layer_back, imageLayer->GetOldImage());
+    CHECK_EQUAL(front, imageLayer->GetNewImage());
+    CHECK_EQUAL(back, imageLayer->GetOldImage());
 
-    MEMCMP_EQUAL(layer_front, imageLayer->GetNewImage(), TEST_BUFFER_SIZE);
-    MEMCMP_EQUAL(layer_back, imageLayer->GetOldImage(), TEST_BUFFER_SIZE);
+    MEMCMP_EQUAL(front, imageLayer->GetNewImage(), TEST_BUFFER_SIZE);
+    MEMCMP_EQUAL(back, imageLayer->GetOldImage(), TEST_BUFFER_SIZE);
 }
 
 TEST(TestImageLayer, TESTLoadFromImageDirectly) {
-    imageLayer->SetImages(layer_images);
-
+    imageLayer->SetImages(images);
     CHECK_EQUAL(0, imageLayer->LoadFrom(image_file));
 }

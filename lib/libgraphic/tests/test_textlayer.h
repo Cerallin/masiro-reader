@@ -4,36 +4,40 @@
 #include "textlayer.h"
 
 const char font_file[] = SRC_DIR "/assets/LXGWWenKaiScreen.ttf";
-char testStr[] = "hello world\n";
+char testStr[] = "hello world\n你好，世界。";
 
-extern unsigned char images[];
-extern unsigned char *front, *back;
+extern unsigned char layer_images[];
+extern unsigned char *layer_front, *layer_back;
 
 TextLayer *textLayer;
 
 FontFace *XLWenKai;
 
+FontFamily *fontFamily;
+
 Font *font;
 
-TEST_GROUP(TestTextLayer) {
-    void setup() {
-        XLWenKai = new FontFace();
-        if (XLWenKai->LoadFont(font_file) == -1) {
-            fprintf(stderr, "Font file not found.\n");
-        }
-        font = new Font(XLWenKai);
+TEST_GROUP(TestTextLayer){void setup(){XLWenKai = new FontFace();
+if (XLWenKai->LoadFont(font_file) == -1) {
+    fprintf(stderr, "Font file not found.\n");
+}
 
-        textLayer = new TextLayer(EPD_WIDTH, EPD_HEIGHT, font);
-        textLayer->SetFrontImage(images);
-        textLayer->SetBackImage(images + TEST_BUFFER_SIZE);
-    }
+fontFamily = new FontFamily(XLWenKai);
+font = new Font(fontFamily);
 
-    void teardown() {
-        delete textLayer;
-        delete XLWenKai;
-        delete font;
-    }
-};
+textLayer = new TextLayer(EPD_WIDTH, EPD_HEIGHT, font);
+textLayer->SetFrontImage(layer_front);
+textLayer->SetBackImage(layer_back);
+}
+
+void teardown() {
+    delete textLayer;
+    delete fontFamily;
+    delete XLWenKai;
+    delete font;
+}
+}
+;
 
 TEST(TestTextLayer, TestSetText) {
     char *p = testStr;

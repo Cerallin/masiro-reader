@@ -161,7 +161,8 @@ void TextLayer::calcCodePointSize(const CodePoint *codepoint, int *ix0,
 void TextLayer::calcCodePointTypeSetting(const CodePoint *codepoint,
                                          Graphic::TextTypeSetting *ts, int x,
                                          int y, int iy0) {
-    font->GetCodepointHMetrics(codepoint, &ts->advancedWith, &ts->leftSideBearing);
+    font->GetCodepointHMetrics(codepoint, &ts->advancedWith,
+                               &ts->leftSideBearing);
     font->GetCodepointBitmap(codepoint, &ts->width, &ts->height, 0, 0);
 
     ts->x = x;
@@ -198,7 +199,8 @@ TextLayer &TextLayer::CalcTypeSetting() {
     float x = font->Unscale(cps, textPadding.paddingLeft), left = x;
     int y = textPadding.paddingTop;
     // TODO: customize lineHeight
-    int lineHeight;
+    // FIXME: need a robust method to calculate line height
+    int lineHeight = font->GetLineHeight(cps + 1, 1.0f);
     int maxLineLength = GetRelativeWidth() - textPadding.paddingRight;
     int maxHeight = GetRelativeHeight() - textPadding.paddingBottom;
 
@@ -206,7 +208,6 @@ TextLayer &TextLayer::CalcTypeSetting() {
     for (auto c = cps + 1; c - cps < charNum; c++) {
         auto nextCodePoint = c + 1;
         auto ts = &this->typeSetting[c - cps - 1];
-        lineHeight = font->GetLineHeight(c, 1.2f);
 
         /* Handle LF */
         if (*c < CHAR_SPACE) { // space
@@ -281,12 +282,17 @@ void TextLayer::Render() {
     // TODO: maxLineLength as a property.
     int maxLineLength = GetRelativeWidth() - textPadding.paddingRight;
 
-    Graphic::TextTypeSetting::AdjustAlign(codepoints.get(), typeSetting.get(), charNum, textAlign,
-                                          maxLineLength, font);
+    Graphic::TextTypeSetting::AdjustAlign(codepoints.get(), typeSetting.get(),
+                                          charNum, textAlign, maxLineLength,
+                                          font);
 
     auto ts = typeSetting.get();
     auto cps = codepoints.get();
+    // TODO: 让ts存储codepoint
     for (auto c = cps + 1; c - cps < charNum; c++, ts++) {
+        if (*c < CHAR_SPACE)
+            continue;
+
         int ascent = font->GetScaledAscent(c);
         // FIXME: not sure if this causes mem leak.
         bitmap = font->GetCodepointBitmap(c, 0, 0, 0, 0);
