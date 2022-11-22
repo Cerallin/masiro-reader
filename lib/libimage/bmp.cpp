@@ -194,7 +194,8 @@ int BMPImage::Load(const char *imageFile) {
     return 0;
 }
 
-template <typename TInt> int BMPImage::getColorOf(const uint8_t *image, int byteCount) {
+template <typename TInt>
+int BMPImage::getColorOf(const uint8_t *image, int byteCount) {
     TInt actual = 0;
     for (int i = 0; i < byteCount; i++) {
         actual += image[i] * image[i];
@@ -220,20 +221,24 @@ inline void paint(uint8_t *image, int offset, bool color) {
 
 void BMPImage::extractImage(const uint8_t *image, int32_t len, int byteCount) {
     int offset, wCount;
+    int32_t size = (len / byteCount - 1) / 8;
+
     assert(len % byteCount == 0);
 
     for (int32_t i = 0; i < len; i += byteCount) {
         int color = getColorOf<uint32_t>(image + i, byteCount);
 
         offset = i / byteCount - 1;
-        wCount = offset % width, offset /= 8;
+        wCount = offset % width;
+        offset /= 8;
+
+        if (!isUpsideDown) {
+            offset = size - offset - 1;
+            wCount = width - wCount - 1;
+        }
 
         paint(front + offset, wCount, color & 0x01);
         paint(back + offset, wCount, color & 0x02);
-    }
-
-    if (!isUpsideDown) {
-        // TODO
     }
 }
 
