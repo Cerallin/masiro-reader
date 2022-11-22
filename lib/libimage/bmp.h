@@ -29,6 +29,8 @@ class BMPImage {
     BMPImage(int32_t width, int32_t height, unsigned char *front,
              unsigned char *back);
 
+    void SetPallette(uint8_t grayDegree[4]);
+
     int Save(const char *imageFile);
 
     int Load(const char *imageFile);
@@ -49,6 +51,8 @@ class BMPImage {
 
     void extractImage(const uint8_t *image, int32_t len, int byteCount);
 
+    template <typename TInt> int getColorOf(const uint8_t *image, int byteCount);
+
     int32_t width;
     int32_t height;
 
@@ -56,6 +60,20 @@ class BMPImage {
 
     unsigned char *front;
     unsigned char *back;
+
+    uint8_t grayDegree[4] = {
+        0x00, // White
+        0x3F, // Light gray
+        0x7F, // Dark gray
+        0xFF, // Black
+    };
+
+    uint16_t grayDegreeSquared[4] = {
+        0x0001, // 0x00 ^ 2
+        0x0F81, // 0x3F ^ 2
+        0x3F01, // 0x7F ^ 2
+        0xFE01, // 0xFF ^ 2
+    };
 };
 
 #endif /* IMAGE_BMP_H */
