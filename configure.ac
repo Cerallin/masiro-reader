@@ -64,6 +64,7 @@ AC_CHECK_FUNCS([floor gettimeofday strpbrk memset])
 AC_CONFIG_FILES([Makefile
                  lib/libbtn/Makefile
                  lib/libdom/Makefile
+                 lib/libdisplay/Makefile
                  lib/libepd37/Makefile
                  lib/libfont/Makefile
                  lib/libft6336/Makefile

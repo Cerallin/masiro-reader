@@ -17,11 +17,12 @@
  *
  */
 
+#include "config.h"
+
 #include <stdio.h>
 #include <stdlib.h>
 
 #include "bmp.h"
-#include "config.h"
 #include "frame.h"
 #include "imagelayer.h"
 #include "textlayer.h"

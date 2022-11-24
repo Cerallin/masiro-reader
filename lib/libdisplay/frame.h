@@ -22,6 +22,7 @@
 
 #include "epd2in13b.h"
 #include "layer.h"
+
 #include <stdint.h>
 
 #ifdef __cplusplus
