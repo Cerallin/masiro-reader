@@ -2,7 +2,21 @@
 # Process this file with autoconf to produce a configure script.
 
 AC_PREREQ([2.69])
-AC_INIT([Masiro Reader], [v0.9], [BUG-REPORT-ADDRESS])
+
+m4_define([v_maj], [0])
+m4_define([v_min], [0])
+m4_define([v_mic], [0])
+m4_define([project_version], [v_maj.v_min.v_mic])
+
+m4_define([lt_cur], [m4_eval(v_maj + v_min)])
+m4_define([lt_rev], [v_mic])
+m4_define([lt_age], [v_min])
+
+AC_INIT([Masiro Reader], [project_version], [BUG-REPORT-ADDRESS])
+
+version_info="lt_cur:lt_rev:lt_age"
+AC_SUBST([version_info])
+
 AC_CONFIG_SRCDIR([config.h.in])
 AC_CONFIG_HEADERS([config.h])
 AC_CONFIG_MACRO_DIRS([m4])

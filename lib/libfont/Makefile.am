@@ -6,6 +6,15 @@ libfont_la_SOURCES = font.cpp \
 					 fontfamily.cpp \
 					 codepoint.cpp
 
+libfont_ladir = $(includedir)/masiro
+
+libfont_la_HEADERS = font.h \
+					 fontmetrics.h \
+					 fontface.h \
+					 fontfamily.h \
+					 codepoint.h \
+					 stb_truetype.h
+
 libfont_la_LIBADD = @LDFLAGS@
 
 AM_CPPFLAGS = -I$(top_srcdir)

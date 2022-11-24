@@ -9,6 +9,17 @@ libdom_la_SOURCES = \
                     treenode.cpp \
                     domnode.cpp
 
+libdom_ladir = $(includedir)/masiro
+
+libdom_la_HEADERS = \
+                    style/margin.h \
+                    style/padding.h \
+                    style/position.h \
+                    style/textalign.h \
+                    style/textindent.h \
+                    treenode.h \
+                    domnode.h
+
 libdom_la_LIBADD = @LDFLAGS@
 
 TESTS = test

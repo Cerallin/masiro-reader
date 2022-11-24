@@ -4,6 +4,14 @@ libgraphic_la_SOURCES = layer.cpp \
                         imagelayer.cpp \
                         textlayer.cpp \
                         style/texttypesetting.cpp
+libgraphic_ladir = $(includedir)/masiro
+libgraphic_la_HEADERS = style.h\
+                        layer.h \
+                        imagelayer.h \
+                        textlayer.h
+
+libgraphic_traitsdir = $(includedir)/masiro/traits
+libgraphic_traits_HEADERS = traits/layersetters.h
 
 AM_CPPFLAGS = -I$(top_srcdir) \
               -I$(top_srcdir)/lib/libimage \

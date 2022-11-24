@@ -13,12 +13,19 @@ SUBDIRS = \
 
 lib_LTLIBRARIES = libmasiro.la
 
+libmasiro_ladir = $(includedir)
+
+libmasiro_la_HEADERS = libmasiro/display.h \
+                       libmasiro/graphics.h
+
 libmasiro_la_SOURCES = libmasiro/text.cpp
 
 libmasiro_la_LIBADD = $(top_builddir)/lib/libdisplay/libdisplay.la \
                       $(top_builddir)/lib/libfont/libfont.la \
                       $(top_builddir)/lib/libimage/libimage.la \
                       $(top_builddir)/lib/libgraphic/libgraphic.la
+
+libmasiro_la_LDFLAGS = -version-info @version_info@
 
 ################  BINARIES  ################
 
@@ -31,7 +38,8 @@ masiro_LDADD = $(top_builddir)/libmasiro.la
 AM_CPPFLAGS = -I$(top_srcdir)/lib/libdisplay \
               -I$(top_srcdir)/lib/libfont \
               -I$(top_srcdir)/lib/libimage \
-              -I$(top_srcdir)/lib/libgraphic
+              -I$(top_srcdir)/lib/libgraphic \
+              -I$(top_srcdir)/libmasiro
 
 if FAKE_EPD
     # TODO fake epd
