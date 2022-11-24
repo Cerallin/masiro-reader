@@ -16,9 +16,10 @@ lib_LTLIBRARIES = libmasiro.la
 libmasiro_ladir = $(includedir)
 
 libmasiro_la_HEADERS = libmasiro/display.h \
-                       libmasiro/graphics.h
+                       libmasiro/graphics.h \
+                       libmasiro/text.h
 
-libmasiro_la_SOURCES = libmasiro/text.cpp
+libmasiro_la_SOURCES = libmasiro/text.c
 
 libmasiro_la_LIBADD = $(top_builddir)/lib/libdisplay/libdisplay.la \
                       $(top_builddir)/lib/libfont/libfont.la \

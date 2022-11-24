@@ -31,11 +31,14 @@ jobs:
           LDFLAGS="-L$(pwd)/build/libbcm2835/lib -L$(pwd)/build/libcpputest/lib" \
           ./configure
 
-      - name: Run make
-        run: make
+      - name: Make and install
+        run: make && make install
+
+      - name: Test library installation
+        run: ./scripts/test-install.sh
 
       - name: Run make check
         if: always()
         run: |
           make check
-          cat lib/*/test-suite.log
+          cat lib/*/test-suite.
