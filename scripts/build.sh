@@ -10,7 +10,7 @@ cd build
 
 INSTALL_DIR=$(pwd)/.libmasiro
 
-CXXFLAGS="  -g -O2 -Wall -Wno-unused-function"
+CXXFLAGS="  -g -flto -O2 -Wall -Wno-unused-function"
 CXXFLAGS+=" -I$(pwd)/libbcm2835/include"
 CXXFLAGS+=" -I$(pwd)/libcpputest/include"
 
