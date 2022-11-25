@@ -1,0 +1,44 @@
+name: C/C++ CI
+
+on:
+  push:
+      branches: [ master ]
+  pull_request:
+      branches: [ master ]
+
+jobs:
+  build-and-test:
+      runs-on: ubuntu-latest
+
+      steps:
+      - name: Checkout
+        uses: actions/checkout@v2
+        with:
+          ref: master
+
+      - name: install libcap
+        run: sudo apt install -y libcap2 libcap-dev
+
+      - name: build and install dependencies
+        run: ./scripts/build-dependencies.sh
+
+      - name: Run autoreconf
+        run: autoreconf -i
+
+      - name: Run configure
+        run: |
+          CXXFLAGS="-I$(pwd)/build/libbcm2835/include -I$(pwd)/build/libcpputest/include" \
+          LDFLAGS="-L$(pwd)/build/libbcm2835/lib -L$(pwd)/build/libcpputest/lib" \
+          ./configure
+
+      - name: Make and install
+        run: make -j16 && make install
+
+      - name: Test library installation
+        run: ./scripts/test-install.sh
+
+      - name: Run make check
+        if: always()
+        run: |
+          make check
+          cat lib/*/test-suite.
