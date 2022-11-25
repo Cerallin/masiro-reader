@@ -19,7 +19,7 @@
 #ifndef IMAGE_BMP_H
 #define IMAGE_BMP_H
 
-#include <stdint.h>
+#include <cstdint>
 
 constexpr int16_t BMP_FILE_HEADER = 0x4D42;
 constexpr int32_t BMP_FILE_INFO_SIZE = 40;
@@ -51,7 +51,8 @@ class BMPImage {
 
     void extractImage(const uint8_t *image, int32_t len, int byteCount);
 
-    template <typename TInt> int getColorOf(const uint8_t *image, int byteCount);
+    template <typename TInt>
+    int getColorOf(const uint8_t *image, int byteCount);
 
     int32_t width;
     int32_t height;

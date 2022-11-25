@@ -20,11 +20,9 @@
 #define STB_TRUETYPE_IMPLEMENTATION
 #include "font.h"
 
-#include <math.h>
-#include <stdio.h>
-#include <string.h>
-
-#include "fontface.h"
+#include <cmath>
+#include <cstdio>
+#include <cstring>
 
 Font::Font(FontFamily *fontFamily, float fontSize)
     : fontFamily(fontFamily), fontSize(fontSize) {

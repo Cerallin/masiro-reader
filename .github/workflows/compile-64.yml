@@ -41,4 +41,4 @@ jobs:
         if: always()
         run: |
           make check
-          cat lib/*/test-suite.
+          cat lib/*/test-suite.log

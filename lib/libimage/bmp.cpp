@@ -21,9 +21,9 @@
 
 #include <assert.h>
 #include <cmath>
+#include <cstdio>
 #include <cstring>
 #include <new>
-#include <stdio.h>
 
 template <typename T> size_t fread__(T *num, FILE *fd) {
     return fread(num, sizeof(T), 1, fd);

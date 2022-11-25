@@ -20,8 +20,8 @@
 #ifndef CODEPOINT_H
 #define CODEPOINT_H
 
-#include <stdint.h>
-#include <stdio.h>
+#include <cstdint>
+#include <cstdio>
 
 class CodePoint {
   public:

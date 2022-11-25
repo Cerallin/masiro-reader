@@ -23,8 +23,8 @@
 #define STBTT_STATIC // make stb private
 #include "fontface.h"
 
+#include <cstdio>
 #include <new>
-#include <stdio.h>
 
 int FontFace::LoadFont(const char *fontFilePath) {
     FILE *fontFile = fopen(fontFilePath, "rb");

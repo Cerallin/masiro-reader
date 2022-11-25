@@ -19,10 +19,11 @@
 
 #include "codepoint.h"
 
-#include <assert.h>
+#include <cassert>
+#include <cstddef>
+#include <cstring>
 #include <iconv.h>
 #include <new>
-#include <string.h>
 
 CodePoint::CodePoint() { this->value = 0; }
 

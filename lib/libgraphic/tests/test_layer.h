@@ -4,8 +4,8 @@
 
 #include "layer.h"
 
+#include <cstring>
 #include <new>
-#include <string.h>
 #include <unistd.h>
 
 constexpr size_t TEST_WIDTH = 16;

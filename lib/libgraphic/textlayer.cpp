@@ -21,9 +21,9 @@
 
 #include "textlayer.h"
 
+#include <cstdio>
+#include <cstring>
 #include <new>
-#include <stdio.h>
-#include <string.h>
 
 #include "traits/layersetters.cpp"
 

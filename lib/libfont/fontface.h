@@ -21,6 +21,7 @@
 #define FONT_FONT_FACE_H
 
 #include "codepoint.h"
+
 #include "stb_truetype.h"
 
 #include <memory>

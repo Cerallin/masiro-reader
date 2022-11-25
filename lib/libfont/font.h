@@ -24,7 +24,7 @@
 #include "fontfamily.h"
 #include "fontmetrics.h"
 
-#include <stdint.h>
+#include <cstdint>
 
 class Font {
   public:

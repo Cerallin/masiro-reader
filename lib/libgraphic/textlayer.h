@@ -24,8 +24,6 @@
 #include "layer.h"
 #include "style.h"
 
-#include <memory>
-
 #ifdef __cplusplus
 extern "C" {
 #endif
