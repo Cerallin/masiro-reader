@@ -29,7 +29,7 @@ jobs:
         run: |
           CXXFLAGS="-I$(pwd)/build/libbcm2835/include -I$(pwd)/build/libcpputest/include" \
           LDFLAGS="-L$(pwd)/build/libbcm2835/lib -L$(pwd)/build/libcpputest/lib" \
-          ./configure
+          ./configure --prefix=$(pwd)/.libmasiro
 
       - name: Make and install
         run: make -j16 && make install
