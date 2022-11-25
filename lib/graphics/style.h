@@ -20,7 +20,7 @@
 #ifndef GRAPHIC_STYLE_H
 #define GRAPHIC_STYLE_H
 
-#include "font.h"
+#include "fonts/font.h"
 #include <cstddef>
 
 namespace Graphic {

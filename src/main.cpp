@@ -19,29 +19,17 @@
 
 #include "config.h"
 
-#include "bmp.h"
-#include "frame.h"
-#include "imagelayer.h"
-#include "textlayer.h"
-
-constexpr size_t BUFFER_SIZE = (EPD_WIDTH * EPD_HEIGHT / 8);
-
-unsigned char layer_buffer[BUFFER_SIZE * 2];
-
-constexpr auto front_buff = layer_buffer,
-               back_buff = layer_buffer + BUFFER_SIZE;
+#include "libmasiro/display.h"
+#include "libmasiro/graphics.h"
 
 int main(void) {
+    BufferPool::Init();
+
     Layer layer(EPD_WIDTH, EPD_HEIGHT);
-    layer.SetFrontImage(front_buff).SetBackImage(back_buff);
+    BufferPool::AssignBuffer(layer);
 
     ImageLayer imageLayer = layer;
-    imageLayer.Init();
-    if (imageLayer.LoadFrom(SRC_DIR "/assets/lain.bmp")) {
-        fprintf(stderr, "Cannot load image file %s\n",
-                SRC_DIR "/assets/lain.bmp");
-        return 1;
-    }
+    imageLayer.Init().LoadFrom(SRC_DIR "/assets/lain.bmp");
 
     TextLayer textLayer(layer, Graphic::AlignCenter);
 
@@ -65,16 +53,13 @@ int main(void) {
         .CalcTypeSetting()
         .Render();
 
-    Epd &epd = Epd::GetInstance();
+    Display display;
+    display.Init();
 
-    if (epd.Init() != 0) {
-        printf("e-Paper init failed\n");
-        return -1;
-    }
+    Frame frame(layer);
+    display.Forward(frame);
 
-    Frame(&layer).Display(&epd);
-
-    epd.PowerOff();
+    BufferPool::ReleaseLayer(layer);
 
     return 0;
 }

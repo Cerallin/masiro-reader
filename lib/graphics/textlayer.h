@@ -20,7 +20,7 @@
 #ifndef GRAPHIC_TEXT_LAYER_H
 #define GRAPHIC_TEXT_LAYER_H
 
-#include "codepoint.h"
+#include "fonts/codepoint.h"
 #include "layer.h"
 #include "style.h"
 

@@ -38,7 +38,7 @@ TEST(TestImageLayer, TESTLoadFromImage) {
 
     imageLayer->SetImages(images);
 
-    CHECK_EQUAL(0, imageLayer->LoadFrom(&img));
+    imageLayer->LoadFrom(&img);
     CHECK_EQUAL(front, imageLayer->GetNewImage());
     CHECK_EQUAL(back, imageLayer->GetOldImage());
 
@@ -48,5 +48,5 @@ TEST(TestImageLayer, TESTLoadFromImage) {
 
 TEST(TestImageLayer, TESTLoadFromImageDirectly) {
     imageLayer->SetImages(images);
-    CHECK_EQUAL(0, imageLayer->LoadFrom(image_file));
+    imageLayer->LoadFrom(image_file);
 }

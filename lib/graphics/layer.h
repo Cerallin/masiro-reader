@@ -24,8 +24,8 @@
 /***        include files                                                   ***/
 /******************************************************************************/
 
-#include "epd2in13b.h"
-#include "font.h"
+#include "epd37/epd2in13b.h"
+#include "fonts/font.h"
 #include "style.h"
 
 #ifdef __cplusplus

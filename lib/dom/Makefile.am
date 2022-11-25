@@ -1,5 +1,7 @@
 noinst_LTLIBRARIES = libdom.la
 
+AM_CPPFLAGS = -I$(top_srcdir)/lib
+
 libdom_la_SOURCES = \
                     style/margin.cpp \
                     style/padding.cpp \
@@ -9,7 +11,7 @@ libdom_la_SOURCES = \
                     treenode.cpp \
                     domnode.cpp
 
-libdom_ladir = $(includedir)/masiro
+libdom_ladir = $(includedir)/dom
 
 libdom_la_HEADERS = \
                     style/margin.h \

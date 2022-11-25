@@ -17,33 +17,17 @@
  *
  */
 
-#ifndef GRAPHIC_IMAGE_LAYER_H
-#define GRAPHIC_IMAGE_LAYER_H
+#include "display/frame.h"
 
-#include "bmp.h"
-#include "layer.h"
+Frame::Frame(const uint8_t *old_image, const uint8_t *new_image)
+    : old_image(old_image), new_image(new_image) {}
 
-#ifdef __cplusplus
-extern "C" {
-#endif
+Frame::Frame(const Layer &layer)
+    : old_image(layer.GetOldImage()), new_image(layer.GetNewImage()) {}
 
-class ImageLayer : public Layer  {
-  public:
-    ImageLayer(const Layer &layer);
-    ImageLayer(uint32_t width, uint32_t height,
-               int32_t rotate = ROTATE_DEFAULT);
-    ~ImageLayer() = default;
+void Frame::Display(const Epd &epd) {
+    epd.DisplayFrame(old_image, new_image);
+    this->displayed = true;
+}
 
-    #undef _Class
-    #define _Class ImageLayer
-    #include "traits/layersetters.h"
-
-    int LoadFrom(BMPImage *image);
-    int LoadFrom(const char *imageFile);
-};
-
-#ifdef __cplusplus
-} /* extern "C" */
-#endif
-
-#endif /* GRAPHIC_IMAGE_LAYER_H */
+bool Frame::isDisplayed() const { return this->displayed; }

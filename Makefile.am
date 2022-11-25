@@ -2,12 +2,16 @@ AUTOMAKE_OPTIONS = foreign
 
 ACLOCAL_AMFLAGS = -I m4
 
+AM_CPPFLAGS = \
+              -I$(top_srcdir)/lib \
+              -I$(top_srcdir)/libmasiro
+
 SUBDIRS = \
-          lib/libdom \
-          lib/libdisplay \
-          lib/libfont \
-          lib/libgraphic \
-          lib/libimage
+          lib/dom \
+          lib/display \
+          lib/fonts \
+          lib/graphics \
+          lib/images
 
 ################ LIBRARIES #################
 
@@ -21,10 +25,10 @@ libmasiro_la_HEADERS = libmasiro/display.h \
 
 libmasiro_la_SOURCES = libmasiro/text.c
 
-libmasiro_la_LIBADD = $(top_builddir)/lib/libdisplay/libdisplay.la \
-                      $(top_builddir)/lib/libfont/libfont.la \
-                      $(top_builddir)/lib/libimage/libimage.la \
-                      $(top_builddir)/lib/libgraphic/libgraphic.la
+libmasiro_la_LIBADD = $(top_builddir)/lib/display/libdisplay.la \
+                      $(top_builddir)/lib/fonts/libfont.la \
+                      $(top_builddir)/lib/images/libimage.la \
+                      $(top_builddir)/lib/graphics/libgraphic.la
 
 libmasiro_la_LDFLAGS = -version-info @version_info@
 
@@ -36,16 +40,10 @@ masiro_SOURCES = src/main.cpp
 
 masiro_LDADD = $(top_builddir)/libmasiro.la
 
-AM_CPPFLAGS = -I$(top_srcdir)/lib/libdisplay \
-              -I$(top_srcdir)/lib/libfont \
-              -I$(top_srcdir)/lib/libimage \
-              -I$(top_srcdir)/lib/libgraphic \
-              -I$(top_srcdir)/libmasiro
-
 if FAKE_EPD
     # TODO fake epd
 else
-    SUBDIRS += lib/libepd37
-    AM_CPPFLAGS += -I$(top_srcdir)/lib/libepd37
-    libmasiro_la_LIBADD += $(top_builddir)/lib/libepd37/libepd37.la
+    SUBDIRS += lib/epd37
+    AM_CPPFLAGS += -I$(top_srcdir)/lib/epd37
+    libmasiro_la_LIBADD += $(top_builddir)/lib/epd37/libepd37.la
 endif #FAKE_EPD

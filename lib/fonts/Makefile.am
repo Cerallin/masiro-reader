@@ -1,12 +1,15 @@
 noinst_LTLIBRARIES = libfont.la
 
+AM_CPPFLAGS = -I$(top_srcdir)/lib \
+			  -I$(top_srcdir)
+
 libfont_la_SOURCES = font.cpp \
 					 fontmetrics.cpp \
 					 fontface.cpp \
 					 fontfamily.cpp \
 					 codepoint.cpp
 
-libfont_ladir = $(includedir)/masiro
+libfont_ladir = $(includedir)/fonts
 
 libfont_la_HEADERS = font.h \
 					 fontmetrics.h \
@@ -16,8 +19,6 @@ libfont_la_HEADERS = font.h \
 					 stb_truetype.h
 
 libfont_la_LIBADD = @LDFLAGS@
-
-AM_CPPFLAGS = -I$(top_srcdir)
 
 TESTS = test
 

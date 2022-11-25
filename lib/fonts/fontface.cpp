@@ -29,6 +29,7 @@
 int FontFace::LoadFont(const char *fontFilePath) {
     FILE *fontFile = fopen(fontFilePath, "rb");
     if (!fontFile) {
+        // TODO throw instead of perror
         perror("LoadFont");
         setState(ERROR);
         return -1;

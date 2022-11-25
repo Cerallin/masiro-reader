@@ -20,8 +20,8 @@
 #ifndef MASIRO_GRAPHICS_H
 #define MASIRO_GRAPHICS_H
 
-#include "masiro/layer.h"
-#include "masiro/textlayer.h"
-#include "masiro/imagelayer.h"
+#include "graphics/layer.h"
+#include "graphics/textlayer.h"
+#include "graphics/imagelayer.h"
 
 #endif /* MASIRO_GRAPHICS_H */

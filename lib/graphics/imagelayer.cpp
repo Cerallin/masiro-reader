@@ -29,12 +29,12 @@ ImageLayer::ImageLayer(uint32_t width, uint32_t height, int32_t rotate)
 
 ImageLayer::ImageLayer(const Layer &layer) : Layer(layer) {}
 
-int ImageLayer::LoadFrom(BMPImage *image) {
+void ImageLayer::LoadFrom(BMPImage *image) {
     auto memSize = GetMemSize();
 
     if (this->width != image->GetWidth() ||
         this->height != image->GetHeight()) {
-        return -1;
+        throw std::runtime_error("Image size incompatible");
     }
 
     // Debug block
@@ -48,14 +48,17 @@ int ImageLayer::LoadFrom(BMPImage *image) {
 
     std::memcpy(new_image, image->GetFrontImage(), memSize);
     std::memcpy(old_image, image->GetBackImage(), memSize);
-
-    return 0;
 }
 
-int ImageLayer::LoadFrom(const char *imageFile) {
+void ImageLayer::LoadFrom(const char *imageFile) {
     assert_is_initialized(new_image);
     assert_is_initialized(old_image);
 
     BMPImage image(GetWidth(), GetHeight(), GetNewImage(), GetOldImage());
-    return image.Load(imageFile);
+    if (image.Load(imageFile)) {
+        char error_msg[256];
+        snprintf(error_msg, 256, "Cannot load image file %s\n",
+                 SRC_DIR "/assets/lain.bmp");
+        throw std::runtime_error(error_msg);
+    }
 }

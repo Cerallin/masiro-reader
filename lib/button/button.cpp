@@ -30,7 +30,7 @@
 /***        include files                                                   ***/
 /******************************************************************************/
 
-#include "button.h"
+#include "button/button.h"
 #include <unistd.h>
 #include <sys/time.h>
 

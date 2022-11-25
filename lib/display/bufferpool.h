@@ -17,37 +17,25 @@
  *
  */
 
-#ifndef GRAPHIC_FRAME_H
-#define GRAPHIC_FRAME_H
+#ifndef DISPLAY_BUFFER_POOL_H
+#define DISPLAY_BUFFER_POOL_H
 
-#include "epd2in13b.h"
-#include "layer.h"
+#include "graphics/layer.h"
 
-#include <stdint.h>
+#include <queue>
 
-#ifdef __cplusplus
-extern "C" {
-#endif
+constexpr size_t EPD_BUFFER_SIZE = EPD_WIDTH * EPD_HEIGHT / 8;
+constexpr size_t LAYER_BUFFER_POOL_SIZE = 8;
 
-class Frame {
+class BufferPool {
   public:
-    Frame(const uint8_t *old_image, const uint8_t *new_image);
-    Frame(const Layer *layer);
-    ~Frame() = default;
-
-    void Display(const Epd *epd);
-
-    bool isDisplayed() const;
+    static void Init();
+    static void AssignBuffer(Layer &layer);
+    static void ReleaseLayer(Layer &layer);
 
   private:
-    const uint8_t *old_image = nullptr;
-    const uint8_t *new_image = nullptr;
-
-    bool displayed = false;
+    static uint8_t bufferPool[EPD_BUFFER_SIZE * LAYER_BUFFER_POOL_SIZE];
+    static std::queue<uint8_t *> bufferQueue;
 };
 
-#ifdef __cplusplus
-} /* extern "C" */
-#endif
-
-#endif
+#endif /* DISPLAY_BUFFER_POOL_H */

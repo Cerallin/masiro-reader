@@ -16,6 +16,8 @@ fi
 
 cat <<EOF >build/test.cpp
 #include "text.h"
+#include "display.h"
+#include "graphics.h"
 
 int main() {
     print_version();

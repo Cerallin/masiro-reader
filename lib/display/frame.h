@@ -17,11 +17,37 @@
  *
  */
 
-#ifndef MASIRO_DISPLAY_H
-#define MASIRO_DISPLAY_H
+#ifndef DISPLAY_FRAME_H
+#define DISPLAY_FRAME_H
 
-#include "display/bufferpool.h"
-#include "display/display.h"
-#include "display/frame.h"
+#include "epd37/epd2in13b.h"
+#include "graphics/layer.h"
 
-#endif /* MASIRO_DISPLAY_H */
+#include <stdint.h>
+
+#ifdef __cplusplus
+extern "C" {
+#endif
+
+class Frame {
+  public:
+    Frame(const uint8_t *old_image, const uint8_t *new_image);
+    Frame(const Layer &layer);
+    ~Frame() = default;
+
+    void Display(const Epd &epd);
+
+    bool isDisplayed() const;
+
+  private:
+    const uint8_t *old_image = nullptr;
+    const uint8_t *new_image = nullptr;
+
+    bool displayed = false;
+};
+
+#ifdef __cplusplus
+} /* extern "C" */
+#endif
+
+#endif
