@@ -58,7 +58,7 @@ class TextLayer : public Layer {
     TextLayer &SetTextPadding(int paddingLeft, int paddingTop, int paddingRight,
                               int paddingBottom);
 
-    TextLayer &CalcTypeSetting();
+    TextLayer &TypeSetting();
 
     /**
      * @brief Render the characters
@@ -67,8 +67,7 @@ class TextLayer : public Layer {
     void Render();
 
   private:
-    void drawGlyph(const CodePoint *cp,
-                   const Graphic::TextTypeSetting *typeSetting, Font *font,
+    void drawGlyph(const Graphic::GlyphInfo *glyphInfo, Font *font,
                    const unsigned char *bitmap);
 
     void calcCodePointSize(const CodePoint *codepoint, int *ix0, int *iy0,
@@ -76,14 +75,13 @@ class TextLayer : public Layer {
 
     int calcLineWidth(const CodePoint *start, const CodePoint *nextBreak);
 
-    void calcCodePointTypeSetting(const CodePoint *c,
-                                  Graphic::TextTypeSetting *ts, int x, int y,
-                                  int iy0);
+    void calcCodePointTypeSetting(const CodePoint *c, Graphic::GlyphInfo *ts,
+                                  int x, int y, int iy0);
 
     std::unique_ptr<CodePoint[]> codepoints = nullptr;
     Font *font = nullptr;
 
-    std::unique_ptr<Graphic::TextTypeSetting[]> typeSetting = nullptr;
+    std::unique_ptr<Graphic::GlyphInfo[]> glyphInfo = nullptr;
     Graphic::TextAlign textAlign = Graphic::AlignLeft;
     Graphic::TextPadding textPadding = {0, 0, 0, 0};
 

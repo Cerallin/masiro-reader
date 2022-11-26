@@ -44,7 +44,7 @@ int main(void) {
             .SetText(str)
             .SetInvertColor(true)
             .SetTextPadding(0, 195, 0, 0)
-            .CalcTypeSetting()
+            .TypeSetting()
             .Render();
 
         auto display = new Display();

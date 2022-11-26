@@ -30,13 +30,13 @@ namespace Graphic {
         cp--;                                                                  \
     }
 
-void TextTypeSetting::AdjustAlign(const CodePoint *codepoints,
-                                  TextTypeSetting *typeSettings, ssize_t len,
+void GlyphInfo::AdjustAlign(const CodePoint *codepoints,
+                                  GlyphInfo *glyphInfos, ssize_t len,
                                   TextAlign align, int lineWidth, Font *font) {
     int stringWidth;
     float offset;
     const CodePoint *cp = codepoints;
-    TextTypeSetting *needle = typeSettings, *lineStart = typeSettings;
+    GlyphInfo *needle = glyphInfos, *lineStart = glyphInfos;
 
     if (align == AlignLeft) // default
         return;
@@ -54,7 +54,7 @@ void TextTypeSetting::AdjustAlign(const CodePoint *codepoints,
             ScanLine(needle, lineStart) { needle->x += offset; }
         }
         lineStart = needle;
-    } while (needle - typeSettings < len);
+    } while (needle - glyphInfos < len);
 }
 
 } // namespace Graphic

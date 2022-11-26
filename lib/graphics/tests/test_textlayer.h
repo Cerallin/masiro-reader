@@ -44,7 +44,7 @@ TEST(TestTextLayer, TestSetText) {
 TEST(TestTextLayer, TestRender) {
     char *p = testStr;
     textLayer->SetText(p);
-    textLayer->CalcTypeSetting();
+    textLayer->TypeSetting();
     textLayer->Render();
     // Nothing but checks mem leak
 }

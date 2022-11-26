@@ -40,7 +40,7 @@ class Font {
                                       int *height, int *xoff, int *yoff);
     int GetCodepointKernAdvance(const CodePoint *cp1, const CodePoint *cp2);
 
-    void FreeBitmap(unsigned char *bitmap);
+    void FreeBitmap(const CodePoint *codepoint, unsigned char *bitmap);
 
     FontFamily *GetFontFamily();
 

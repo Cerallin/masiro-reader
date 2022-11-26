@@ -40,10 +40,10 @@ class TextPadding {
     int paddingBottom;
 };
 
-class TextTypeSetting {
+class GlyphInfo {
   public:
     static void AdjustAlign(const CodePoint *codepoints,
-                            TextTypeSetting *typeSettings, ssize_t len,
+                            GlyphInfo *glyphInfos, ssize_t len,
                             TextAlign align, int lineWidth, Font *font);
 
     float x;             // unscaled absolute x, to be justified
@@ -55,6 +55,8 @@ class TextTypeSetting {
     int leftSideBearing; // unscaled left side bearing
     int kern;            // scaled kerning
     int ascent;          // ascent
+
+    const CodePoint *cp = nullptr;
 };
 
 } // namespace Graphic

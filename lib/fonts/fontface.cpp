@@ -20,7 +20,8 @@
 #include "debug.h"
 
 #define STB_TRUETYPE_IMPLEMENTATION
-#define STBTT_STATIC // make stb private
+#define STBTT_STATIC // make stb local
+
 #include "fontface.h"
 
 #include <cstdio>

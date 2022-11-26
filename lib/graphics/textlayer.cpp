@@ -67,22 +67,21 @@ TextLayer::TextLayer(const TextLayer &layer) : Layer(layer) {}
 TextLayer::TextLayer(uint32_t width, uint32_t height, int32_t rotate)
     : Layer(width, height, rotate) {}
 
-void TextLayer::drawGlyph(const CodePoint *cp,
-                          const Graphic::TextTypeSetting *ts, Font *font,
+void TextLayer::drawGlyph(const Graphic::GlyphInfo *glyph, Font *font,
                           const unsigned char *bitmap) {
     int32_t x, y;
 
-    x = font->Scale(cp, ts->x + ts->leftSideBearing);
-    y = ts->y + ts->iy0 + ts->ascent;
+    x = font->Scale(glyph->cp, glyph->x + glyph->leftSideBearing);
+    y = glyph->y + glyph->iy0 + glyph->ascent;
 
 #ifndef NDEBUG
-    debug("%d %d %d %d\n", x, y, x + ts->width, y + ts->height);
-    this->DrawRectangle(x, y, x + ts->width, y + ts->height,
+    debug("%d %d %d %d\n", x, y, x + glyph->width, y + glyph->height);
+    this->DrawRectangle(x, y, x + glyph->width, y + glyph->height,
                         invertColor ? Graphic::Color::WB : Graphic::Color::BW);
 #endif
 
-    LoopMatrix(ts->width, ts->height, x, y) {
-        int color = GetMatrix(bitmap, ts->width, i - x, j - y) >> 6;
+    LoopMatrix(glyph->width, glyph->height, x, y) {
+        int color = GetMatrix(bitmap, glyph->width, i - x, j - y) >> 6;
         // FIXME This is some kind of "alpha" tunnel
         if (this->invertColor) {
             if (color != Graphic::Color::WW)
@@ -105,7 +104,6 @@ TextLayer &TextLayer::SetText(char *str) {
         codepoints.release();
         throw;
     }
-    typeSetting.reset(new Graphic::TextTypeSetting[charNum]);
 
     return *this;
 }
@@ -153,15 +151,16 @@ void TextLayer::calcCodePointSize(const CodePoint *codepoint, int *ix0,
 }
 
 void TextLayer::calcCodePointTypeSetting(const CodePoint *codepoint,
-                                         Graphic::TextTypeSetting *ts, int x,
+                                         Graphic::GlyphInfo *glyph, int x,
                                          int y, int iy0) {
-    font->GetCodepointHMetrics(codepoint, &ts->advancedWith,
-                               &ts->leftSideBearing);
-    font->GetCodepointBitmap(codepoint, &ts->width, &ts->height, 0, 0);
+    font->GetCodepointHMetrics(codepoint, &glyph->advancedWith,
+                               &glyph->leftSideBearing);
+    font->GetCodepointBitmap(codepoint, &glyph->width, &glyph->height, 0, 0);
 
-    ts->x = x;
-    ts->y = y;
-    ts->iy0 = iy0;
+    glyph->x = x;
+    glyph->y = y;
+    glyph->iy0 = iy0;
+    glyph->cp = codepoint;
 }
 
 int TextLayer::calcLineWidth(const CodePoint *start,
@@ -178,16 +177,18 @@ int TextLayer::calcLineWidth(const CodePoint *start,
     return sum;
 }
 
-TextLayer &TextLayer::CalcTypeSetting() {
+TextLayer &TextLayer::TypeSetting() {
     // Debug checks
     assert_is_initialized(font);
     assert_is_initialized(codepoints);
-    assert_is_initialized(typeSetting);
+
+    glyphInfo.reset(new Graphic::GlyphInfo[charNum]);
 
     // Next line flag
     int flagNextLine = 0;
 
     auto cps = codepoints.get();
+    auto glyph = glyphInfo.get();
 
     /* Smoother unscaled x */
     float x = font->Unscale(cps, textPadding.paddingLeft), left = x;
@@ -199,9 +200,8 @@ TextLayer &TextLayer::CalcTypeSetting() {
     int maxHeight = GetRelativeHeight() - textPadding.paddingBottom;
 
     /* Codepoints always starts with 0xFEFF */
-    for (auto c = cps + 1; c - cps < charNum; c++) {
+    for (auto c = cps + 1; c - cps < charNum; c++, glyph++) {
         auto nextCodePoint = c + 1;
-        auto ts = &this->typeSetting[c - cps - 1];
 
         /* Handle LF */
         if (*c < CHAR_SPACE) { // space
@@ -237,20 +237,21 @@ TextLayer &TextLayer::CalcTypeSetting() {
         int ix0, iy0;
         font->GetCodepointBitmapBox(c, &ix0, &iy0, 0, 0);
         x += font->Unscale(c, ix0);
-        calcCodePointTypeSetting(c, ts, x, y, iy0);
+        calcCodePointTypeSetting(c, glyph, x, y, iy0);
 
-        if (font->Scale(c, x + ts->leftSideBearing +
-                               font->Unscale(c, ts->width)) >= maxLineLength) {
-            NextLine(x, y, left - ts->leftSideBearing, lineHeight);
+        if (font->Scale(c, x + glyph->leftSideBearing +
+                               font->Unscale(c, glyph->width)) >=
+            maxLineLength) {
+            NextLine(x, y, left - glyph->leftSideBearing, lineHeight);
         }
 
         /* 调整x */
-        x += ts->advancedWith;
+        x += glyph->advancedWith;
 
         if (!nextCodePoint->IsEmpty()) {
             /* 调整字距 */
-            ts->kern = font->GetCodepointKernAdvance(c, nextCodePoint);
-            x += ts->kern;
+            glyph->kern = font->GetCodepointKernAdvance(c, nextCodePoint);
+            x += glyph->kern;
         }
 
         if (flagNextLine) {
@@ -268,33 +269,24 @@ TextLayer &TextLayer::CalcTypeSetting() {
 void TextLayer::Render() {
     // Debug checks
     assert_is_initialized(font);
-    assert_is_initialized(codepoints);
-    assert_is_initialized(typeSetting);
+    assert_is_initialized(glyphInfo);
 
     unsigned char *bitmap;
 
     // TODO: maxLineLength as a property.
     int maxLineLength = GetRelativeWidth() - textPadding.paddingRight;
 
-    Graphic::TextTypeSetting::AdjustAlign(codepoints.get(), typeSetting.get(),
-                                          charNum, textAlign, maxLineLength,
-                                          font);
+    Graphic::GlyphInfo::AdjustAlign(codepoints.get(), glyphInfo.get(), charNum,
+                                    textAlign, maxLineLength, font);
 
-    auto ts = typeSetting.get();
-    auto cps = codepoints.get();
-    // TODO: 让ts存储codepoint
-    for (auto c = cps + 1; c - cps < charNum; c++, ts++) {
-        if (*c < CHAR_SPACE)
-            continue;
-
-        int ascent = font->GetScaledAscent(c);
-        // FIXME: not sure if this causes mem leak.
-        bitmap = font->GetCodepointBitmap(c, 0, 0, 0, 0);
-        ts->ascent = ascent;
-        drawGlyph(c, ts, font, bitmap);
+    for (auto glyph = glyphInfo.get(); glyph->cp != nullptr; glyph++) {
+        auto cp = glyph->cp;
+        glyph->ascent = font->GetScaledAscent(cp);
+        bitmap = font->GetCodepointBitmap(cp, 0, 0, 0, 0);
+        drawGlyph(glyph, font, bitmap);
+        // TODO: prealloc to optimize
+        font->FreeBitmap(cp, bitmap);
     }
-
-    // font->FreeBitmap(bitmap);
 }
 
 TextLayer &TextLayer::SetFont(Font *font) {

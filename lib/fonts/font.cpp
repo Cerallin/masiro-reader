@@ -72,9 +72,9 @@ int Font::GetCodepointKernAdvance(const CodePoint *cp1, const CodePoint *cp2) {
                                          cp2->GetValue());
 }
 
-// void Font::FreeBitmap(unsigned char *bitmap) {
-//     stbtt_FreeBitmap(bitmap, fontFace->GetFontInfo()->userdata);
-// }
+void Font::FreeBitmap(const CodePoint *codepoint, unsigned char *bitmap) {
+    stbtt_FreeBitmap(bitmap, getFontFace(codepoint)->GetFontInfo()->userdata);
+}
 
 int Font::GetScaledAscent(const CodePoint *codepoint) {
     auto metrics = getMetrics(codepoint);
