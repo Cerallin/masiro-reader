@@ -14,28 +14,23 @@ TextLayer *textLayer;
 
 FontFace *XLWenKai;
 
-FontFamily *fontFamily;
-
 Font *font;
 
 TEST_GROUP(TestTextLayer){
     void setup() {
         XLWenKai = new FontFace();
-        if (XLWenKai->LoadFont(font_file) == -1) {
-            fprintf(stderr, "Font file not found.\n");
-        }
+        XLWenKai->LoadFont(font_file);
 
-        fontFamily = new FontFamily(XLWenKai);
-        font = new Font(fontFamily);
+        font = new Font(XLWenKai);
 
-        textLayer = new TextLayer(EPD_WIDTH, EPD_HEIGHT, font);
+        textLayer = new TextLayer(EPD_WIDTH, EPD_HEIGHT);
+        textLayer->SetFont(font);
         textLayer->SetFrontImage(layer_front);
         textLayer->SetBackImage(layer_back);
     }
 
     void teardown() {
         delete textLayer;
-        delete fontFamily;
         delete XLWenKai;
         delete font;
     }
@@ -43,12 +38,13 @@ TEST_GROUP(TestTextLayer){
 
 TEST(TestTextLayer, TestSetText) {
     char *p = testStr;
-    CHECK_EQUAL(0, textLayer->SetText(p));
+    textLayer->SetText(p);
 }
 
 TEST(TestTextLayer, TestRender) {
     char *p = testStr;
     textLayer->SetText(p);
+    textLayer->CalcTypeSetting();
     textLayer->Render();
     // Nothing but checks mem leak
 }

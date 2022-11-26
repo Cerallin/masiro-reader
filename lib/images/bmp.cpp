@@ -23,7 +23,10 @@
 #include <cmath>
 #include <cstdio>
 #include <cstring>
-#include <new>
+#include <exception>
+#include <system_error>
+
+char UnsupportedBMPImage::error_msg[80];
 
 template <typename T> size_t fread__(T *num, FILE *fd) {
     return fread(num, sizeof(T), 1, fd);
@@ -40,14 +43,15 @@ void BMPImage::SetPallette(uint8_t new_grayDegree[4]) {
     }
 }
 
-BMPImage::BMPImage(int32_t width, int32_t height, unsigned char *front,
-                   unsigned char *back)
+auto doNothing = [](uint8_t *ptr) {};
+
+BMPImage::BMPImage(int32_t width, int32_t height, uint8_t *front, uint8_t *back)
     : width(width), height(height), front(front), back(back) {}
 
-int BMPImage::Save(const char *imageFile) {
+void BMPImage::Save(const char *imageFile) {
     FILE *fd = fopen(imageFile, "wb");
     if (fd == nullptr) {
-        return -1;
+        throw std::system_error(errno, std::generic_category());
     }
 
     /* Header */
@@ -108,10 +112,9 @@ int BMPImage::Save(const char *imageFile) {
     }
 
     fclose(fd);
-    return 0;
 }
 
-int BMPImage::Load(const char *imageFile) {
+void BMPImage::Load(const char *imageFile) {
     int32_t tmp = 0; // long enough
     int32_t fileSize, offsetToImage, infoSize, imageSize;
 
@@ -120,9 +123,10 @@ int BMPImage::Load(const char *imageFile) {
 
     FILE *fd = fopen(imageFile, "rb");
     if (fd == nullptr) {
-        perror("BMPIMage::Load");
-        return -1;
+        throw std::system_error(errno, std::generic_category());
     }
+
+    // TODO compare width and height
 
     fread__<int16_t>((int16_t *)&tmp, fd);
     assert(tmp == BMP_FILE_HEADER);
@@ -145,53 +149,27 @@ int BMPImage::Load(const char *imageFile) {
     fread__<int16_t>(&bitCount, fd);
 
     if (bitCount < 8) {
-        fprintf(stderr, "Unsupported BMP image!\n");
-        return -1;
+        throw UnsupportedBMPImage("bit size < 8");
     }
 
     fread__<int32_t>(&tmp, fd); // Compression type
 
     if (tmp) {
-        fprintf(stderr, "Compressed BMP images are not supported!\n");
-        return -1;
+        throw UnsupportedBMPImage("compressed");
     }
 
     fread__<int32_t>(&imageSize, fd);
     imageSize++;
 
     // Load image
+    auto image = std::make_unique<uint8_t[]>(imageSize);
     fseek(fd, offsetToImage, SEEK_SET);
-    auto image = new (std::nothrow) unsigned char[imageSize];
-    if (image == nullptr) {
-        fprintf(stderr, "Out of memory.\n");
-        return -1;
-    }
-    fread(image, 1, imageSize, fd);
+    fread(image.get(), 1, imageSize, fd);
     fclose(fd);
 
     int32_t len = imageSize / bitCount;
 
-    // allocate buffer
-    if (front == nullptr) {
-        front = new (std::nothrow) unsigned char[len]();
-        if (front == nullptr) {
-            fprintf(stderr, "Out of memory.\n");
-            return -1;
-        }
-    }
-
-    if (back == nullptr) {
-        back = new (std::nothrow) unsigned char[len]();
-        if (back == nullptr) {
-            fprintf(stderr, "Out of memory.\n");
-            return -1;
-        }
-    }
-
-    extractImage(image, imageSize, bitCount / 8);
-
-    delete[] image;
-    return 0;
+    extractImage(image.get(), imageSize, bitCount / 8);
 }
 
 template <typename TInt>
@@ -252,21 +230,9 @@ constexpr int32_t BMPImage::getImageSize() const {
     return 3 * width * height - 1;
 }
 
-const unsigned char *BMPImage::GetFrontImage() const { return front; }
+const uint8_t *BMPImage::GetFrontImage() const { return front; }
 
-const unsigned char *BMPImage::GetBackImage() const { return back; }
-
-void BMPImage::DeleteFrontImage() {
-    if (front != nullptr) {
-        delete[] front;
-    }
-}
-
-void BMPImage::DeleteBackImage() {
-    if (back != nullptr) {
-        delete[] back;
-    }
-}
+const uint8_t *BMPImage::GetBackImage() const { return back; }
 
 int32_t BMPImage::GetWidth() const { return width; }
 

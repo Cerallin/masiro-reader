@@ -27,18 +27,31 @@
 extern "C" {
 #endif
 
-class ImageLayer : public Layer  {
+class ImageLayer : public Layer {
   public:
     ImageLayer(const Layer &layer);
     ImageLayer(uint32_t width, uint32_t height,
                int32_t rotate = ROTATE_DEFAULT);
     ~ImageLayer() = default;
 
-    #undef _Class
-    #define _Class ImageLayer
-    #include "traits/layersetters.h"
+#undef _Class
+#define _Class ImageLayer
+#include "traits/layersetters.h"
 
+    /**
+     * @brief Load image from BMPImage.
+     *
+     * @throw std::runtime_error
+     */
     void LoadFrom(BMPImage *image);
+
+    /**
+     * @brief Load image from file.
+     *
+     * @param imageFile filename
+     *
+     * @throw std::runtime_error
+     */
     void LoadFrom(const char *imageFile);
 };
 

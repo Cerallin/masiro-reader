@@ -22,6 +22,21 @@
 
 #include <cstdint>
 #include <cstdio>
+#include <exception>
+
+class ConvertFailedException : public std::exception {
+  public:
+    ConvertFailedException(const char *str) : std::exception(), str(str){};
+
+    const char *what() const _GLIBCXX_TXN_SAFE_DYN _GLIBCXX_NOTHROW override {
+        snprintf(error_msg, 80, "Cannot convert string: %s.", str);
+        return error_msg;
+    };
+
+  private:
+    static char error_msg[80];
+    const char *str;
+};
 
 class CodePoint {
   public:
@@ -63,7 +78,10 @@ class CodePoint {
      *
      * @param str string to convert
      * @param unicodeStr storage result
+     *
      * @return int
+     *
+     * @throw ConvertFailedException
      */
     static int StrToUnicode(char *str, size_t srcLen, CodePoint **unicodeStr,
                             size_t destLen);

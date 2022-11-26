@@ -2,7 +2,7 @@ AUTOMAKE_OPTIONS = foreign
 
 ACLOCAL_AMFLAGS = -I m4
 
-AM_CPPFLAGS = \
+AM_CPPFLAGS = -I$(top_srcdir) \
               -I$(top_srcdir)/lib \
               -I$(top_srcdir)/libmasiro
 

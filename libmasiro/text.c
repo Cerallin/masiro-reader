@@ -19,9 +19,17 @@
 
 #include "config.h"
 
+#ifdef __cplusplus
+extern "C" {
+#endif
+
 #include <stdio.h>
 
 void print_version() {
     fprintf(stderr, "Masiro-Reader Library " PACKAGE_VERSION "\n"
                     "Copy 2022 Cerallin <cerallin@cerallin.top>\n\n");
 }
+
+#ifdef __cplusplus
+}
+#endif

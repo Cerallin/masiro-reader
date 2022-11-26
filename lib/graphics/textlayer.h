@@ -30,16 +30,9 @@ extern "C" {
 
 class TextLayer : public Layer {
   public:
-    TextLayer(uint32_t width, uint32_t height, Font *font,
-              Graphic::TextAlign textAlign = Graphic::AlignLeft,
-              int32_t rotate = ROTATE_DEFAULT);
-
-    TextLayer(uint32_t width, uint32_t height, CodePoint *codepoints,
-              Font *font, Graphic::TextAlign textAlign = Graphic::AlignLeft,
-              int32_t rotate = ROTATE_DEFAULT);
-
-    TextLayer(const Layer &layer,
-              Graphic::TextAlign textAlign = Graphic::AlignLeft);
+    TextLayer(const Layer &layer);
+    TextLayer(const TextLayer &layer);
+    TextLayer(uint32_t width, uint32_t height, int32_t rotate = ROTATE_DEFAULT);
 
     ~TextLayer() = default;
 
@@ -51,9 +44,9 @@ class TextLayer : public Layer {
      * @brief Set text.
      *
      * @param str Unicode series starts with 0xFEFF
-     * @return int
+     * @return TextLayer &
      */
-    int SetText(char *str);
+    TextLayer &SetText(char *str);
 
     TextLayer &SetFont(Font *font);
 

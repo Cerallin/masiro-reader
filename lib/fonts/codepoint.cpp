@@ -19,11 +19,16 @@
 
 #include "codepoint.h"
 
+#include <iconv.h>
+
 #include <cassert>
 #include <cstddef>
 #include <cstring>
-#include <iconv.h>
+#include <iostream>
 #include <new>
+#include <system_error>
+
+char ConvertFailedException::error_msg[80];
 
 CodePoint::CodePoint() { this->value = 0; }
 
@@ -126,16 +131,19 @@ int CodePoint::StrToUnicode(char *str, size_t srcLen, CodePoint **unicodeStr,
     char *buffer = (char *)*unicodeStr;
     char *inbuf = str, *outbuff = buffer;
 
-    iconv_t cd = iconv_open("UTF-16", "UTF-8");
-    if (cd == (iconv_t)-1) {
-        return -1;
+    try {
+        iconv_t cd = iconv_open("UTF-16", "UTF-8");
+        if (cd == (iconv_t)-1) {
+            throw std::system_error(errno, std::generic_category());
+        }
+        if (iconv(cd, &inbuf, &srcLeft, &outbuff, &unicodeLeft) == (size_t)-1) {
+            throw std::system_error(errno, std::generic_category());
+        }
+        iconv_close(cd);
+    } catch (std::system_error &e) {
+        std::cerr << "iconv(" << e.code() << "): " << e.what() << std::endl;
+        throw ConvertFailedException(str);
     }
-
-    if (iconv(cd, &inbuf, &srcLeft, &outbuff, &unicodeLeft) == (size_t)-1) {
-        perror("iconv");
-        return -1;
-    }
-    iconv_close(cd);
 
     // TODO endianess check
     assert(*(uint16_t *)buffer == 0xFEFF);

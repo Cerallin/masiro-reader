@@ -26,6 +26,20 @@
 
 #include <memory>
 
+class LoadFontFailedException : public std::exception {
+  public:
+    LoadFontFailedException(const char *str) : std::exception(), str(str){};
+
+    const char *what() const _GLIBCXX_TXN_SAFE_DYN _GLIBCXX_NOTHROW override {
+        snprintf(error_msg, 80, "Cannot load font: %s.", str);
+        return error_msg;
+    };
+
+  private:
+    static char error_msg[80];
+    const char *str;
+};
+
 enum FontFaceState {
     TO_LOAD,
     LOADED,
@@ -37,7 +51,14 @@ class FontFace {
     FontFace() = default;
     ~FontFace() = default;
 
-    int LoadFont(const char *fontFilePath);
+    /**
+     * @brief Load font from file.
+     *
+     * @param filename font file
+     *
+     * @throw LoadFontFailedException
+     */
+    void LoadFont(const char *filename);
     const stbtt_fontinfo *GetFontInfo() const;
 
     int FindGlyphIndex(const CodePoint *codepoint) const;

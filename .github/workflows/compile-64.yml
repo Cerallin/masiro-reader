@@ -31,11 +31,8 @@ jobs:
           LDFLAGS="-L$(pwd)/build/libbcm2835/lib -L$(pwd)/build/libcpputest/lib" \
           ./configure --prefix=$(pwd)/.libmasiro
 
-      - name: Make and install
-        run: make -j16 && make install
-
-      - name: Test library installation
-        run: ./scripts/test-install.sh
+      - name: Make
+        run: make -j16
 
       - name: Run make check
         if: always()

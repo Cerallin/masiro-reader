@@ -28,7 +28,8 @@
 
 class Font {
   public:
-    Font(FontFamily *fontFace, float fontSize = 32.0f);
+    Font(FontFace *fontFace, float = 32.0f);
+    Font(FontFamily *fontFamily, float fontSize = 32.0f);
     ~Font() = default;
 
     void GetCodepointHMetrics(const CodePoint *codepoint, int *advanceWidth,
@@ -50,7 +51,7 @@ class Font {
     float Unscale(const CodePoint *codepoint, float num);
 
   private:
-    FontFamily *fontFamily;
+    std::unique_ptr<FontFamily> fontFamily;
 
     std::unique_ptr<unsigned char[]> bitmap = nullptr;
     std::vector<FontMetrics> metricsList;

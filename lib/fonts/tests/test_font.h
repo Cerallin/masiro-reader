@@ -7,24 +7,19 @@ extern const char font_file[];
 
 const CodePoint CHAR_H('H'), CHAR_E('E');
 
-extern FontFace *fontFace;
-extern FontFamily *fontfamily;
+extern FontFace *face;
 Font *font;
 
 TEST_GROUP(TestFont) {
     void setup() {
-        fontFace = new FontFace;
-        CHECK_EQUAL(0, fontFace->LoadFont(font_file));
-
-        fontfamily = new FontFamily(fontFace);
-
-        font = new Font(fontfamily, 32.0f);
+        face = new FontFace;
+        face->LoadFont(font_file);
+        font = new Font(face, 32.0f);
     }
 
     void teardown() {
         delete font;
-        delete fontfamily;
-        delete fontFace;
+        delete face;
     }
 };
 

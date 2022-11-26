@@ -26,7 +26,6 @@
 
 void Display::Refresh() {
     if (frames.empty()) {
-        // TODO throw instead of return
         return;
     }
 
@@ -47,7 +46,7 @@ size_t Display::Forward(Layer &layer) {
 
 size_t Display::Backward() {
     if (frames.empty()) {
-        return 0;
+        throw new EmptyStackException();
     }
 
     auto top = frames.top();
@@ -68,7 +67,7 @@ size_t Display::Count() const { return frames.size(); }
 
 void Display::Init() {
     if (Epd::GetInstance().Init() != 0) {
-        throw new std::runtime_error("e-Paper init failed");
+        throw new EpdInitFailedException;
     }
 }
 

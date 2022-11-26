@@ -24,6 +24,16 @@
 
 #include <stack>
 
+class EpdInitFailedException : public std::exception {
+  public:
+    const char *what() { return "e-Paper init failed"; }
+};
+
+class EmptyStackException : public std::exception {
+  public:
+    const char *what() { return "Trying to pop an empty stack"; }
+};
+
 class Display {
   public:
     Display() = default;
@@ -32,52 +42,54 @@ class Display {
     /**
      * @brief Init epd.
      *
-     * @throw runtime_error
-    */
+     * @throw EpdInitFailedException
+     */
     void Init();
 
     /**
      * @brief Display the frame last time displayed.
-    */
+     */
     void Refresh();
 
     /**
      * @brief Sleep, not power off.
-    */
+     */
     void Sleep();
 
     /**
      * @brief Power on.
-    */
+     */
     void Awake();
 
     /**
      * @brief Diaplay a frame.
      *
      * @param frame to show
-    */
+     */
     size_t Forward(Frame &frame);
 
     /**
      * @brief Display a layer.
      *
      * @param layer to show
-    */
+     *
+     * @throw EmptyStackException
+     */
     size_t Forward(Layer &layer);
 
     /**
      * @brief Go back to last layer displayed.
-    */
+     */
     size_t Backward();
 
     /**
      * @brief Clear all frames stored.
-    */
+     */
     size_t Clear();
 
     /**
      * @brief Count frames.
-    */
+     */
     size_t Count() const;
 
   private:

@@ -20,23 +20,53 @@
 #define IMAGE_BMP_H
 
 #include <cstdint>
+#include <memory>
 
 constexpr int16_t BMP_FILE_HEADER = 0x4D42;
 constexpr int32_t BMP_FILE_INFO_SIZE = 40;
 
+ class UnsupportedBMPImage : public std::exception {
+  public:
+    UnsupportedBMPImage(const char *info) : std::exception(), info(info){};
+
+    const char *what() const _GLIBCXX_TXN_SAFE_DYN _GLIBCXX_NOTHROW override {
+        snprintf(error_msg, 80, "Unsupported BMP image: %s.", info);
+        return error_msg;
+    };
+
+  private:
+    static char error_msg[80];
+    const char *info;
+};
+
 class BMPImage {
   public:
-    BMPImage(int32_t width, int32_t height, unsigned char *front,
-             unsigned char *back);
+    BMPImage(int32_t width, int32_t height, uint8_t *front, uint8_t *back);
+    ~BMPImage() = default;
 
     void SetPallette(uint8_t grayDegree[4]);
 
-    int Save(const char *imageFile);
+    /**
+     * @brief Save image to file.
+     *
+     * @param imageFile image filename
+     *
+     * @throw std::system_error
+     */
+    void Save(const char *imageFile);
 
-    int Load(const char *imageFile);
+    /**
+     * @brief Load image from file.
+     *
+     * @param imageFile image filename
+     *
+     * @throw std::system_error
+     * @throw std::runtime_error
+     */
+    void Load(const char *imageFile);
 
-    const unsigned char *GetFrontImage() const;
-    const unsigned char *GetBackImage() const;
+    const uint8_t *GetFrontImage() const;
+    const uint8_t *GetBackImage() const;
 
     void DeleteFrontImage();
     void DeleteBackImage();
@@ -59,8 +89,8 @@ class BMPImage {
 
     bool isUpsideDown;
 
-    unsigned char *front;
-    unsigned char *back;
+    uint8_t *front;
+    uint8_t *back;
 
     uint8_t grayDegree[4] = {
         0x00, // White

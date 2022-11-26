@@ -24,15 +24,19 @@
 #include "fontface.h"
 
 #include <cstdio>
+#include <exception>
 #include <new>
+#include <system_error>
 
-int FontFace::LoadFont(const char *fontFilePath) {
-    FILE *fontFile = fopen(fontFilePath, "rb");
+char LoadFontFailedException::error_msg[80];
+
+void FontFace::LoadFont(const char *filename) {
+    FILE *fontFile = fopen(filename, "rb");
     if (!fontFile) {
-        // TODO throw instead of perror
-        perror("LoadFont");
+        std::system_error e(errno, std::generic_category());
+        handle_exception(e);
         setState(ERROR);
-        return -1;
+        throw LoadFontFailedException(filename);
     }
 
     fseek(fontFile, 0, SEEK_END);
@@ -40,19 +44,16 @@ int FontFace::LoadFont(const char *fontFilePath) {
     fseek(fontFile, 0, SEEK_SET);
 
     fontBuffer = std::make_unique<unsigned char[]>(size);
-
-    debug("Loading font from %s\n", fontFilePath);
-
     fread(fontBuffer.get(), size, 1, fontFile);
     fclose(fontFile);
 
     if (!stbtt_InitFont(&fontInfo, fontBuffer.get(), 0)) {
-        setState(ERROR);
-        return -1;
+        std::runtime_error e("init failed.");
+        handle_exception(e);
+        throw LoadFontFailedException(filename);
     }
 
     setState(LOADED);
-    return 0;
 }
 
 const stbtt_fontinfo *FontFace::GetFontInfo() const { return &fontInfo; }

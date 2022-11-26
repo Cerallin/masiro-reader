@@ -40,6 +40,9 @@ Font::Font(FontFamily *fontFamily, float fontSize)
     }
 };
 
+Font::Font(FontFace *fontFace, float fontSize)
+    : Font(new FontFamily(fontFace), fontSize) {}
+
 void Font::GetCodepointHMetrics(const CodePoint *codepoint, int *advanceWidth,
                                 int *leftSideBearing) {
     stbtt_GetCodepointHMetrics(getFontFace(codepoint)->GetFontInfo(),

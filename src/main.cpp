@@ -19,8 +19,10 @@
 
 #include "config.h"
 
-#include "libmasiro/display.h"
-#include "libmasiro/graphics.h"
+#include "display.h"
+#include "graphics.h"
+
+#include <iostream>
 
 int main(void) {
     BufferPool::Init();
@@ -28,38 +30,31 @@ int main(void) {
     Layer layer(EPD_WIDTH, EPD_HEIGHT);
     BufferPool::AssignBuffer(layer);
 
-    ImageLayer imageLayer = layer;
-    imageLayer.Init().LoadFrom(SRC_DIR "/assets/lain.bmp");
+    try {
+        ImageLayer imageLayer = layer;
+        imageLayer.Init().LoadFrom(SRC_DIR "/assets/lain.bmp");
 
-    TextLayer textLayer(layer, Graphic::AlignCenter);
+        FontFace XLWenKai;
+        XLWenKai.LoadFont(SRC_DIR "/assets/LXGWWenKaiScreen.ttf");
 
-    FontFace XLWenKai;
-    if (XLWenKai.LoadFont(SRC_DIR "/assets/LXGWWenKaiScreen.ttf")) {
-        fprintf(stderr, "Load font failed.\n");
-        return 1;
+        char str[] = "Serial Experiments Lain";
+        TextLayer textLayer = layer;
+        textLayer.SetTextAlign(Graphic::AlignCenter)
+            .SetFont(new Font(&XLWenKai, 28.0f))
+            .SetText(str)
+            .SetInvertColor(true)
+            .SetTextPadding(0, 195, 0, 0)
+            .CalcTypeSetting()
+            .Render();
+
+        auto display = new Display();
+        display->Init();
+        display->Forward(*(new Frame(layer)));
+
+        BufferPool::ReleaseLayer(layer);
+    } catch (const std::exception &e) {
+        std::cout << e.what() << std::endl;
     }
-
-    FontFamily fontFamily(&XLWenKai);
-
-    Font TitleFont(&fontFamily, 28.0f);
-    textLayer.SetFont(&TitleFont);
-
-    char str[] = "Serial Experiments Lain";
-    if (textLayer.SetText(str) == -1) {
-        return 1;
-    }
-    textLayer.SetInvertColor(true)
-        .SetTextPadding(0, 195, 0, 0)
-        .CalcTypeSetting()
-        .Render();
-
-    Display display;
-    display.Init();
-
-    Frame frame(layer);
-    display.Forward(frame);
-
-    BufferPool::ReleaseLayer(layer);
 
     return 0;
 }

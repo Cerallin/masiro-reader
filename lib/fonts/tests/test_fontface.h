@@ -16,12 +16,10 @@ TEST(TestFontFace, TestFontFileExistence) {
 
 TEST(TestFontFace, TestLoadFont) {
     FontFace fontFace;
-    int res = fontFace.LoadFont(font_file);
-    CHECK_EQUAL(0, res);
+    fontFace.LoadFont(font_file);
 }
 
 TEST(TestFontFace, TestLoadFontFail) {
     FontFace fontFace;
-    int res = fontFace.LoadFont("/nonexist.ttf");
-    CHECK_EQUAL(-1, res);
+    CHECK_THROWS(LoadFontFailedException, fontFace.LoadFont("/nonexist.ttf"));
 }

@@ -60,17 +60,12 @@ const CodePoint ch_breaks[] = {
         }                                                                      \
     }
 
-TextLayer::TextLayer(uint32_t width, uint32_t height, Font *font,
-                     Graphic::TextAlign textAlign, int32_t rotate)
-    : Layer(width, height, rotate), font(font), textAlign(textAlign) {}
+TextLayer::TextLayer(const Layer &layer) : Layer(layer) {}
 
-TextLayer::TextLayer(uint32_t width, uint32_t height, CodePoint *codepoints,
-                     Font *font, Graphic::TextAlign textAlign, int32_t rotate)
-    : Layer(width, height, rotate), codepoints(codepoints), font(font),
-      textAlign(textAlign) {}
+TextLayer::TextLayer(const TextLayer &layer) : Layer(layer) {}
 
-TextLayer::TextLayer(const Layer &layer, Graphic::TextAlign textAlign)
-    : Layer(layer), textAlign(textAlign) {}
+TextLayer::TextLayer(uint32_t width, uint32_t height, int32_t rotate)
+    : Layer(width, height, rotate) {}
 
 void TextLayer::drawGlyph(const CodePoint *cp,
                           const Graphic::TextTypeSetting *ts, Font *font,
@@ -99,31 +94,29 @@ void TextLayer::drawGlyph(const CodePoint *cp,
     };
 }
 
-int TextLayer::SetText(char *str) {
+TextLayer &TextLayer::SetText(char *str) {
     size_t srcLen = strlen(str), destLen = (srcLen + 4) * 2;
-    codepoints = std::make_unique<CodePoint[]>(destLen / 2);
-    if (codepoints == nullptr) {
-        return -1;
-    }
+    codepoints.reset(new CodePoint[destLen / 2]);
 
     auto cps = codepoints.get();
-    charNum = CodePoint::StrToUnicode(str, srcLen, &cps, destLen);
-    if (charNum == -1) {
-        codepoints.~unique_ptr();
-        return -1;
+    try {
+        charNum = CodePoint::StrToUnicode(str, srcLen, &cps, destLen);
+    } catch (const ConvertFailedException &e) {
+        codepoints.release();
+        throw;
     }
+    typeSetting.reset(new Graphic::TextTypeSetting[charNum]);
 
-    typeSetting = std::make_unique<Graphic::TextTypeSetting[]>(charNum);
-    return 0;
+    return *this;
 }
 
 TextLayer &TextLayer::SetTextAlign(Graphic::TextAlign textAlign) {
-    textAlign = textAlign;
+    this->textAlign = textAlign;
     return *this;
 }
 
 TextLayer &TextLayer::SetTextPadding(Graphic::TextPadding textPadding) {
-    textPadding = textPadding;
+    this->textPadding = textPadding;
     return *this;
 }
 

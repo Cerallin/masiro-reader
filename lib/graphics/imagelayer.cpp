@@ -22,7 +22,9 @@
 #include "imagelayer.h"
 #include "traits/layersetters.cpp"
 
+#include <cstdint>
 #include <cstring>
+#include <exception>
 
 ImageLayer::ImageLayer(uint32_t width, uint32_t height, int32_t rotate)
     : Layer(width, height, rotate) {}
@@ -30,11 +32,15 @@ ImageLayer::ImageLayer(uint32_t width, uint32_t height, int32_t rotate)
 ImageLayer::ImageLayer(const Layer &layer) : Layer(layer) {}
 
 void ImageLayer::LoadFrom(BMPImage *image) {
-    auto memSize = GetMemSize();
-
     if (this->width != image->GetWidth() ||
         this->height != image->GetHeight()) {
-        throw std::runtime_error("Image size incompatible");
+        char error_msg[80];
+        snprintf(error_msg, 80,
+                 "Image size incompatible, layer size: [%" PRId32 "x%" PRId32
+                 "], image size: [%" PRId32 "x%" PRId32 "]",
+                 this->width, this->height, image->GetWidth(),
+                 image->GetHeight());
+        throw std::runtime_error(error_msg);
     }
 
     // Debug block
@@ -46,6 +52,7 @@ void ImageLayer::LoadFrom(BMPImage *image) {
         assert_is_initialized(old_image);
     }
 
+    auto memSize = GetMemSize();
     std::memcpy(new_image, image->GetFrontImage(), memSize);
     std::memcpy(old_image, image->GetBackImage(), memSize);
 }
@@ -55,9 +62,13 @@ void ImageLayer::LoadFrom(const char *imageFile) {
     assert_is_initialized(old_image);
 
     BMPImage image(GetWidth(), GetHeight(), GetNewImage(), GetOldImage());
-    if (image.Load(imageFile)) {
+    try {
+        image.Load(imageFile);
+    } catch (std::exception &e) {
+        handle_exception(e);
+
         char error_msg[256];
-        snprintf(error_msg, 256, "Cannot load image file %s\n",
+        snprintf(error_msg, 256, "Cannot load image file: %s\n",
                  SRC_DIR "/assets/lain.bmp");
         throw std::runtime_error(error_msg);
     }

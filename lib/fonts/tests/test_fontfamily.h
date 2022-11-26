@@ -4,31 +4,31 @@
 
 extern const char font_file[];
 
-FontFace *fontFace;
-FontFamily *fontfamily;
+FontFace *face;
+FontFamily *family;
 
 TEST_GROUP(TestFontFamily) {
     void setup() {
-        fontFace = new FontFace;
-        CHECK_EQUAL(0, fontFace->LoadFont(font_file));
+        face = new FontFace;
+        face->LoadFont(font_file);
 
-        fontfamily = new FontFamily(fontFace);
+        family = new FontFamily(face);
     }
 
     void teardown() {
-        delete fontfamily;
-        delete fontFace;
+        delete family;
+        delete face;
     }
 };
 
 TEST(TestFontFamily, TestGetFontFace) {
-    auto ffList = fontfamily->GetFontFace();
+    auto ffList = family->GetFontFace();
     CHECK_EQUAL(1, ffList.size());
-    CHECK_EQUAL(fontFace, ffList[0]);
+    CHECK_EQUAL(face, ffList[0]);
 }
 
 TEST(TestFontFamily, TestGetFontFaceIndex) {
     CodePoint CHAR_H('H'), CHAR_UNDEF(0xFFFF);
-    CHECK_EQUAL(0, fontfamily->GetFontFaceIndex(&CHAR_H));
-    CHECK_EQUAL(-1, fontfamily->GetFontFaceIndex(&CHAR_UNDEF));
+    CHECK_EQUAL(0, family->GetFontFaceIndex(&CHAR_H));
+    CHECK_EQUAL(-1, family->GetFontFaceIndex(&CHAR_UNDEF));
 }
