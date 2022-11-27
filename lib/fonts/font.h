@@ -40,8 +40,6 @@ class Font {
                                       int *height, int *xoff, int *yoff);
     int GetCodepointKernAdvance(const CodePoint *cp1, const CodePoint *cp2);
 
-    void FreeBitmap(const CodePoint *codepoint, unsigned char *bitmap);
-
     FontFamily *GetFontFamily();
 
     int GetScaledAscent(const CodePoint *codepoint);
@@ -52,8 +50,6 @@ class Font {
 
   private:
     std::unique_ptr<FontFamily> fontFamily;
-
-    std::unique_ptr<unsigned char[]> bitmap = nullptr;
     std::vector<FontMetrics> metricsList;
 
     float fontSize;

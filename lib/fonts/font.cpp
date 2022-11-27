@@ -53,7 +53,8 @@ void Font::GetCodepointHMetrics(const CodePoint *codepoint, int *advanceWidth,
 void Font::GetCodepointBitmapBox(const CodePoint *codepoint, int *ix0, int *iy0,
                                  int *ix1, int *iy1) {
     auto fontInfo = getFontFace(codepoint)->GetFontInfo();
-    stbtt_GetCodepointBitmapBox(fontInfo, codepoint->GetValue(), 0,
+    stbtt_GetCodepointBitmapBox(fontInfo, codepoint->GetValue(),
+                                getFontScale(codepoint),
                                 getFontScale(codepoint), ix0, iy0, ix1, iy1);
     stbtt_FindGlyphIndex(fontInfo, codepoint->GetValue());
 }
@@ -61,8 +62,9 @@ void Font::GetCodepointBitmapBox(const CodePoint *codepoint, int *ix0, int *iy0,
 unsigned char *Font::GetCodepointBitmap(const CodePoint *codepoint, int *width,
                                         int *height, int *xoff, int *yoff) {
     return stbtt_GetCodepointBitmap(
-        getFontFace(codepoint)->GetFontInfo(), 0, getFontScale(codepoint),
-        codepoint->GetValue(), width, height, xoff, yoff);
+        getFontFace(codepoint)->GetFontInfo(), getFontScale(codepoint),
+        getFontScale(codepoint), codepoint->GetValue(), width, height, xoff,
+        yoff);
 }
 
 int Font::GetCodepointKernAdvance(const CodePoint *cp1, const CodePoint *cp2) {
@@ -70,10 +72,6 @@ int Font::GetCodepointKernAdvance(const CodePoint *cp1, const CodePoint *cp2) {
     auto ff1 = getFontFace(cp1);
     return stbtt_GetCodepointKernAdvance(ff1->GetFontInfo(), cp1->GetValue(),
                                          cp2->GetValue());
-}
-
-void Font::FreeBitmap(const CodePoint *codepoint, unsigned char *bitmap) {
-    stbtt_FreeBitmap(bitmap, getFontFace(codepoint)->GetFontInfo()->userdata);
 }
 
 int Font::GetScaledAscent(const CodePoint *codepoint) {

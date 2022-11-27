@@ -113,6 +113,11 @@ TextLayer &TextLayer::SetTextAlign(Graphic::TextAlign textAlign) {
     return *this;
 }
 
+TextLayer &TextLayer::SetLineHeight(float lineHeight) {
+    this->lineHeightScale = lineHeight;
+    return *this;
+}
+
 TextLayer &TextLayer::SetTextPadding(Graphic::TextPadding textPadding) {
     this->textPadding = textPadding;
     return *this;
@@ -150,19 +155,6 @@ void TextLayer::calcCodePointSize(const CodePoint *codepoint, int *ix0,
     font->GetCodepointHMetrics(codepoint, advanceWidth, 0);
 }
 
-void TextLayer::calcCodePointTypeSetting(const CodePoint *codepoint,
-                                         Graphic::GlyphInfo *glyph, int x,
-                                         int y, int iy0) {
-    font->GetCodepointHMetrics(codepoint, &glyph->advancedWith,
-                               &glyph->leftSideBearing);
-    font->GetCodepointBitmap(codepoint, &glyph->width, &glyph->height, 0, 0);
-
-    glyph->x = x;
-    glyph->y = y;
-    glyph->iy0 = iy0;
-    glyph->cp = codepoint;
-}
-
 int TextLayer::calcLineWidth(const CodePoint *start,
                              const CodePoint *nextBreak) {
     int ix0, advanceWidth;
@@ -193,9 +185,7 @@ TextLayer &TextLayer::TypeSetting() {
     /* Smoother unscaled x */
     float x = font->Unscale(cps, textPadding.paddingLeft), left = x;
     int y = textPadding.paddingTop;
-    // TODO: customize lineHeight
-    // FIXME: need a robust method to calculate line height
-    int lineHeight = font->GetLineHeight(cps + 1, 1.0f);
+    int lineHeight = font->GetLineHeight(cps + 1, lineHeightScale);
     int maxLineLength = GetRelativeWidth() - textPadding.paddingRight;
     int maxHeight = GetRelativeHeight() - textPadding.paddingBottom;
 
@@ -234,10 +224,20 @@ TextLayer &TextLayer::TypeSetting() {
             }
         }
 
-        int ix0, iy0;
-        font->GetCodepointBitmapBox(c, &ix0, &iy0, 0, 0);
+        int ix0, iy0, ix1, iy1;
+        font->GetCodepointBitmapBox(c, &ix0, &iy0, &ix1, &iy1);
         x += font->Unscale(c, ix0);
-        calcCodePointTypeSetting(c, glyph, x, y, iy0);
+
+        glyph->x = x;
+        glyph->y = y;
+
+        glyph->width = ix1 - ix0;
+        glyph->height = iy1 - iy0;
+        glyph->iy0 = iy0;
+        glyph->cp = c;
+
+        font->GetCodepointHMetrics(c, &glyph->advancedWith,
+                                   &glyph->leftSideBearing);
 
         if (font->Scale(c, x + glyph->leftSideBearing +
                                font->Unscale(c, glyph->width)) >=
@@ -271,21 +271,17 @@ void TextLayer::Render() {
     assert_is_initialized(font);
     assert_is_initialized(glyphInfo);
 
-    unsigned char *bitmap;
-
-    // TODO: maxLineLength as a property.
-    int maxLineLength = GetRelativeWidth() - textPadding.paddingRight;
-
+    int lineWidth = GetRelativeWidth() - textPadding.paddingRight;
     Graphic::GlyphInfo::AdjustAlign(codepoints.get(), glyphInfo.get(), charNum,
-                                    textAlign, maxLineLength, font);
+                                    textAlign, lineWidth, font);
+
+    std::unique_ptr<unsigned char[]> bitmap;
 
     for (auto glyph = glyphInfo.get(); glyph->cp != nullptr; glyph++) {
         auto cp = glyph->cp;
+        bitmap.reset(font->GetCodepointBitmap(cp, 0, 0, 0, 0));
         glyph->ascent = font->GetScaledAscent(cp);
-        bitmap = font->GetCodepointBitmap(cp, 0, 0, 0, 0);
-        drawGlyph(glyph, font, bitmap);
-        // TODO: prealloc to optimize
-        font->FreeBitmap(cp, bitmap);
+        drawGlyph(glyph, font, bitmap.get());
     }
 }
 

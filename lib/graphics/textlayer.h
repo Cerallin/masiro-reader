@@ -52,6 +52,8 @@ class TextLayer : public Layer {
 
     TextLayer &SetTextAlign(Graphic::TextAlign textAlign);
 
+    TextLayer &SetLineHeight(float lineHeight);
+
     TextLayer &SetTextPadding(Graphic::TextPadding textPadding);
     TextLayer &SetTextPadding(int padding);
     TextLayer &SetTextPadding(int paddingX, int paddingY);
@@ -75,9 +77,6 @@ class TextLayer : public Layer {
 
     int calcLineWidth(const CodePoint *start, const CodePoint *nextBreak);
 
-    void calcCodePointTypeSetting(const CodePoint *c, Graphic::GlyphInfo *ts,
-                                  int x, int y, int iy0);
-
     std::unique_ptr<CodePoint[]> codepoints = nullptr;
     Font *font = nullptr;
 
@@ -86,6 +85,8 @@ class TextLayer : public Layer {
     Graphic::TextPadding textPadding = {0, 0, 0, 0};
 
     ssize_t charNum;
+
+    float lineHeightScale = 1.0f;
 };
 
 #ifdef __cplusplus

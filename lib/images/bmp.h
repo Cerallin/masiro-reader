@@ -20,12 +20,13 @@
 #define IMAGE_BMP_H
 
 #include <cstdint>
+#include <cstdio>
 #include <memory>
 
 constexpr int16_t BMP_FILE_HEADER = 0x4D42;
 constexpr int32_t BMP_FILE_INFO_SIZE = 40;
 
- class UnsupportedBMPImage : public std::exception {
+class UnsupportedBMPImage : public std::exception {
   public:
     UnsupportedBMPImage(const char *info) : std::exception(), info(info){};
 

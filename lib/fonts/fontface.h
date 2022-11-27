@@ -22,6 +22,9 @@
 
 #include "codepoint.h"
 
+#define STBTT_malloc(x, u) ((void)(u), new unsigned char[x])
+#define STBTT_free(x, u)   ((void)(u), delete[](unsigned char *) x)
+
 #include "stb_truetype.h"
 
 #include <memory>
