@@ -28,7 +28,6 @@
 #include "fonts/font.h"
 #include "graphic.h"
 #include "shapes.h"
-#include "style.h"
 
 #ifdef __cplusplus
 extern "C" {

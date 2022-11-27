@@ -13,11 +13,10 @@ libgraphic_la_SOURCES = layer.cpp \
 
 libgraphic_ladir = $(includedir)/graphics
 
-libgraphic_la_HEADERS = style.h \
-                        shapes.h \
-                        graphic.h \
-                        layer.h \
+libgraphic_la_HEADERS = graphic.h \
                         imagelayer.h \
+                        layer.h \
+                        shapes.h \
                         textlayer.h
 
 libgraphic_traitsdir = $(includedir)/graphics/traits

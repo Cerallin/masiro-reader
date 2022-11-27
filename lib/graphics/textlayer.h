@@ -22,7 +22,6 @@
 
 #include "fonts/codepoint.h"
 #include "layer.h"
-#include "style.h"
 
 #ifdef __cplusplus
 extern "C" {

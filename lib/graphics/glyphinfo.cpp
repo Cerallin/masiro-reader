@@ -17,7 +17,7 @@
  *
  */
 
-#include "style.h"
+#include "graphic.h"
 
 namespace Graphic {
 

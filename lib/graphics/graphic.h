@@ -20,6 +20,9 @@
 #ifndef GRAPHIC_GRAPHIC_H
 #define GRAPHIC_GRAPHIC_H
 
+#include "fonts/font.h"
+
+#include <cstddef>
 #include <cstdint>
 
 namespace Graphic {
@@ -41,6 +44,39 @@ enum Color {
 Color CastColor(uint8_t color);
 Color InvertColor(Color color);
 Color InvertColor(int color);
+
+typedef enum {
+    AlignLeft,
+    AlignRight,
+    AlignCenter,
+    AlignJustify, // TODO: not implemented
+} TextAlign;
+
+class TextPadding {
+  public:
+    int paddingLeft;
+    int paddingTop;
+    int paddingRight;
+    int paddingBottom;
+};
+
+class GlyphInfo {
+  public:
+    static void AdjustAlign(GlyphInfo *glyphInfos, ssize_t len, TextAlign align,
+                            int lineWidth, Font *font);
+
+    float x;             // unscaled absolute x, to be justified
+    int y;               // absolute y, determing chars in the same line
+    int iy0;             // y offset
+    int width;           // scaled bitmap width
+    int height;          // scaled bitmap height
+    int advancedWith;    // unscaled advance width
+    int leftSideBearing; // unscaled left side bearing
+    int kern;            // scaled kerning
+    int ascent;          // ascent
+
+    const CodePoint *cp = nullptr;
+};
 
 } // namespace Graphic
 
