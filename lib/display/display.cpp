@@ -46,7 +46,7 @@ size_t Display::Forward(Layer &layer) {
 
 size_t Display::Backward() {
     if (frames.empty()) {
-        throw new EmptyStackException();
+        throw EmptyStackException();
     }
 
     auto top = frames.top();
@@ -67,7 +67,7 @@ size_t Display::Count() const { return frames.size(); }
 
 void Display::Init() {
     if (Epd::GetInstance().Init() != 0) {
-        throw new EpdInitFailedException;
+        throw EpdInitFailedException();
     }
 }
 

@@ -26,12 +26,16 @@
 
 class EpdInitFailedException : public std::exception {
   public:
-    const char *what() { return "e-Paper init failed"; }
+    const char *what() const _GLIBCXX_TXN_SAFE_DYN _GLIBCXX_NOTHROW override {
+        return "e-Paper init failed";
+    }
 };
 
 class EmptyStackException : public std::exception {
   public:
-    const char *what() { return "Trying to pop an empty stack"; }
+    const char *what() const _GLIBCXX_TXN_SAFE_DYN _GLIBCXX_NOTHROW override {
+        return "Trying to pop an empty stack";
+    }
 };
 
 class Display {
@@ -72,13 +76,13 @@ class Display {
      * @brief Display a layer.
      *
      * @param layer to show
-     *
-     * @throw EmptyStackException
      */
     size_t Forward(Layer &layer);
 
     /**
      * @brief Go back to last layer displayed.
+     *
+     * @throw EmptyStackException
      */
     size_t Backward();
 

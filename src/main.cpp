@@ -30,9 +30,11 @@ int main(void) {
     Layer layer(EPD_WIDTH, EPD_HEIGHT);
     BufferPool::AssignBuffer(layer);
 
+    layer.Init();
+
     try {
         ImageLayer imageLayer = layer;
-        imageLayer.Init().LoadFrom(SRC_DIR "/assets/lain.bmp");
+        imageLayer.LoadFrom(SRC_DIR "/assets/lain.bmp");
 
         FontFace XLWenKai;
         XLWenKai.LoadFont(SRC_DIR "/assets/LXGWWenKaiScreen.ttf");
@@ -42,16 +44,17 @@ int main(void) {
         textLayer.SetTextAlign(Graphic::AlignCenter)
             .SetFont(new Font(&XLWenKai, 28.0f))
             .SetText(str)
-            .SetInvertColor(true)
             .SetTextPadding(0, 195, 0, 0)
             .TypeSetting()
             .Render();
 
         auto display = new Display();
         display->Init();
-        display->Forward(*(new Frame(layer)));
+        display->Forward(*(new Frame(layer.InvertColor())));
 
         BufferPool::ReleaseLayer(layer);
+    } catch (EpdInitFailedException &e) {
+        std::cout << e.what() << std::endl;
     } catch (const std::exception &e) {
         std::cout << e.what() << std::endl;
     }
