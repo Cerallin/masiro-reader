@@ -23,26 +23,26 @@
 
 using namespace Shape;
 
-TwoPointShape::TwoPointShape(Point topLeft, Point bottomRight)
-    : topLeft(topLeft), bottomRight(bottomRight) {
-    auto x = std::minmax(topLeft.x, bottomRight.x);
-    auto y = std::minmax(topLeft.y, bottomRight.y);
-
-    topLeft.x = std::get<0>(x);
-    topLeft.y = std::get<0>(y);
-    bottomRight.x = std::get<1>(x);
-    bottomRight.y = std::get<1>(y);
-}
+TwoPointShape::TwoPointShape(Point p1, Point p2)
+    : start(p1), end(p2) {}
 
 TwoPointShape::TwoPointShape(coordinate x0, coordinate y0, coordinate x1,
                              coordinate y1)
     : TwoPointShape(Point(x0, y0), Point(x1, y1)) {}
 
-Rectangle::Rectangle(Point topLeft, Point bottomRight)
-    : TwoPointShape(topLeft, bottomRight) {}
+Rectangle::Rectangle(Point start, Point end)
+    : TwoPointShape(start, end) {
+    auto x = std::minmax(start.x, end.x);
+    auto y = std::minmax(start.y, end.y);
+
+    start.x = std::get<0>(x);
+    start.y = std::get<0>(y);
+    end.x = std::get<1>(x);
+    end.y = std::get<1>(y);
+}
 
 Rectangle::Rectangle(coordinate x0, coordinate y0, coordinate x1, coordinate y1)
-    : TwoPointShape(x0, y0, x1, y1) {}
+    : Rectangle(Point(x0, y0), Point(x1, y1)) {}
 
 Line::Line(Point start, Point end) : TwoPointShape(start, end) {}
 

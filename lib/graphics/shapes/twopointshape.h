@@ -24,15 +24,15 @@ namespace Shape {
 
 class TwoPointShape {
   public:
-    TwoPointShape(Point topLeft, Point bottomRight);
+    TwoPointShape(Point start, Point end);
     TwoPointShape(coordinate x0, coordinate y0, coordinate x1, coordinate y1);
 
-    Point topLeft, bottomRight;
+    Point start, end;
 };
 
 class Rectangle : public TwoPointShape {
   public:
-    Rectangle(Point topLeft, Point bottomRight);
+    Rectangle(Point start, Point end);
     Rectangle(coordinate x0, coordinate y0, coordinate x1, coordinate y1);
 };
 

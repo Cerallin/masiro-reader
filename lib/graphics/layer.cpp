@@ -111,18 +111,15 @@ void Layer::Draw(Shape::Point pixel, Graphic::Color color) {
 }
 
 void Layer::Draw(Shape::Line line, Graphic::Color color) {
-    auto x0 = line.topLeft.x, y0 = line.topLeft.y;
-    auto x1 = line.bottomRight.x, y1 = line.bottomRight.y;
-
-    assert(x0 < x1);
-    assert(y0 < y1);
+    auto x0 = line.start.x, y0 = line.start.y;
+    auto x1 = line.end.x, y1 = line.end.y;
 
     /* Bresenham algorithm */
-    auto dx = x1 - x0;
-    auto sx = 1;
-    auto dy = y1 - y0;
-    auto sy = 1;
-    auto err = dx + dy;
+    int32_t dx = x1 - x0 >= 0 ? x1 - x0 : x0 - x1;
+    int32_t sx = x0 < x1 ? 1 : -1;
+    int32_t dy = y1 - y0 <= 0 ? y1 - y0 : y0 - y1;
+    int32_t sy = y0 < y1 ? 1 : -1;
+    int32_t err = dx + dy;
 
     while ((x0 != x1) && (y0 != y1)) {
         Draw(Shape::Point(x0, y0), color);
@@ -139,25 +136,25 @@ void Layer::Draw(Shape::Line line, Graphic::Color color) {
 
 // TODO optimize with DrawAbsolute
 void Layer::Draw(Shape::HorizontalLine line, Graphic::Color color) {
-    auto width = line.bottomRight.x - line.topLeft.x;
-    auto y = line.bottomRight.y;
+    auto width = line.end.x - line.start.x;
+    auto y = line.end.y;
 
     assert(width >= 0);
-    LoopLine(line.topLeft.x, width + 1) { Draw(Shape::Point(i, y), color); }
+    LoopLine(line.start.x, width + 1) { Draw(Shape::Point(i, y), color); }
 }
 
 // TODO optimize with DrawAbsolute
 void Layer::Draw(Shape::VerticalLine line, Graphic::Color color) {
-    auto x = line.bottomRight.x;
-    auto height = line.bottomRight.y - line.topLeft.y;
+    auto x = line.end.x;
+    auto height = line.end.y - line.start.y;
 
     assert(height >= 0);
-    LoopLine(line.topLeft.y, height + 1) { Draw(Shape::Point(x, i), color); }
+    LoopLine(line.start.y, height + 1) { Draw(Shape::Point(x, i), color); }
 }
 
 void Layer::Draw(Shape::Rectangle rectangle, Graphic::Color color) {
-    auto x0 = rectangle.topLeft.x, y0 = rectangle.topLeft.y;
-    auto x1 = rectangle.bottomRight.x, y1 = rectangle.bottomRight.y;
+    auto x0 = rectangle.start.x, y0 = rectangle.start.y;
+    auto x1 = rectangle.end.x, y1 = rectangle.end.y;
 
     Draw(Shape::HorizontalLine(x0, x1, y0), color);
     Draw(Shape::HorizontalLine(x0, x1, y1), color);
@@ -166,9 +163,9 @@ void Layer::Draw(Shape::Rectangle rectangle, Graphic::Color color) {
 }
 
 void Layer::DrawFilled(Shape::Rectangle rectangle, Graphic::Color color) {
-    auto x0 = rectangle.topLeft.x;
-    auto width = rectangle.bottomRight.x - rectangle.topLeft.x;
-    auto y0 = rectangle.topLeft.y, y1 = rectangle.bottomRight.y;
+    auto x0 = rectangle.start.x;
+    auto width = rectangle.end.x - rectangle.start.x;
+    auto y0 = rectangle.start.y, y1 = rectangle.end.y;
 
     assert(width >= 0);
     assert(y1 - y0 >= 0);
@@ -219,9 +216,9 @@ void Layer::DrawFilled(Shape::Circle circle, Graphic::Color color) {
         Draw(Shape::Point(x + x_pos, y + y_pos), color);
         Draw(Shape::Point(x + x_pos, y - y_pos), color);
         Draw(Shape::Point(x - x_pos, y - y_pos), color);
-        Draw(Shape::HorizontalLine(x + x_pos, y + y_pos, 2 * (-x_pos) + 1),
+        Draw(Shape::HorizontalLine(x + x_pos, x - x_pos + 1, y + y_pos),
              color);
-        Draw(Shape::HorizontalLine(x + x_pos, y - y_pos, 2 * (-x_pos) + 1),
+        Draw(Shape::HorizontalLine(x + x_pos, x - x_pos + 1, y - y_pos),
              color);
         e2 = err;
         if (e2 <= y_pos) {

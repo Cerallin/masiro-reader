@@ -9,6 +9,7 @@ libgraphic_la_SOURCES = layer.cpp \
                         textlayer.cpp \
                         glyphinfo.cpp \
                         shapes/point.cpp \
+                        shapes/circle.cpp \
                         shapes/twopointshape.cpp
 
 libgraphic_ladir = $(includedir)/graphics
