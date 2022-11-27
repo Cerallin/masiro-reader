@@ -19,16 +19,23 @@ jobs:
       - name: install libcap
         run: sudo apt install -y libcap2 libcap-dev
 
+      - name: init submodule
+        run: |
+          git submodule init
+          git submodule update
+
       - name: build and install dependencies
-        run: ./scripts/build-dependencies.sh
+        run: |
+          ./scripts/build-bcm2835.sh --host=arm-linux-gnueabihf
+          ./scripts/build-cpputest.sh
 
       - name: Run autoreconf
         run: autoreconf -i
 
       - name: Run configure
         run: |
-          CXXFLAGS="-I$(pwd)/build/libbcm2835/include -I$(pwd)/build/libcpputest/include" \
-          LDFLAGS="-L$(pwd)/build/libbcm2835/lib -L$(pwd)/build/libcpputest/lib" \
+          CXXFLAGS="-I$(pwd)/bcm2835-install/include -I$(pwd)/cpputest-install/include" \
+          LDFLAGS="-L$(pwd)/bcm2835-install/lib -L$(pwd)/cpputest-install/lib" \
           ./configure --prefix=$(pwd)/.libmasiro
 
       - name: Make

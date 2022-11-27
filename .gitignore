@@ -55,3 +55,7 @@ test
 masiro
 build
 *.tar.gz
+
+bcm2835*
+*-build
+*-install
