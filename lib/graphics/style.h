@@ -42,9 +42,8 @@ class TextPadding {
 
 class GlyphInfo {
   public:
-    static void AdjustAlign(const CodePoint *codepoints,
-                            GlyphInfo *glyphInfos, ssize_t len,
-                            TextAlign align, int lineWidth, Font *font);
+    static void AdjustAlign(GlyphInfo *glyphInfos, ssize_t len, TextAlign align,
+                            int lineWidth, Font *font);
 
     float x;             // unscaled absolute x, to be justified
     int y;               // absolute y, determing chars in the same line

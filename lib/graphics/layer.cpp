@@ -44,9 +44,9 @@ size_t Layer::GetMemSize() const {
     return size;
 }
 
-Layer &Layer::Clear(int32_t color) {
+Layer &Layer::Clear(Graphic::Color color) {
     LoopMatrix(this->width, this->height, 0, 0) {
-        DrawAbsolutePixel(i, j, color);
+        DrawAbsolute(Shape::Point(i, j), color);
     }
 
     return *this;
@@ -54,18 +54,18 @@ Layer &Layer::Clear(int32_t color) {
 
 bool Layer::GetInvertColor() const { return invertColor; }
 
-void Layer::DrawAbsolutePixel(int32_t x, int32_t y, int32_t color) {
-    if (invertColor) {
-        color = (~color) & 0x03;
-    }
+void Layer::DrawAbsolute(Shape::Point point, Graphic::Color color) {
+    auto x = point.x, y = point.y;
 
-    if (color & 0x01) {
+    int32_t iColor = this->invertColor ? color : Graphic::InvertColor(color);
+
+    if (iColor & 0x01) {
         new_image[(x + y * this->width) / 8] &= ~(0x80 >> (x % 8));
     } else {
         new_image[(x + y * this->width) / 8] |= 0x80 >> (x % 8);
     }
 
-    if (color & 0x02) {
+    if (iColor & 0x02) {
         old_image[(x + y * this->width) / 8] &= ~(0x80 >> (x % 8));
     } else {
         old_image[(x + y * this->width) / 8] |= 0x80 >> (x % 8);
@@ -96,29 +96,36 @@ int32_t Layer::GetHeight(void) const { return height; }
 
 int32_t Layer::GetRotate(void) const { return this->rotate; }
 
-void Layer::DrawPixel(int32_t x, int32_t y, int32_t color) {
+void Layer::Draw(Shape::Point pixel, Graphic::Color color) {
+    auto x = pixel.x, y = pixel.y;
+
     if (rotate == Graphic::ROTATE_0) {
-        DrawAbsolutePixel(x, y, color);
+        DrawAbsolute(Shape::Point(x, y), color);
     } else if (rotate == Graphic::ROTATE_90) {
-        DrawAbsolutePixel(width - y, x, color);
+        DrawAbsolute(Shape::Point(width - y, x), color);
     } else if (rotate == Graphic::ROTATE_180) {
-        DrawAbsolutePixel(width - x, height - y, color);
+        DrawAbsolute(Shape::Point(width - x, height - y), color);
     } else if (rotate == Graphic::ROTATE_270) {
-        DrawAbsolutePixel(y, height - x, color);
+        DrawAbsolute(Shape::Point(y, height - x), color);
     }
 }
 
-void Layer::DrawLine(int32_t x0, int32_t y0, int32_t x1, int32_t y1,
-                     int32_t color) {
+void Layer::Draw(Shape::Line line, Graphic::Color color) {
+    auto x0 = line.topLeft.x, y0 = line.topLeft.y;
+    auto x1 = line.bottomRight.x, y1 = line.bottomRight.y;
+
+    assert(x0 < x1);
+    assert(y0 < y1);
+
     /* Bresenham algorithm */
-    int32_t dx = x1 - x0 >= 0 ? x1 - x0 : x0 - x1;
-    int32_t sx = x0 < x1 ? 1 : -1;
-    int32_t dy = y1 - y0 <= 0 ? y1 - y0 : y0 - y1;
-    int32_t sy = y0 < y1 ? 1 : -1;
-    int32_t err = dx + dy;
+    auto dx = x1 - x0;
+    auto sx = 1;
+    auto dy = y1 - y0;
+    auto sy = 1;
+    auto err = dx + dy;
 
     while ((x0 != x1) && (y0 != y1)) {
-        DrawPixel(x0, y0, color);
+        Draw(Shape::Point(x0, y0), color);
         if (2 * err >= dy) {
             err += dy;
             x0 += sx;
@@ -130,51 +137,49 @@ void Layer::DrawLine(int32_t x0, int32_t y0, int32_t x1, int32_t y1,
     }
 }
 
-void Layer::DrawHorizontalLine(int32_t x, int32_t y, int32_t line_width,
-                               int32_t color) {
-    int32_t i;
-    for (i = x; i < x + line_width; i++) {
-        DrawPixel(i, y, color);
-    }
+// TODO optimize with DrawAbsolute
+void Layer::Draw(Shape::HorizontalLine line, Graphic::Color color) {
+    auto width = line.bottomRight.x - line.topLeft.x;
+    auto y = line.bottomRight.y;
+
+    assert(width >= 0);
+    LoopLine(line.topLeft.x, width + 1) { Draw(Shape::Point(i, y), color); }
 }
 
-void Layer::DrawVerticalLine(int32_t x, int32_t y, int32_t line_height,
-                             int32_t color) {
-    int32_t i;
-    for (i = y; i < y + line_height; i++) {
-        DrawPixel(x, i, color);
-    }
+// TODO optimize with DrawAbsolute
+void Layer::Draw(Shape::VerticalLine line, Graphic::Color color) {
+    auto x = line.bottomRight.x;
+    auto height = line.bottomRight.y - line.topLeft.y;
+
+    assert(height >= 0);
+    LoopLine(line.topLeft.y, height + 1) { Draw(Shape::Point(x, i), color); }
 }
 
-void Layer::DrawRectangle(int32_t x0, int32_t y0, int32_t x1, int32_t y1,
-                          int32_t color) {
-    int32_t min_x, min_y, max_x, max_y;
-    min_x = x1 > x0 ? x0 : x1;
-    max_x = x1 > x0 ? x1 : x0;
-    min_y = y1 > y0 ? y0 : y1;
-    max_y = y1 > y0 ? y1 : y0;
+void Layer::Draw(Shape::Rectangle rectangle, Graphic::Color color) {
+    auto x0 = rectangle.topLeft.x, y0 = rectangle.topLeft.y;
+    auto x1 = rectangle.bottomRight.x, y1 = rectangle.bottomRight.y;
 
-    DrawHorizontalLine(min_x, min_y, max_x - min_x + 1, color);
-    DrawHorizontalLine(min_x, max_y, max_x - min_x + 1, color);
-    DrawVerticalLine(min_x, min_y, max_y - min_y + 1, color);
-    DrawVerticalLine(max_x, min_y, max_y - min_y + 1, color);
+    Draw(Shape::HorizontalLine(x0, x1, y0), color);
+    Draw(Shape::HorizontalLine(x0, x1, y1), color);
+    Draw(Shape::VerticalLine(x0, y0, y1), color);
+    Draw(Shape::VerticalLine(x1, y0, y1), color);
 }
 
-void Layer::DrawFilledRectangle(int32_t x0, int32_t y0, int32_t x1, int32_t y1,
-                                int32_t color) {
-    int32_t min_x, min_y, max_x, max_y;
-    int32_t i;
-    min_x = x1 > x0 ? x0 : x1;
-    max_x = x1 > x0 ? x1 : x0;
-    min_y = y1 > y0 ? y0 : y1;
-    max_y = y1 > y0 ? y1 : y0;
+void Layer::DrawFilled(Shape::Rectangle rectangle, Graphic::Color color) {
+    auto x0 = rectangle.topLeft.x;
+    auto width = rectangle.bottomRight.x - rectangle.topLeft.x;
+    auto y0 = rectangle.topLeft.y, y1 = rectangle.bottomRight.y;
 
-    for (i = min_x; i <= max_x; i++) {
-        DrawVerticalLine(i, min_y, max_y - min_y + 1, color);
-    }
+    assert(width >= 0);
+    assert(y1 - y0 >= 0);
+
+    LoopLine(x0, width + 1) { Draw(Shape::VerticalLine(i, y0, y1), color); }
 }
 
-void Layer::DrawCircle(int32_t x, int32_t y, int32_t radius, int32_t color) {
+void Layer::Draw(Shape::Circle circle, Graphic::Color color) {
+    auto x = circle.center.x, y = circle.center.y;
+    auto radius = circle.radius;
+
     /* Bresenham algorithm */
     int32_t x_pos = -radius;
     int32_t y_pos = 0;
@@ -182,10 +187,10 @@ void Layer::DrawCircle(int32_t x, int32_t y, int32_t radius, int32_t color) {
     int32_t e2;
 
     do {
-        DrawPixel(x - x_pos, y + y_pos, color);
-        DrawPixel(x + x_pos, y + y_pos, color);
-        DrawPixel(x + x_pos, y - y_pos, color);
-        DrawPixel(x - x_pos, y - y_pos, color);
+        Draw(Shape::Point(x - x_pos, y + y_pos), color);
+        Draw(Shape::Point(x + x_pos, y + y_pos), color);
+        Draw(Shape::Point(x + x_pos, y - y_pos), color);
+        Draw(Shape::Point(x - x_pos, y - y_pos), color);
         e2 = err;
         if (e2 <= y_pos) {
             err += ++y_pos * 2 + 1;
@@ -199,8 +204,10 @@ void Layer::DrawCircle(int32_t x, int32_t y, int32_t radius, int32_t color) {
     } while (x_pos <= 0);
 }
 
-void Layer::DrawFilledCircle(int32_t x, int32_t y, int32_t radius,
-                             int32_t color) {
+void Layer::DrawFilled(Shape::Circle circle, Graphic::Color color) {
+    auto x = circle.center.x, y = circle.center.y;
+    auto radius = circle.radius;
+
     /* Bresenham algorithm */
     int32_t x_pos = -radius;
     int32_t y_pos = 0;
@@ -208,12 +215,14 @@ void Layer::DrawFilledCircle(int32_t x, int32_t y, int32_t radius,
     int32_t e2;
 
     do {
-        DrawPixel(x - x_pos, y + y_pos, color);
-        DrawPixel(x + x_pos, y + y_pos, color);
-        DrawPixel(x + x_pos, y - y_pos, color);
-        DrawPixel(x - x_pos, y - y_pos, color);
-        DrawHorizontalLine(x + x_pos, y + y_pos, 2 * (-x_pos) + 1, color);
-        DrawHorizontalLine(x + x_pos, y - y_pos, 2 * (-x_pos) + 1, color);
+        Draw(Shape::Point(x - x_pos, y + y_pos), color);
+        Draw(Shape::Point(x + x_pos, y + y_pos), color);
+        Draw(Shape::Point(x + x_pos, y - y_pos), color);
+        Draw(Shape::Point(x - x_pos, y - y_pos), color);
+        Draw(Shape::HorizontalLine(x + x_pos, y + y_pos, 2 * (-x_pos) + 1),
+             color);
+        Draw(Shape::HorizontalLine(x + x_pos, y - y_pos, 2 * (-x_pos) + 1),
+             color);
         e2 = err;
         if (e2 <= y_pos) {
             err += ++y_pos * 2 + 1;

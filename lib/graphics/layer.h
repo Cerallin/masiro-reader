@@ -26,6 +26,8 @@
 
 #include "epd37/epd2in13b.h"
 #include "fonts/font.h"
+#include "graphic.h"
+#include "shapes.h"
 #include "style.h"
 
 #ifdef __cplusplus
@@ -40,24 +42,6 @@ extern "C" {
 /***        type definitions                                                ***/
 /******************************************************************************/
 
-namespace Graphic {
-
-enum Rotate {
-    ROTATE_0 = 1,
-    ROTATE_90 = 2,
-    ROTATE_180 = 4,
-    ROTATE_270 = 8,
-};
-
-enum Color {
-    WW = 0,
-    WB = 1,
-    BW = 2,
-    BB = 3,
-};
-
-} // namespace Graphic
-
 class Layer {
   public:
     Layer(uint32_t width, uint32_t height, int32_t rotate = ROTATE_DEFAULT,
@@ -65,8 +49,8 @@ class Layer {
     Layer(const Layer &layer);
     ~Layer() = default;
 
-    #define _Class Layer
-    #include "traits/layersetters.h"
+#define _Class Layer
+#include "traits/layersetters.h"
 
     /**
      * @brief Get size of an image (front or back)
@@ -80,7 +64,7 @@ class Layer {
      *
      * @param color color to paint
      */
-    Layer &Clear(int32_t color);
+    Layer &Clear(Graphic::Color color);
 
     /**
      * @brief Get width, NOT affected by rotate
@@ -107,6 +91,9 @@ class Layer {
      */
     int32_t GetRotate() const;
 
+    /**
+     * @brief Get invertColor
+     */
     bool GetInvertColor(void) const;
 
     /**
@@ -124,98 +111,49 @@ class Layer {
     uint8_t *GetOldImage() const;
 
     /**
-     * @brief
-     *
-     * @param[in] x
-     * @param[in] y
-     * @param[in] color
+     * @brief Draw absolute pixel
      */
-    void DrawAbsolutePixel(int32_t x, int32_t y, int32_t color);
+    void DrawAbsolute(Shape::Point point, Graphic::Color color);
 
     /**
-     * @brief this draws a pixel by the coordinates.
-     *
-     * @param[in] x
-     * @param[in] y
-     * @param[in] color
+     * @brief Draw relative pixel
      */
-    void DrawPixel(int32_t x, int32_t y, int32_t color);
+    void Draw(Shape::Point point, Graphic::Color color);
 
     /**
-     * @brief this draws a line on the frame buffer.
-     *
-     * @param[in] x0
-     * @param[in] y0
-     * @param[in] x1
-     * @param[in] y1
-     * @param[in] color
+     * @brief Draw line
      */
-    void DrawLine(int32_t x0, int32_t y0, int32_t x1, int32_t y1,
-                  int32_t color);
+    void Draw(Shape::Line line, Graphic::Color color);
 
     /**
-     * @brief this draws a horizontal line on the frame buffer.
-     *
-     * @param[in] x
-     * @param[in] y
-     * @param[in] width
-     * @param[in] color
+     * @brief Draw horizontal line
      */
-    void DrawHorizontalLine(int32_t x, int32_t y, int32_t width, int32_t color);
+    void Draw(Shape::HorizontalLine line, Graphic::Color color);
 
     /**
-     * @brief this draws a vertical line on the frame buffer.
-     *
-     * @param[in] x
-     * @param[in] y
-     * @param[in] height
-     * @param[in] color
+     * @brief Draw vertical line
      */
-    void DrawVerticalLine(int32_t x, int32_t y, int32_t height, int32_t color);
+    void Draw(Shape::VerticalLine line, Graphic::Color color);
 
     /**
-     * @brief this draws a rectangle.
-     *
-     * @param[in] x0
-     * @param[in] y0
-     * @param[in] x1
-     * @param[in] y1
-     * @param[in] color
+     * @brief Draw circle
      */
-    void DrawRectangle(int32_t x0, int32_t y0, int32_t x1, int32_t y1,
-                       int32_t color);
+    void Draw(Shape::Circle circle, Graphic::Color color);
 
     /**
-     * @brief this draws a filled rectangle.
-     *
-     * @param[in] x0
-     * @param[in] y0
-     * @param[in] x1
-     * @param[in] y1
-     * @param[in] color
+     * @brief Draw filled circle
      */
-    void DrawFilledRectangle(int32_t x0, int32_t y0, int32_t x1, int32_t y1,
-                             int32_t color);
+    void DrawFilled(Shape::Circle circle, Graphic::Color color);
 
     /**
-     * @brief this draws a circle.
-     *
-     * @param[in] x
-     * @param[in] y
-     * @param[in] radius
-     * @param[in] color
+     * @brief Draw rectangle
      */
-    void DrawCircle(int32_t x, int32_t y, int32_t radius, int32_t color);
+    void Draw(Shape::Rectangle rectangle, Graphic::Color color);
 
     /**
-     * @brief this draws a filled circle.
-     *
-     * @param[in] x
-     * @param[in] y
-     * @param[in] radius
-     * @param[in] color
+     * @brief Draw filled rectangle
      */
-    void DrawFilledCircle(int32_t x, int32_t y, int32_t radius, int32_t color);
+    void DrawFilled(Shape::Rectangle rectangle, Graphic::Color color);
 
   protected:
     uint8_t *new_image = nullptr;
@@ -241,6 +179,8 @@ class Layer {
 #define LoopMatrix(w, h, x, y)                                                 \
     for (auto i = x; i < x + w; i++)                                           \
         for (auto j = y; j < y + h; j++)
+
+#define LoopLine(start, count) for (auto i = start; i < start + count; i++)
 
 #ifdef __cplusplus
 } /* extern "C" */

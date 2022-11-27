@@ -22,35 +22,36 @@
 namespace Graphic {
 
 #define ScanLine(needle, lineStart)                                            \
-    for (needle = lineStart; needle->y == lineStart->y; needle++, cp++)
+    for (needle = lineStart;                                                   \
+         needle->cp != nullptr && needle->y == lineStart->y; needle++)
 
-#define BackSpace(needle, cp)                                                  \
-    {                                                                          \
-        needle--;                                                              \
-        cp--;                                                                  \
-    }
+#define BackSpace(needle)                                                      \
+    { needle--; }
 
-void GlyphInfo::AdjustAlign(const CodePoint *codepoints,
-                                  GlyphInfo *glyphInfos, ssize_t len,
-                                  TextAlign align, int lineWidth, Font *font) {
+void GlyphInfo::AdjustAlign(GlyphInfo *glyphInfos, ssize_t len, TextAlign align,
+                            int lineWidth, Font *font) {
     int stringWidth;
     float offset;
-    const CodePoint *cp = codepoints;
-    GlyphInfo *needle = glyphInfos, *lineStart = glyphInfos;
+    GlyphInfo *lineStart = glyphInfos, *needle = lineStart;
 
     if (align == AlignLeft) // default
         return;
 
     do {
         ScanLine(needle, lineStart) {} // Search for EOL
-        BackSpace(needle, cp);
 
-        stringWidth = font->Scale(cp, needle->x) + needle->width;
+        if (needle == lineStart) {
+            break;
+        }
+
+        BackSpace(needle);
+
+        stringWidth = font->Scale(needle->cp, needle->x) + needle->width;
         if (align == AlignRight) {
-            offset = font->Unscale(cp, lineWidth - stringWidth);
+            offset = font->Unscale(needle->cp, lineWidth - stringWidth);
             ScanLine(needle, lineStart) { needle->x += offset; }
         } else if (align == AlignCenter) {
-            offset = font->Unscale(cp, lineWidth - stringWidth) / 2;
+            offset = font->Unscale(needle->cp, lineWidth - stringWidth) / 2;
             ScanLine(needle, lineStart) { needle->x += offset; }
         }
         lineStart = needle;

@@ -76,19 +76,16 @@ void TextLayer::drawGlyph(const Graphic::GlyphInfo *glyph, Font *font,
 
 #ifndef NDEBUG
     debug("%d %d %d %d\n", x, y, x + glyph->width, y + glyph->height);
-    this->DrawRectangle(x, y, x + glyph->width, y + glyph->height,
-                        invertColor ? Graphic::Color::WB : Graphic::Color::BW);
+    this->Draw(Shape::Rectangle(x, y, x + glyph->width, y + glyph->height),
+               invertColor ? Graphic::Color::WB : Graphic::Color::BW);
 #endif
 
     LoopMatrix(glyph->width, glyph->height, x, y) {
-        int color = GetMatrix(bitmap, glyph->width, i - x, j - y) >> 6;
-        // FIXME This is some kind of "alpha" tunnel
-        if (this->invertColor) {
-            if (color != Graphic::Color::WW)
-                DrawPixel(i, j, ~color);
-        } else {
-            if (color != Graphic::Color::BB)
-                DrawPixel(i, j, color);
+        auto iColor = GetMatrix(bitmap, glyph->width, i - x, j - y) >> 6;
+        Graphic::Color color = Graphic::CastColor(iColor);
+
+        if (color != Graphic::Color::WW) {
+            Draw(Shape::Point(i, j), color);
         }
     };
 }
@@ -190,7 +187,7 @@ TextLayer &TextLayer::TypeSetting() {
     int maxHeight = GetRelativeHeight() - textPadding.paddingBottom;
 
     /* Codepoints always starts with 0xFEFF */
-    for (auto c = cps + 1; c - cps < charNum; c++, glyph++) {
+    for (auto c = cps + 1; c - cps < charNum; c++) {
         auto nextCodePoint = c + 1;
 
         /* Handle LF */
@@ -261,6 +258,8 @@ TextLayer &TextLayer::TypeSetting() {
                 continue;
             }
         }
+
+        glyph++;
     }
 
     return *this;
@@ -272,7 +271,7 @@ void TextLayer::Render() {
     assert_is_initialized(glyphInfo);
 
     int lineWidth = GetRelativeWidth() - textPadding.paddingRight;
-    Graphic::GlyphInfo::AdjustAlign(codepoints.get(), glyphInfo.get(), charNum,
+    Graphic::GlyphInfo::AdjustAlign(glyphInfo.get(), charNum,
                                     textAlign, lineWidth, font);
 
     std::unique_ptr<unsigned char[]> bitmap;

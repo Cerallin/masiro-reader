@@ -4,13 +4,18 @@ AM_CPPFLAGS = -I$(top_srcdir)/lib \
               -I$(top_srcdir)
 
 libgraphic_la_SOURCES = layer.cpp \
+                        graphic.cpp \
                         imagelayer.cpp \
                         textlayer.cpp \
-                        style/texttypesetting.cpp
+                        glyphinfo.cpp \
+                        shapes/point.cpp \
+                        shapes/twopointshape.cpp
 
 libgraphic_ladir = $(includedir)/graphics
 
-libgraphic_la_HEADERS = style.h\
+libgraphic_la_HEADERS = style.h \
+                        shapes.h \
+                        graphic.h \
                         layer.h \
                         imagelayer.h \
                         textlayer.h
@@ -18,6 +23,12 @@ libgraphic_la_HEADERS = style.h\
 libgraphic_traitsdir = $(includedir)/graphics/traits
 
 libgraphic_traits_HEADERS = traits/layersetters.h
+
+libgraphic_shapesdir = $(includedir)/graphics/shapes
+
+libgraphic_shapes_HEADERS = shapes/point.h \
+                            shapes/circle.h \
+                            shapes/twopointshape.h
 
 TESTS = test
 

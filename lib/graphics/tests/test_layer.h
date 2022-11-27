@@ -20,13 +20,14 @@ unsigned char layer_images[TEST_BUFFER_SIZE * 2];
 unsigned char *layer_front = layer_images,
               *layer_back = layer_images + TEST_BUFFER_SIZE;
 
-TEST_GROUP(TestLayer){void setup(){
-    layer = new Layer(TEST_WIDTH, TEST_HEIGHT, Graphic::ROTATE_270);
-layer->SetFrontImage(layer_front);
-layer->SetBackImage(layer_back);
-}
+TEST_GROUP(TestLayer) {
+    void setup() {
+        layer = new Layer(TEST_WIDTH, TEST_HEIGHT, Graphic::ROTATE_270);
+        layer->SetFrontImage(layer_front);
+        layer->SetBackImage(layer_back);
+    }
 
-void teardown() { delete layer; }
+    void teardown() { delete layer; }
 }
 ;
 
@@ -82,14 +83,14 @@ TEST(TestLayer, TestGetOldImage) {
 
 TEST(TestLayer, TestDrawAbsolutePixel) {
     layer->Init();
-    layer->DrawAbsolutePixel(3, 0, Graphic::Color::BB);
+    layer->DrawAbsolute(Shape::Point(3, 0), Graphic::Color::BB);
     BITS_EQUAL(0xEF, layer_front[0], 0xFF);
 }
 
 TEST(TestLayer, TestDrawPixel) {
     layer->Init();
     layer->SetRotate(Graphic::ROTATE_270);
-    layer->DrawPixel(TEST_HEIGHT, 3, Graphic::Color::BB);
+    layer->Draw(Shape::Point(TEST_HEIGHT, 3), Graphic::Color::BB);
     BITS_EQUAL(0xEF, layer_front[0], 0xFF);
 }
 
