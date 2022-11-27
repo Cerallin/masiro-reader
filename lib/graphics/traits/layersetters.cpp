@@ -38,6 +38,9 @@ _Class &_Class::SetImages(uint8_t *image) {
 }
 
 _Class &_Class::Init() {
+    assert(new_image != nullptr);
+    assert(old_image != nullptr);
+
     Clear(Graphic::Color::WW);
     return *this;
 }
@@ -48,16 +51,18 @@ _Class &_Class::SetRotate(int32_t rotate) {
 }
 
 _Class &_Class::SetInvertColor(bool flag) {
-    if (invertColor == flag)
+    if (invertColor == flag) {
         return *this;
-
+    }
     invertColor = flag;
+    return *this;
+}
 
+_Class &_Class::InvertColor() {
     int32_t w = width / 8;
-
     LoopMatrix(w, height, 0, 0) {
-        new_image[i + j * w] = ~new_image[i + j * w];
-        old_image[i + j * w] = ~old_image[i + j * w];
+        GetMatrix(new_image, w, i, j) = ~GetMatrix(new_image, w, i, j);
+        GetMatrix(old_image, w, i, j) = ~GetMatrix(old_image, w, i, j);
     }
 
     return *this;

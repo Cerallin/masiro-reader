@@ -21,7 +21,7 @@
 
 namespace Graphic {
 
-Color CastColor(int color) {
+Color CastColor(uint8_t color) {
     color = color & 0x03;
     Color map[] = {
         Color::WW,

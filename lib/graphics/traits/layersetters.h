@@ -72,3 +72,5 @@ _Class &SetRelativeHeight(int32_t height);
 _Class &SetRotate(int32_t rotate);
 
 _Class &SetInvertColor(bool flag);
+
+_Class &InvertColor();

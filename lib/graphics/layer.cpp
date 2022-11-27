@@ -57,7 +57,7 @@ bool Layer::GetInvertColor() const { return invertColor; }
 void Layer::DrawAbsolute(Shape::Point point, Graphic::Color color) {
     auto x = point.x, y = point.y;
 
-    int32_t iColor = this->invertColor ? color : Graphic::InvertColor(color);
+    uint8_t iColor = this->invertColor ? Graphic::InvertColor(color) : color;
 
     if (iColor & 0x01) {
         new_image[(x + y * this->width) / 8] &= ~(0x80 >> (x % 8));

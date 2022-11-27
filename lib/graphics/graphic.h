@@ -20,6 +20,8 @@
 #ifndef GRAPHIC_GRAPHIC_H
 #define GRAPHIC_GRAPHIC_H
 
+#include <cstdint>
+
 namespace Graphic {
 
 enum Rotate {
@@ -36,7 +38,7 @@ enum Color {
     BB = 3,
 };
 
-Color CastColor(int color);
+Color CastColor(uint8_t color);
 Color InvertColor(Color color);
 Color InvertColor(int color);
 

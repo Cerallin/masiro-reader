@@ -81,8 +81,8 @@ void TextLayer::drawGlyph(const Graphic::GlyphInfo *glyph, Font *font,
 #endif
 
     LoopMatrix(glyph->width, glyph->height, x, y) {
-        auto iColor = GetMatrix(bitmap, glyph->width, i - x, j - y) >> 6;
-        Graphic::Color color = Graphic::CastColor(iColor);
+        uint8_t iColor = GetMatrix(bitmap, glyph->width, i - x, j - y) >> 6;
+        auto color = Graphic::CastColor(iColor);
 
         if (color != Graphic::Color::WW) {
             Draw(Shape::Point(i, j), color);
