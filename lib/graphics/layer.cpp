@@ -54,22 +54,31 @@ Layer &Layer::Clear(Graphic::Color color) {
 
 bool Layer::GetInvertColor() const { return invertColor; }
 
+void Layer::drawAbsolute(uint8_t *image, bool color) {
+    if (color) {
+        *image = 0x00;
+    } else {
+        *image = ~((uint8_t)0x00);
+    }
+}
+
+void Layer::drawAbsolute(uint8_t *image, int32_t x, bool color) {
+    if (color) {
+        *image &= ~(0x80 >> (x % 8));
+    } else {
+        *image |= 0x80 >> (x % 8);
+    }
+}
+
 void Layer::DrawAbsolute(Shape::Point point, Graphic::Color color) {
     auto x = point.x, y = point.y;
 
-    uint8_t iColor = this->invertColor ? Graphic::InvertColor(color) : color;
-
-    if (iColor & 0x01) {
-        new_image[(x + y * this->width) / 8] &= ~(0x80 >> (x % 8));
-    } else {
-        new_image[(x + y * this->width) / 8] |= 0x80 >> (x % 8);
+    if (this->invertColor) {
+        color = Graphic::InvertColor(color);
     }
 
-    if (iColor & 0x02) {
-        old_image[(x + y * this->width) / 8] &= ~(0x80 >> (x % 8));
-    } else {
-        old_image[(x + y * this->width) / 8] |= 0x80 >> (x % 8);
-    }
+    drawAbsolute(&new_image[(x + y * this->width) / 8], x, color & 0x01);
+    drawAbsolute(&old_image[(x + y * this->width) / 8], x, color & 0x02);
 }
 
 uint8_t *Layer::GetNewImage(void) const { return this->new_image; }
@@ -134,22 +143,78 @@ void Layer::Draw(Shape::Line line, Graphic::Color color) {
     }
 }
 
-// TODO optimize with DrawAbsolute
-void Layer::Draw(Shape::HorizontalLine line, Graphic::Color color) {
-    auto width = line.end.x - line.start.x;
-    auto y = line.end.y;
+void Layer::DrawAbsolute(Shape::HorizontalLine line, Graphic::Color color) {
+    auto width = line.end.x - line.start.x + 1;
+    auto x0 = line.start.x, y = line.end.y;
 
-    assert(width >= 0);
-    LoopLine(line.start.x, width + 1) { Draw(Shape::Point(i, y), color); }
+    assert(width > 0);
+
+    int32_t preBits = 8 - x0 % 8, preCount = (x0 + preBits) / 8;
+    int32_t byteCount = (width - preBits) / 8, postBits = (width - preBits) % 8;
+
+    if (preBits > width) {
+        preBits = width;
+    }
+
+    LoopLine(x0, preBits) { DrawAbsolute(Shape::Point(i, y), color); }
+    LoopLine(x0 + preBits + byteCount * 8, postBits) {
+        DrawAbsolute(Shape::Point(i, y), color);
+    }
+
+    if (this->invertColor) {
+        color = Graphic::InvertColor(color);
+    }
+
+    LoopLine(preCount, byteCount) {
+        drawAbsolute(&new_image[(i * 8 + y * this->width) / 8], color & 0x01);
+        drawAbsolute(&old_image[(i * 8 + y * this->width) / 8], color & 0x02);
+    }
 }
 
-// TODO optimize with DrawAbsolute
-void Layer::Draw(Shape::VerticalLine line, Graphic::Color color) {
+void Layer::DrawAbsolute(Shape::VerticalLine line, Graphic::Color color) {
     auto x = line.end.x;
-    auto height = line.end.y - line.start.y;
+    auto height = line.end.y - line.start.y + 1;
 
-    assert(height >= 0);
-    LoopLine(line.start.y, height + 1) { Draw(Shape::Point(x, i), color); }
+    assert(height > 0);
+    LoopLine(line.start.y, height) { DrawAbsolute(Shape::Point(x, i), color); }
+}
+
+void Layer::Draw(Shape::HorizontalLine line, Graphic::Color color) {
+    auto x0 = line.start.x, y0 = line.start.y;
+    auto x1 = line.end.x;
+
+    if (rotate == Graphic::ROTATE_0) {
+        DrawAbsolute(line, color);
+    } else if (rotate == Graphic::ROTATE_90) {
+        auto absoluteLine = Shape::VerticalLine(width - y0, x0, x1);
+        DrawAbsolute(absoluteLine, color);
+    } else if (rotate == Graphic::ROTATE_180) {
+        auto absoluteLine =
+            Shape::HorizontalLine(width - x1, width - x0, height - y0);
+        DrawAbsolute(absoluteLine, color);
+    } else if (rotate == Graphic::ROTATE_270) {
+        auto absoluteLine = Shape::VerticalLine(y0, height - x1, height - x0);
+        DrawAbsolute(absoluteLine, color);
+    }
+}
+
+void Layer::Draw(Shape::VerticalLine line, Graphic::Color color) {
+    auto x0 = line.start.x, y0 = line.start.y;
+    auto y1 = line.end.y;
+
+    if (rotate == Graphic::ROTATE_0) {
+        DrawAbsolute(line, color);
+    } else if (rotate == Graphic::ROTATE_90) {
+        auto absoluteLine = Shape::HorizontalLine(width - y1, width - y0, x0);
+        DrawAbsolute(absoluteLine, color);
+    } else if (rotate == Graphic::ROTATE_180) {
+        auto absoluteLine =
+            Shape::VerticalLine(width - x0, height - y0, height - y1);
+        DrawAbsolute(absoluteLine, color);
+    } else if (rotate == Graphic::ROTATE_270) {
+        auto absoluteLine = Shape::HorizontalLine(y0, y1, height - x0);
+        DrawAbsolute(absoluteLine, color);
+    }
 }
 
 void Layer::Draw(Shape::Rectangle rectangle, Graphic::Color color) {
@@ -212,14 +277,8 @@ void Layer::DrawFilled(Shape::Circle circle, Graphic::Color color) {
     int32_t e2;
 
     do {
-        Draw(Shape::Point(x - x_pos, y + y_pos), color);
-        Draw(Shape::Point(x + x_pos, y + y_pos), color);
-        Draw(Shape::Point(x + x_pos, y - y_pos), color);
-        Draw(Shape::Point(x - x_pos, y - y_pos), color);
-        Draw(Shape::HorizontalLine(x + x_pos, x - x_pos + 1, y + y_pos),
-             color);
-        Draw(Shape::HorizontalLine(x + x_pos, x - x_pos + 1, y - y_pos),
-             color);
+        Draw(Shape::HorizontalLine(x + x_pos, x - x_pos, y + y_pos), color);
+        Draw(Shape::HorizontalLine(x + x_pos, x - x_pos, y - y_pos), color);
         e2 = err;
         if (e2 <= y_pos) {
             err += ++y_pos * 2 + 1;

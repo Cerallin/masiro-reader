@@ -114,6 +114,9 @@ class Layer {
      */
     void DrawAbsolute(Shape::Point point, Graphic::Color color);
 
+    void DrawAbsolute(Shape::VerticalLine line, Graphic::Color color);
+    void DrawAbsolute(Shape::HorizontalLine line, Graphic::Color color);
+
     /**
      * @brief Draw relative pixel
      */
@@ -163,6 +166,10 @@ class Layer {
     bool invertColor;
 
     static Graphic::Rotate ROTATE_DEFAULT;
+
+  private:
+    static void drawAbsolute(uint8_t *image, bool color);
+    static void drawAbsolute(uint8_t *image, int32_t x, bool color);
 };
 
 /******************************************************************************/
@@ -176,10 +183,11 @@ class Layer {
 #define GetMatrix(bitmap, w, x, y) (bitmap[(y) * (w) + (x)])
 
 #define LoopMatrix(w, h, x, y)                                                 \
-    for (auto i = x; i < x + w; i++)                                           \
-        for (auto j = y; j < y + h; j++)
+    for (auto i = (x); i < (x) + (w); i++)                                     \
+        for (auto j = (y); j < (y) + (h); j++)
 
-#define LoopLine(start, count) for (auto i = start; i < start + count; i++)
+#define LoopLine(start, count)                                                 \
+    for (auto i = (start); i < (start) + (count); i++)
 
 #ifdef __cplusplus
 } /* extern "C" */
