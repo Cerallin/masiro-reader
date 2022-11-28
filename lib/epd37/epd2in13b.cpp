@@ -167,7 +167,7 @@ int Epd::Init(void) {
     SendData(0x08);
 
     SendCommand(VCOM_AND_DATA_INTERVAL_SETTING);
-    SendData(0x11);
+    SendData(0x10);
 
     // Initialize LUTs
     for (auto command = VCOM_LUT; command - VCOM_LUT < 6; command++) {
