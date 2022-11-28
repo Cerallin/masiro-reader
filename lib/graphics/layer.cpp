@@ -44,6 +44,7 @@ size_t Layer::GetMemSize() const {
     return size;
 }
 
+// TODO optimize
 Layer &Layer::Clear(Graphic::Color color) {
     LoopMatrix(this->width, this->height, 0, 0) {
         DrawAbsolute(Shape::Point(i, j), color);
@@ -157,7 +158,7 @@ void Layer::DrawAbsolute(Shape::HorizontalLine line, Graphic::Color color) {
     }
 
     LoopLine(x0, preBits) { DrawAbsolute(Shape::Point(i, y), color); }
-    LoopLine(x0 + preBits + byteCount * 8, postBits) {
+    LoopLine(x0 + width - postBits, postBits) {
         DrawAbsolute(Shape::Point(i, y), color);
     }
 

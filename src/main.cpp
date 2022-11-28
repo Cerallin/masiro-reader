@@ -34,8 +34,7 @@ int main(void) {
 
     try {
         ImageLayer imageLayer = layer;
-        imageLayer.LoadFrom(SRC_DIR "/assets/lain.bmp");
-        imageLayer.InvertColor();
+        imageLayer.SetInvertColor(true).LoadFrom(SRC_DIR "/assets/lain.bmp");
 
         FontFace XLWenKai;
         XLWenKai.LoadFont(SRC_DIR "/assets/LXGWWenKaiScreen.ttf");

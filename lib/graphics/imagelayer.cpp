@@ -55,6 +55,10 @@ void ImageLayer::LoadFrom(BMPImage *image) {
     auto memSize = GetMemSize();
     std::memcpy(new_image, image->GetFrontImage(), memSize);
     std::memcpy(old_image, image->GetBackImage(), memSize);
+
+    if (invertColor) {
+        InvertColor();
+    }
 }
 
 void ImageLayer::LoadFrom(const char *imageFile) {
@@ -71,5 +75,9 @@ void ImageLayer::LoadFrom(const char *imageFile) {
         snprintf(error_msg, 256, "Cannot load image file: %s\n",
                  SRC_DIR "/assets/lain.bmp");
         throw std::runtime_error(error_msg);
+    }
+
+    if (invertColor) {
+        InvertColor();
     }
 }
