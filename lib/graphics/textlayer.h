@@ -59,11 +59,16 @@ class TextLayer : public Layer {
     TextLayer &SetTextPadding(int paddingLeft, int paddingTop, int paddingRight,
                               int paddingBottom);
 
-    TextLayer &TypeSetting();
+    /**
+     * @brief Calculate glyphs positions.
+     *
+     * @param direction Text::Horizontal or Text::Vertical
+     */
+    TextLayer &TypeSetting(Text::Direction direction);
 
     /**
-     * @brief Render the characters
-     *
+     * @brief Draw glyphs.
+     * Must be called after TextLayer::TypeSetting.
      */
     void Render();
 
@@ -71,10 +76,11 @@ class TextLayer : public Layer {
     void drawGlyph(const Graphic::GlyphInfo *glyphInfo, Font *font,
                    const unsigned char *bitmap);
 
-    void calcCodePointSize(const CodePoint *codepoint, int *ix0, int *iy0,
-                           int *ix1, int *iy1, int *advanceWidth);
+    int32_t calcGlyphOffset(const CodePoint *start, const CodePoint *nextBreak);
+    void getGlyphInfo(Graphic::GlyphInfo *glyph, const CodePoint *cp, float x,
+                      float y);
 
-    int calcLineWidth(const CodePoint *start, const CodePoint *nextBreak);
+    bool lineFeed(const CodePoint *cp, int32_t x);
 
     std::unique_ptr<CodePoint[]> codepoints = nullptr;
     Font *font = nullptr;

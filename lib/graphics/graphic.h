@@ -65,19 +65,30 @@ class GlyphInfo {
     static void AdjustAlign(GlyphInfo *glyphInfos, ssize_t len, TextAlign align,
                             int lineWidth, Font *font);
 
-    float x;             // unscaled absolute x, to be justified
-    int y;               // absolute y, determing chars in the same line
-    int iy0;             // y offset
-    int width;           // scaled bitmap width
-    int height;          // scaled bitmap height
-    int advancedWith;    // unscaled advance width
-    int leftSideBearing; // unscaled left side bearing
-    int kern;            // scaled kerning
-    int ascent;          // ascent
+    float x = 0;    // unscaled absolute x
+    float y = 0;    // unscaled absolute y
+    int iy0 = 0;    // y offset
+    int width = 0;  // scaled bitmap width
+    int height = 0; // scaled bitmap height
+    int advancedWith = 0;    // unscaled advance width
+    int leftSideBearing = 0; // unscaled left side bearing
+    int kern = 0;            // scaled kerning
+    int ascent = 0;          // ascent
+
+    bool rotate = false;
 
     const CodePoint *cp = nullptr;
 };
 
 } // namespace Graphic
+
+namespace Text {
+
+enum Direction {
+    Vertical,
+    Horizontal,
+};
+
+} // namespace Text
 
 #endif /* GRAPHIC_GRAPHIC_H */

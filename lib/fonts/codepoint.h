@@ -67,7 +67,7 @@ class CodePoint {
     static CodePoint *FindNextBreak(const CodePoint *str,
                                     const CodePoint *needle);
 
-    static CodePoint *StrChr(const CodePoint *str, CodePoint c);
+    static CodePoint *StrChr(const CodePoint *str, const CodePoint &c);
 
     static CodePoint *Strpbrk(const CodePoint *str, const CodePoint *needle);
 

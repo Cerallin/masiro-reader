@@ -74,7 +74,7 @@ const bool CodePoint::operator>=(uint16_t cp) const { return value >= cp; }
 
 const bool CodePoint::operator==(uint16_t cp) const { return value == cp; }
 
-CodePoint *CodePoint::StrChr(const CodePoint *str, CodePoint c) {
+CodePoint *CodePoint::StrChr(const CodePoint *str, const CodePoint &c) {
     for (auto p_str = str; !p_str->IsEmpty(); p_str++) {
         if (*p_str == c)
             return (CodePoint *)p_str;
