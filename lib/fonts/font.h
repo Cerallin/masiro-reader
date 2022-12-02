@@ -34,6 +34,8 @@ class Font {
 
     void GetCodepointHMetrics(const CodePoint *codepoint, int *advanceWidth,
                               int *leftSideBearing);
+    void GetCodepointVMetrics(const CodePoint *codepoint, int *advanceHeight,
+                              int *topSideBearing);
     void GetCodepointBitmapBox(const CodePoint *codepoint, int *ix0, int *iy0,
                                int *ix1, int *iy1);
     unsigned char *GetCodepointBitmap(const CodePoint *codepoint, int *width,
@@ -42,11 +44,13 @@ class Font {
 
     FontFamily *GetFontFamily();
 
-    int GetScaledAscent(const CodePoint *codepoint);
-    int GetLineHeight(const CodePoint *codepoint, float scale = 1.f);
+    int GetScaledAscent(const CodePoint *codepoint) const;
+    int GetScaledVertAscent(const CodePoint *codepoint) const;
+    int GetLineHeight(const CodePoint *codepoint, float scale = 1.f) const;
+    int GetLineWidth(const CodePoint *codepoint, float scale = 1.f) const;
 
-    float Scale(const CodePoint *codepoint, float num);
-    float Unscale(const CodePoint *codepoint, float num);
+    float Scale(const CodePoint *codepoint, float num) const;
+    float Unscale(const CodePoint *codepoint, float num) const;
 
   private:
     std::unique_ptr<FontFamily> fontFamily;
@@ -54,9 +58,9 @@ class Font {
 
     float fontSize;
 
-    inline float getFontScale(const CodePoint *codepoint);
-    inline const FontFace *getFontFace(const CodePoint *codepoint);
-    inline const FontMetrics *getMetrics(const CodePoint *codepoint);
+    inline float getFontScale(const CodePoint *codepoint) const;
+    inline const FontFace *getFontFace(const CodePoint *codepoint) const;
+    inline const FontMetrics *getMetrics(const CodePoint *codepoint) const;
 };
 
 #endif /* FONT_FONT_H */

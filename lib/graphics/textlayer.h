@@ -53,6 +53,8 @@ class TextLayer : public Layer {
 
     TextLayer &SetLineHeight(float lineHeight);
 
+    TextLayer &SetWritingMode(Text::WritingMode mode);
+
     TextLayer &SetTextPadding(Graphic::TextPadding textPadding);
     TextLayer &SetTextPadding(int padding);
     TextLayer &SetTextPadding(int paddingX, int paddingY);
@@ -61,10 +63,8 @@ class TextLayer : public Layer {
 
     /**
      * @brief Calculate glyphs positions.
-     *
-     * @param direction Text::Horizontal (default) or Text::Vertical
      */
-    TextLayer &TypeSetting(Text::Direction direction = Text::Horizontal);
+    TextLayer &TypeSetting();
 
     /**
      * @brief Draw glyphs.
@@ -80,7 +80,7 @@ class TextLayer : public Layer {
     void getGlyphInfo(Graphic::GlyphInfo *glyph, const CodePoint *cp, float x,
                       float y);
 
-    bool lineFeed(const CodePoint *cp, int32_t x);
+    bool lineFeed(const CodePoint *cp, int32_t pos, int32_t maxLine);
 
     std::unique_ptr<CodePoint[]> codepoints = nullptr;
     Font *font = nullptr;
@@ -90,6 +90,8 @@ class TextLayer : public Layer {
     Graphic::TextPadding textPadding = {0, 0, 0, 0};
 
     ssize_t charNum;
+
+    Text::WritingMode mode = Text::Horizontal_TB;
 
     float lineHeightScale = 1.0f;
 };

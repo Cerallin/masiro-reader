@@ -65,15 +65,16 @@ class GlyphInfo {
     static void AdjustAlign(GlyphInfo *glyphInfos, ssize_t len, TextAlign align,
                             int lineWidth, Font *font);
 
-    float x = 0;    // unscaled absolute x
-    float y = 0;    // unscaled absolute y
-    int iy0 = 0;    // y offset
-    int width = 0;  // scaled bitmap width
-    int height = 0; // scaled bitmap height
+    float x = 0;         // unscaled absolute x
+    float y = 0;         // unscaled absolute y
+    int ix0 = 0;         // x offset
+    int iy0 = 0;         // y offset
+    int width = 0;       // scaled bitmap width
+    int height = 0;      // scaled bitmap height
     int advanced = 0;    // unscaled advance width
-    int leftSideBearing = 0; // unscaled left side bearing
-    int kern = 0;            // scaled kerning
-    int ascent = 0;          // ascent
+    int sideBearing = 0; // unscaled left side bearing
+    int kern = 0;        // scaled kerning
+    int ascent = 0;      // ascent
 
     bool rotate = false;
 
@@ -84,10 +85,20 @@ class GlyphInfo {
 
 namespace Text {
 
-enum Direction {
-    Vertical,
-    Horizontal,
+enum WritingMode {
+    // Horizontal, from top to bottom
+    Horizontal_TB = 1,
+    // Vertical, from left to right
+    Vertical_LR = 2,
+    // Vertical, from right to left
+    Vertical_RL = 4,
 };
+
+constexpr bool Horizontal(WritingMode mode) { return mode == Horizontal_TB; }
+
+constexpr bool Vertical(WritingMode mode) {
+    return mode == Vertical_LR || mode == Vertical_RL;
+}
 
 } // namespace Text
 

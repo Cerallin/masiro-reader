@@ -35,6 +35,7 @@ Font::Font(FontFamily *fontFamily, float fontSize)
 
         FontMetrics metrics(scale);
         metrics.FontVMetrics(fontInfo);
+        metrics.FontHMetrics(fontInfo);
 
         metricsList.push_back(metrics);
     }
@@ -48,6 +49,13 @@ void Font::GetCodepointHMetrics(const CodePoint *codepoint, int *advanceWidth,
     stbtt_GetCodepointHMetrics(getFontFace(codepoint)->GetFontInfo(),
                                codepoint->GetValue(), advanceWidth,
                                leftSideBearing);
+}
+
+void Font::GetCodepointVMetrics(const CodePoint *codepoint, int *advanceHeight,
+                                int *topSideBearing) {
+    stbtt_GetCodepointVMetrics(getFontFace(codepoint)->GetFontInfo(),
+                               codepoint->GetValue(), advanceHeight,
+                               topSideBearing);
 }
 
 void Font::GetCodepointBitmapBox(const CodePoint *codepoint, int *ix0, int *iy0,
@@ -74,34 +82,44 @@ int Font::GetCodepointKernAdvance(const CodePoint *cp1, const CodePoint *cp2) {
                                          cp2->GetValue());
 }
 
-int Font::GetScaledAscent(const CodePoint *codepoint) {
+int Font::GetScaledAscent(const CodePoint *codepoint) const {
     auto metrics = getMetrics(codepoint);
     return Scale(codepoint, metrics->ascent);
 }
 
-int Font::GetLineHeight(const CodePoint *codepoint, float scale) {
+int Font::GetScaledVertAscent(const CodePoint *codepoint) const {
+    auto metrics = getMetrics(codepoint);
+    return Scale(codepoint, metrics->vertTypoAscender);
+}
+
+int Font::GetLineHeight(const CodePoint *codepoint, float scale) const {
     auto metrics = getMetrics(codepoint);
     return roundeven(scale * metrics->GetLineHeight());
 }
 
-float Font::Scale(const CodePoint *codepoint, float num) {
+int Font::GetLineWidth(const CodePoint *codepoint, float scale) const {
+    auto metrics = getMetrics(codepoint);
+    return roundeven(scale * metrics->GetLineWidth());
+}
+
+float Font::Scale(const CodePoint *codepoint, float num) const {
     return roundevenf(num * getFontScale(codepoint));
 }
 
-float Font::Unscale(const CodePoint *codepoint, float num) {
+float Font::Unscale(const CodePoint *codepoint, float num) const {
     return roundevenf(num / getFontScale(codepoint));
 }
 
-inline float Font::getFontScale(const CodePoint *codepoint) {
+inline float Font::getFontScale(const CodePoint *codepoint) const {
     auto metrics = getMetrics(codepoint);
     return metrics->scale;
 }
 
-inline const FontFace *Font::getFontFace(const CodePoint *codepoint) {
+inline const FontFace *Font::getFontFace(const CodePoint *codepoint) const {
     return fontFamily->GetFontFace(codepoint);
 }
 
-inline const FontMetrics *Font::getMetrics(const CodePoint *codepoint) {
+inline const FontMetrics *Font::getMetrics(const CodePoint *codepoint) const {
     auto index = fontFamily->GetFontFaceIndex(codepoint);
     return &metricsList[index];
 }

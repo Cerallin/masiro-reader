@@ -28,13 +28,18 @@ class FontMetrics {
     FontMetrics(float scale, int ascent, int descent, int lineGap);
 
     void FontVMetrics(const stbtt_fontinfo *info);
+    void FontHMetrics(const stbtt_fontinfo *info);
 
     float GetLineHeight() const;
+    float GetLineWidth() const;
 
     float scale;
     int ascent = 0;
     int descent = 0;
     int lineGap = 0;
+    int vertTypoAscender = 0;
+    int vertTypoDescender = 0;
+    int vertTypoLineGap = 0;
 };
 
 #endif /* FONT_FONT_METRICS_H */

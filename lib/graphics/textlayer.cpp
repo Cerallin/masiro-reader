@@ -31,10 +31,11 @@ constexpr uint16_t CHAR_LF = 0x000A;
 constexpr uint16_t CHAR_SPACE = 0x0020;
 
 static const CodePoint breaks[] = {
-    CHAR_LF, // LF
-    0x002c,  // '.'
-    0x002e,  // ','
-    0x0000,  // EOS
+    CHAR_LF,    // LF
+    CHAR_SPACE, // ' '
+    0x002c,     // '.'
+    0x002e,     // ','
+    0x0000,     // EOS
 };
 
 // 中文标点
@@ -78,6 +79,11 @@ TextLayer &TextLayer::SetLineHeight(float lineHeight) {
     return *this;
 }
 
+TextLayer &TextLayer::SetWritingMode(Text::WritingMode mode) {
+    this->mode = mode;
+    return *this;
+}
+
 TextLayer &TextLayer::SetFont(Font *font) {
     this->font = font;
     return *this;
@@ -116,15 +122,40 @@ TextLayer &TextLayer::SetTextPadding(int paddingLeft, int paddingTop,
 void TextLayer::drawGlyph(const Graphic::GlyphInfo *glyph, Font *font,
                           const unsigned char *bitmap) {
     int32_t x, y;
-
-    x = font->Scale(glyph->cp, glyph->x + glyph->leftSideBearing);
-    y = font->Scale(glyph->cp, glyph->y) + glyph->iy0 + glyph->ascent;
+    if (Text::Horizontal(mode)) {
+        x = font->Scale(glyph->cp, glyph->x + glyph->sideBearing);
+        y = font->Scale(glyph->cp, glyph->y) + glyph->iy0 + glyph->ascent;
+    } else if (Text::Vertical(mode)) {
+        x = font->Scale(glyph->cp, glyph->y) + glyph->ix0;
+        y = font->Scale(glyph->cp, glyph->x + glyph->sideBearing);
+    }
 
 #ifndef NDEBUG
-    debug("%d %d %d %d\n", x, y, x + glyph->width, y + glyph->height);
+    if (glyph->cp->GetValue() < 0xff) {
+        debug("%c: ", (char)glyph->cp->GetValue());
+    }
+    debug("%3d x %3d\t+ %3d x %3d\n", x, y, x + glyph->width,
+          y + glyph->height);
+
     if (glyph->width && glyph->height) {
         this->Draw(Shape::Rectangle(x, y, x + glyph->width, y + glyph->height),
-                   invertColor ? Graphic::Color::WB : Graphic::Color::BW);
+                   Graphic::Color::WB);
+
+        if (Text::Horizontal(mode)) {
+            this->Draw(Shape::Rectangle(
+                           font->Scale(glyph->cp, glyph->x),
+                           font->Scale(glyph->cp, glyph->y),
+                           font->Scale(glyph->cp, glyph->x + glyph->advanced),
+                           y + glyph->height),
+                       Graphic::Color::BW);
+        } else if (Text::Vertical(mode)) {
+            this->Draw(Shape::Rectangle(
+                           font->Scale(glyph->cp, glyph->y),
+                           font->Scale(glyph->cp, glyph->x),
+                           font->Scale(glyph->cp, glyph->y) + glyph->width,
+                           font->Scale(glyph->cp, glyph->x + glyph->advanced)),
+                       Graphic::Color::BW);
+        }
     }
 #endif
 
@@ -141,18 +172,27 @@ void TextLayer::drawGlyph(const Graphic::GlyphInfo *glyph, Font *font,
 float TextLayer::calcGlyphOffset(const CodePoint *start, int num) {
     assert(num > 0);
 
-    int ix0, ix1, advanceWidth, lsb;
+    int ix0, iy0, ix1, iy1, advance, sideBearing;
     float sum = 0;
     const CodePoint *cp;
     for (cp = start + 1; cp - start < num; cp++) {
-        font->GetCodepointBitmapBox(cp, &ix0, 0, &ix1, 0);
-        font->GetCodepointHMetrics(cp, &advanceWidth, &lsb);
+        font->GetCodepointBitmapBox(cp, &ix0, &iy0, &ix1, &iy1);
+        if (Text::Horizontal(mode)) {
+            font->GetCodepointHMetrics(cp, &advance, &sideBearing);
+        } else if (Text::Vertical(mode)) {
+            font->GetCodepointVMetrics(cp, &advance, &sideBearing);
+        }
 
-        sum += advanceWidth;
+        sum += advance;
         sum += font->GetCodepointKernAdvance(cp, cp + 1);
     }
     // For last glyph, use width instead of advance width.
-    sum = sum - advanceWidth + lsb + font->Unscale(cp, ix1 - ix0);
+    sum = sum - advance + sideBearing;
+    if (Text::Horizontal(mode)) {
+        sum += font->Unscale(cp, ix1 - ix0);
+    } else if (Text::Vertical(mode)) {
+        sum += font->Unscale(cp, iy1 - iy0);
+    }
 
     return sum;
 }
@@ -166,9 +206,7 @@ inline bool isChBreak(const CodePoint &cp) {
            CodePoint::FindNextChar(ch_breaks, cp) != nullptr;
 }
 
-bool TextLayer::lineFeed(const CodePoint *cp, int32_t x) {
-    int32_t maxLineLength = GetRelativeWidth() - textPadding.paddingRight;
-
+bool TextLayer::lineFeed(const CodePoint *cp, int32_t pos, int32_t maxLine) {
     /* Auto linefeed for latin chars */
     if (isBreak(*cp)) {
         auto nextBreak = CodePoint::FindNextBreak(cp + 1, breaks);
@@ -176,29 +214,36 @@ bool TextLayer::lineFeed(const CodePoint *cp, int32_t x) {
             return false;
         }
         auto assumedLineLength =
-            font->Scale(cp, x + calcGlyphOffset(cp, nextBreak - cp));
-        return assumedLineLength > maxLineLength;
+            font->Scale(cp, pos + calcGlyphOffset(cp, nextBreak - cp));
+        return assumedLineLength > maxLine;
     }
     /* Auto linefeed for Chinese chars */
     if (isChBreak(*(cp + 2))) {
-        auto assumedLineLength = font->Scale(cp, x + calcGlyphOffset(cp, 3));
-        return assumedLineLength > maxLineLength;
+        auto assumedLineLength = font->Scale(cp, pos + calcGlyphOffset(cp, 3));
+        return assumedLineLength > maxLine;
     }
 
     return false;
 }
 
 void TextLayer::getGlyphInfo(Graphic::GlyphInfo *glyph, const CodePoint *cp,
-                             float x, float y) {
+                             float textDirection, float lineDirection) {
     int ix0, iy0, ix1, iy1;
-
     font->GetCodepointBitmapBox(cp, &ix0, &iy0, &ix1, &iy1);
-    font->GetCodepointHMetrics(cp, &glyph->advanced, &glyph->leftSideBearing);
 
-    glyph->x = x;
-    glyph->y = y;
+    if (Text::Horizontal(mode)) {
+        font->GetCodepointHMetrics(cp, &glyph->advanced, &glyph->sideBearing);
+        glyph->ascent = font->GetScaledAscent(cp);
+    } else if (Text::Vertical(mode)) {
+        font->GetCodepointVMetrics(cp, &glyph->advanced, &glyph->sideBearing);
+        glyph->ascent = font->GetScaledVertAscent(cp);
+    }
+
+    glyph->x = textDirection;
+    glyph->y = lineDirection;
     glyph->width = ix1 - ix0;
     glyph->height = iy1 - iy0;
+    glyph->ix0 = ix0;
     glyph->iy0 = iy0;
     glyph->cp = cp;
 
@@ -208,27 +253,27 @@ void TextLayer::getGlyphInfo(Graphic::GlyphInfo *glyph, const CodePoint *cp,
     }
 }
 
+bool overflow(const Graphic::GlyphInfo *glyph, const Font *font, int max) {
+    float assumedLineLength;
+    assumedLineLength =
+        glyph->x + glyph->sideBearing + font->Unscale(glyph->cp, glyph->width);
+    return font->Scale(glyph->cp, assumedLineLength) >= max;
+}
+
 #define NextLine(x, y, start, lineHeight, stopCondition)                       \
     {                                                                          \
-        if (direction == Text::Horizontal) {                                   \
-            x = start;                                                         \
-            y += lineHeight;                                                   \
-        } else if (direction == Text::Vertical) {                              \
-            y = start;                                                         \
-            x += lineHeight;                                                   \
-        }                                                                      \
+        x = start;                                                             \
+        y += lineHeight;                                                       \
         if (stopCondition) {                                                   \
             charNum = cp - cps;                                                \
             break;                                                             \
         }                                                                      \
     }
 
-TextLayer &TextLayer::TypeSetting(Text::Direction direction) {
+TextLayer &TextLayer::TypeSetting() {
     // Debug checks
     assert_is_initialized(font);
     assert_is_initialized(codepoints);
-
-    float assumedLineLength;
 
     // initialize
     glyphInfo.reset(new Graphic::GlyphInfo[charNum]);
@@ -237,15 +282,41 @@ TextLayer &TextLayer::TypeSetting(Text::Direction direction) {
     auto cps = codepoints.get() + 1;
     auto glyph = glyphInfo.get();
 
-    /* Smoother unscaled x */
-    float x = font->Unscale(cps, textPadding.paddingLeft),
-          y = font->Unscale(cps, textPadding.paddingTop);
-    float start = x,
-          lineHeight =
-              font->Unscale(cps, font->GetLineHeight(cps, lineHeightScale));
+    float textStart, lineHeight;
 
-    int maxLineLength = GetRelativeWidth() - textPadding.paddingRight;
-    int maxHeight = GetRelativeHeight() - textPadding.paddingBottom;
+    /* Smoother unscaled */
+    float textDirection, lineDirection;
+    // max length of lines
+    int maxLine;
+    // max length of each line
+    int maxText;
+
+    if (Text::Horizontal(mode)) {
+        textStart = font->Unscale(cps, textPadding.paddingLeft);
+        lineHeight =
+            font->Unscale(cps, font->GetLineHeight(cps, lineHeightScale));
+
+        textDirection = textStart;
+        lineDirection = font->Unscale(cps, textPadding.paddingTop);
+
+        maxLine = GetRelativeHeight() - textPadding.paddingBottom;
+        maxText = GetRelativeWidth() - textPadding.paddingRight;
+    } else if (Text::Vertical(mode)) {
+        textStart = font->Unscale(cps, textPadding.paddingTop);
+        lineHeight =
+            font->Unscale(cps, font->GetLineWidth(cps, lineHeightScale));
+
+        textDirection = textStart;
+        lineDirection = font->Unscale(cps, textPadding.paddingLeft);
+
+        if (mode == Text::Vertical_RL) {
+            lineDirection -= lineHeight;
+            lineHeight = -lineHeight;
+        }
+
+        maxLine = GetRelativeWidth() - textPadding.paddingRight;
+        maxText = GetRelativeHeight() - textPadding.paddingBottom;
+    }
 
     /* Codepoints always starts with 0xFEFF */
     for (auto cp = cps; cp - cps < charNum - 1; cp++) {
@@ -258,11 +329,9 @@ TextLayer &TextLayer::TypeSetting(Text::Direction direction) {
             }
         }
 
-        getGlyphInfo(glyph, cp, x, y);
+        getGlyphInfo(glyph, cp, textDirection, lineDirection);
 
-        assumedLineLength =
-            glyph->x + glyph->leftSideBearing + font->Unscale(cp, glyph->width);
-        if (font->Scale(cp, assumedLineLength) >= maxLineLength) {
+        if (overflow(glyph, font, maxText)) {
             if (*cp == CHAR_SPACE) {
                 while (*cp == CHAR_SPACE) {
                     cp++;
@@ -271,21 +340,21 @@ TextLayer &TextLayer::TypeSetting(Text::Direction direction) {
                 cp--;
                 continue;
             }
-            glyph->x = start;
+            glyph->x = textStart;
             glyph->y += lineHeight;
-            NextLine(x, y, start, lineHeight,
-                     font->Scale(cp, y + lineHeight) > maxHeight);
+            NextLine(textDirection, lineDirection, textStart, lineHeight,
+                     font->Scale(cp, lineDirection + lineHeight) > maxLine);
         }
 
         /* move to start of the next codepoint */
-        x += glyph->advanced + font->Unscale(cp, glyph->kern);
+        textDirection += glyph->advanced + font->Unscale(cp, glyph->kern);
 
         glyph++;
 
-        if (lineFeed(cp, x)) {
+        if (lineFeed(cp, textStart, maxText)) {
         next_line:
-            NextLine(x, y, start, lineHeight,
-                     font->Scale(cp, y + lineHeight) > maxHeight);
+            NextLine(textDirection, lineDirection, textStart, lineHeight,
+                     font->Scale(cp, lineDirection + lineHeight) > maxLine);
         }
     }
 
@@ -297,7 +366,13 @@ void TextLayer::Render() {
     assert_is_initialized(font);
     assert_is_initialized(glyphInfo);
 
-    int lineWidth = GetRelativeWidth() - textPadding.paddingRight;
+    int lineWidth;
+
+    if (Text::Horizontal(mode)) {
+        lineWidth = GetRelativeWidth() - textPadding.paddingRight;
+    } else if (Text::Vertical(mode)) {
+        lineWidth = GetRelativeHeight() - textPadding.paddingBottom;
+    }
     Graphic::GlyphInfo::AdjustAlign(glyphInfo.get(), charNum, textAlign,
                                     lineWidth, font);
 
@@ -306,7 +381,6 @@ void TextLayer::Render() {
     for (auto glyph = glyphInfo.get(); glyph->cp != nullptr; glyph++) {
         auto cp = glyph->cp;
         bitmap.reset(font->GetCodepointBitmap(cp, 0, 0, 0, 0));
-        glyph->ascent = font->GetScaledAscent(cp);
         drawGlyph(glyph, font, bitmap.get());
     }
 }
