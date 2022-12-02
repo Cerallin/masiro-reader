@@ -72,7 +72,11 @@ void Layer::drawAbsolute(uint8_t *image, int32_t x, bool color) {
 }
 
 void Layer::DrawAbsolute(Shape::Point point, Graphic::Color color) {
+#ifndef NDEBUG
+    auto x = point.x % width, y = point.y % height;
+#else
     auto x = point.x, y = point.y;
+#endif
 
     if (this->invertColor) {
         color = Graphic::InvertColor(color);

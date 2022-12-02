@@ -74,7 +74,7 @@ const bool CodePoint::operator>=(uint16_t cp) const { return value >= cp; }
 
 const bool CodePoint::operator==(uint16_t cp) const { return value == cp; }
 
-CodePoint *CodePoint::StrChr(const CodePoint *str, const CodePoint &c) {
+CodePoint *CodePoint::FindNextChar(const CodePoint *str, CodePoint c) {
     for (auto p_str = str; !p_str->IsEmpty(); p_str++) {
         if (*p_str == c)
             return (CodePoint *)p_str;
@@ -156,13 +156,4 @@ int CodePoint::StrToUnicode(char *str, size_t srcLen, CodePoint **unicodeStr,
     *unicodeStr = (CodePoint *)buffer;
 
     return (CodePoint *)outbuff - (CodePoint *)buffer;
-}
-
-CodePoint *CodePoint::FindNextChar(const CodePoint *str, CodePoint c) {
-    for (auto p_str = str; !p_str->IsEmpty(); p_str++) {
-        if (*p_str == c)
-            return (CodePoint *)p_str;
-    }
-
-    return nullptr;
 }

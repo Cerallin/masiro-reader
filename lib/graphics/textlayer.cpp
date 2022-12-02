@@ -31,11 +31,10 @@ constexpr uint16_t CHAR_LF = 0x000A;
 constexpr uint16_t CHAR_SPACE = 0x0020;
 
 static const CodePoint breaks[] = {
-    CHAR_SPACE, // space
-    CHAR_LF,    // LF
-    0x002c,     // '.'
-    0x002e,     // ','
-    0x0000,     // EOS
+    CHAR_LF, // LF
+    0x002c,  // '.'
+    0x002e,  // ','
+    0x0000,  // EOS
 };
 
 // 中文标点
@@ -53,29 +52,6 @@ TextLayer::TextLayer(const TextLayer &layer) : Layer(layer) {}
 
 TextLayer::TextLayer(uint32_t width, uint32_t height, int32_t rotate)
     : Layer(width, height, rotate) {}
-
-void TextLayer::drawGlyph(const Graphic::GlyphInfo *glyph, Font *font,
-                          const unsigned char *bitmap) {
-    int32_t x, y;
-
-    x = font->Scale(glyph->cp, glyph->x + glyph->leftSideBearing);
-    y = font->Scale(glyph->cp, glyph->y) + glyph->iy0 + glyph->ascent;
-
-#ifndef NDEBUG
-    debug("%d %d %d %d\n", x, y, x + glyph->width, y + glyph->height);
-    this->Draw(Shape::Rectangle(x, y, x + glyph->width, y + glyph->height),
-               invertColor ? Graphic::Color::WB : Graphic::Color::BW);
-#endif
-
-    LoopMatrix(glyph->width, glyph->height, x, y) {
-        uint8_t iColor = GetMatrix(bitmap, glyph->width, i - x, j - y) >> 6;
-        auto color = Graphic::CastColor(iColor);
-
-        if (color != Graphic::Color::WW) {
-            Draw(Shape::Point(i, j), color);
-        }
-    };
-}
 
 TextLayer &TextLayer::SetText(char *str) {
     size_t srcLen = strlen(str), destLen = (srcLen + 4) * 2;
@@ -137,32 +113,57 @@ TextLayer &TextLayer::SetTextPadding(int paddingLeft, int paddingTop,
     return *this;
 }
 
+void TextLayer::drawGlyph(const Graphic::GlyphInfo *glyph, Font *font,
+                          const unsigned char *bitmap) {
+    int32_t x, y;
+
+    x = font->Scale(glyph->cp, glyph->x + glyph->leftSideBearing);
+    y = font->Scale(glyph->cp, glyph->y) + glyph->iy0 + glyph->ascent;
+
+#ifndef NDEBUG
+    debug("%d %d %d %d\n", x, y, x + glyph->width, y + glyph->height);
+    if (glyph->width && glyph->height) {
+        this->Draw(Shape::Rectangle(x, y, x + glyph->width, y + glyph->height),
+                   invertColor ? Graphic::Color::WB : Graphic::Color::BW);
+    }
+#endif
+
+    LoopMatrix(glyph->width, glyph->height, x, y) {
+        uint8_t iColor = GetMatrix(bitmap, glyph->width, i - x, j - y) >> 6;
+        auto color = Graphic::CastColor(iColor);
+
+        if (color != Graphic::Color::WW) {
+            Draw(Shape::Point(i, j), color);
+        }
+    };
+}
+
 float TextLayer::calcGlyphOffset(const CodePoint *start, int num) {
     assert(num > 0);
 
-    int ix0, ix1, advanceWidth;
+    int ix0, ix1, advanceWidth, lsb;
     float sum = 0;
     const CodePoint *cp;
-    for (cp = start; cp - start < num; cp++) {
+    for (cp = start + 1; cp - start < num; cp++) {
         font->GetCodepointBitmapBox(cp, &ix0, 0, &ix1, 0);
-        font->GetCodepointHMetrics(cp, &advanceWidth, 0);
+        font->GetCodepointHMetrics(cp, &advanceWidth, &lsb);
 
         sum += advanceWidth;
         sum += font->GetCodepointKernAdvance(cp, cp + 1);
     }
     // For last glyph, use width instead of advance width.
-    sum = sum - advanceWidth + font->Unscale(cp, ix1 - ix0);
+    sum = sum - advanceWidth + lsb + font->Unscale(cp, ix1 - ix0);
 
     return sum;
 }
 
 inline bool isBreak(const CodePoint &cp) {
-    return CodePoint::StrChr(breaks, cp) != nullptr;
+    return CodePoint::FindNextChar(breaks, cp) != nullptr;
 }
 
 inline bool isChBreak(const CodePoint &cp) {
     return !cp.IsEmpty() && cp > 0x2000 &&
-           CodePoint::StrChr(ch_breaks, cp) != nullptr;
+           CodePoint::FindNextChar(ch_breaks, cp) != nullptr;
 }
 
 bool TextLayer::lineFeed(const CodePoint *cp, int32_t x) {
@@ -180,8 +181,7 @@ bool TextLayer::lineFeed(const CodePoint *cp, int32_t x) {
     }
     /* Auto linefeed for Chinese chars */
     if (isChBreak(*(cp + 2))) {
-        auto assumedLineLength =
-            font->Scale(cp, x + calcGlyphOffset(cp, 3));
+        auto assumedLineLength = font->Scale(cp, x + calcGlyphOffset(cp, 3));
         return assumedLineLength > maxLineLength;
     }
 
@@ -208,10 +208,15 @@ void TextLayer::getGlyphInfo(Graphic::GlyphInfo *glyph, const CodePoint *cp,
     }
 }
 
-#define NextLine(x, y, xStart, yOffset, stopCondition)                         \
+#define NextLine(x, y, start, lineHeight, stopCondition)                       \
     {                                                                          \
-        x = xStart;                                                            \
-        y += yOffset;                                                          \
+        if (direction == Text::Horizontal) {                                   \
+            x = start;                                                         \
+            y += lineHeight;                                                   \
+        } else if (direction == Text::Vertical) {                              \
+            y = start;                                                         \
+            x += lineHeight;                                                   \
+        }                                                                      \
         if (stopCondition) {                                                   \
             charNum = cp - cps;                                                \
             break;                                                             \
@@ -235,7 +240,7 @@ TextLayer &TextLayer::TypeSetting(Text::Direction direction) {
     /* Smoother unscaled x */
     float x = font->Unscale(cps, textPadding.paddingLeft),
           y = font->Unscale(cps, textPadding.paddingTop);
-    float left = x,
+    float start = x,
           lineHeight =
               font->Unscale(cps, font->GetLineHeight(cps, lineHeightScale));
 
@@ -258,9 +263,17 @@ TextLayer &TextLayer::TypeSetting(Text::Direction direction) {
         assumedLineLength =
             glyph->x + glyph->leftSideBearing + font->Unscale(cp, glyph->width);
         if (font->Scale(cp, assumedLineLength) >= maxLineLength) {
-            glyph->x = left;
+            if (*cp == CHAR_SPACE) {
+                while (*cp == CHAR_SPACE) {
+                    cp++;
+                }
+
+                cp--;
+                continue;
+            }
+            glyph->x = start;
             glyph->y += lineHeight;
-            NextLine(x, y, left, lineHeight,
+            NextLine(x, y, start, lineHeight,
                      font->Scale(cp, y + lineHeight) > maxHeight);
         }
 
@@ -271,11 +284,8 @@ TextLayer &TextLayer::TypeSetting(Text::Direction direction) {
 
         if (lineFeed(cp, x)) {
         next_line:
-            NextLine(x, y, left, lineHeight,
+            NextLine(x, y, start, lineHeight,
                      font->Scale(cp, y + lineHeight) > maxHeight);
-            if (*cp == CHAR_SPACE) {
-                continue;
-            }
         }
     }
 

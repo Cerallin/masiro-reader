@@ -62,9 +62,9 @@ class TextLayer : public Layer {
     /**
      * @brief Calculate glyphs positions.
      *
-     * @param direction Text::Horizontal or Text::Vertical
+     * @param direction Text::Horizontal (default) or Text::Vertical
      */
-    TextLayer &TypeSetting(Text::Direction direction);
+    TextLayer &TypeSetting(Text::Direction direction = Text::Horizontal);
 
     /**
      * @brief Draw glyphs.
