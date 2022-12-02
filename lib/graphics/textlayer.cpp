@@ -137,18 +137,21 @@ TextLayer &TextLayer::SetTextPadding(int paddingLeft, int paddingTop,
     return *this;
 }
 
-int32_t TextLayer::calcGlyphOffset(const CodePoint *start,
-                                   const CodePoint *nextBreak) {
-    int ix0, advanceWidth;
+float TextLayer::calcGlyphOffset(const CodePoint *start, int num) {
+    assert(num > 0);
 
-    int32_t sum = 0;
-    for (auto tmp = start; tmp < nextBreak; tmp++) {
-        font->GetCodepointBitmapBox(tmp, &ix0, 0, 0, 0);
-        font->GetCodepointHMetrics(tmp, &advanceWidth, 0);
+    int ix0, ix1, advanceWidth;
+    float sum = 0;
+    const CodePoint *cp;
+    for (cp = start; cp - start < num; cp++) {
+        font->GetCodepointBitmapBox(cp, &ix0, 0, &ix1, 0);
+        font->GetCodepointHMetrics(cp, &advanceWidth, 0);
 
-        sum += font->Unscale(tmp, ix0) + advanceWidth;
-        sum += font->GetCodepointKernAdvance(tmp, (tmp + 1));
+        sum += advanceWidth;
+        sum += font->GetCodepointKernAdvance(cp, cp + 1);
     }
+    // For last glyph, use width instead of advance width.
+    sum = sum - advanceWidth + font->Unscale(cp, ix1 - ix0);
 
     return sum;
 }
@@ -172,13 +175,13 @@ bool TextLayer::lineFeed(const CodePoint *cp, int32_t x) {
             return false;
         }
         auto assumedLineLength =
-            font->Scale(cp, x + calcGlyphOffset(cp, nextBreak));
+            font->Scale(cp, x + calcGlyphOffset(cp, nextBreak - cp));
         return assumedLineLength > maxLineLength;
     }
     /* Auto linefeed for Chinese chars */
     if (isChBreak(*(cp + 2))) {
         auto assumedLineLength =
-            font->Scale(cp, x + calcGlyphOffset(cp, cp + 3));
+            font->Scale(cp, x + calcGlyphOffset(cp, 3));
         return assumedLineLength > maxLineLength;
     }
 
@@ -190,10 +193,9 @@ void TextLayer::getGlyphInfo(Graphic::GlyphInfo *glyph, const CodePoint *cp,
     int ix0, iy0, ix1, iy1;
 
     font->GetCodepointBitmapBox(cp, &ix0, &iy0, &ix1, &iy1);
-    font->GetCodepointHMetrics(cp, &glyph->advancedWith,
-                               &glyph->leftSideBearing);
+    font->GetCodepointHMetrics(cp, &glyph->advanced, &glyph->leftSideBearing);
 
-    glyph->x = x + font->Unscale(cp, ix0);
+    glyph->x = x;
     glyph->y = y;
     glyph->width = ix1 - ix0;
     glyph->height = iy1 - iy0;
@@ -226,9 +228,6 @@ TextLayer &TextLayer::TypeSetting(Text::Direction direction) {
     // initialize
     glyphInfo.reset(new Graphic::GlyphInfo[charNum]);
 
-    // Next line flag
-    bool flagLineFeed = false;
-
     // head of arrays
     auto cps = codepoints.get() + 1;
     auto glyph = glyphInfo.get();
@@ -248,34 +247,31 @@ TextLayer &TextLayer::TypeSetting(Text::Direction direction) {
         /* Handle LF */
         if (*cp < CHAR_SPACE) {
             if (*cp == CHAR_LF) { // LF, of course
-                flagLineFeed = true;
                 goto next_line;
             } else { // Invalid char?
                 continue;
             }
         }
 
-        flagLineFeed = lineFeed(cp, x);
-
         getGlyphInfo(glyph, cp, x, y);
 
         assumedLineLength =
             glyph->x + glyph->leftSideBearing + font->Unscale(cp, glyph->width);
-        assumedLineLength = font->Scale(cp, assumedLineLength);
-        if (assumedLineLength >= maxLineLength) {
-            NextLine(x, y, left - glyph->leftSideBearing, lineHeight,
+        if (font->Scale(cp, assumedLineLength) >= maxLineLength) {
+            glyph->x = left;
+            glyph->y += lineHeight;
+            NextLine(x, y, left, lineHeight,
                      font->Scale(cp, y + lineHeight) > maxHeight);
         }
 
         /* move to start of the next codepoint */
-        x += glyph->advancedWith + font->Unscale(cp, glyph->kern);
+        x += glyph->advanced + font->Unscale(cp, glyph->kern);
 
         glyph++;
 
-        if (flagLineFeed) {
+        if (lineFeed(cp, x)) {
         next_line:
-            flagLineFeed = false;
-            NextLine(x, y, left - glyph->leftSideBearing, lineHeight,
+            NextLine(x, y, left, lineHeight,
                      font->Scale(cp, y + lineHeight) > maxHeight);
             if (*cp == CHAR_SPACE) {
                 continue;

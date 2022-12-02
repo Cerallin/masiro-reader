@@ -76,7 +76,7 @@ class TextLayer : public Layer {
     void drawGlyph(const Graphic::GlyphInfo *glyphInfo, Font *font,
                    const unsigned char *bitmap);
 
-    int32_t calcGlyphOffset(const CodePoint *start, const CodePoint *nextBreak);
+    float calcGlyphOffset(const CodePoint *start, int num);
     void getGlyphInfo(Graphic::GlyphInfo *glyph, const CodePoint *cp, float x,
                       float y);
 

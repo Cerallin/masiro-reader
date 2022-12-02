@@ -70,7 +70,7 @@ class GlyphInfo {
     int iy0 = 0;    // y offset
     int width = 0;  // scaled bitmap width
     int height = 0; // scaled bitmap height
-    int advancedWith = 0;    // unscaled advance width
+    int advanced = 0;    // unscaled advance width
     int leftSideBearing = 0; // unscaled left side bearing
     int kern = 0;            // scaled kerning
     int ascent = 0;          // ascent
