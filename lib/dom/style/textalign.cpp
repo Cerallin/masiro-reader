@@ -21,7 +21,7 @@
 
 namespace Style {
 
-HasTextAlign::HasTextAlign() { textAlign = AlignLeft; }
+HasTextAlign::HasTextAlign() { textAlign = AlignStart; }
 
 TextAlign HasTextAlign::GetTextAlign() { return textAlign; }
 

@@ -86,7 +86,7 @@ class TextLayer : public Layer {
     Font *font = nullptr;
 
     std::unique_ptr<Graphic::GlyphInfo[]> glyphInfo = nullptr;
-    Graphic::TextAlign textAlign = Graphic::AlignLeft;
+    Graphic::TextAlign textAlign = Graphic::AlignStart;
     Graphic::TextPadding textPadding = {0, 0, 0, 0};
 
     ssize_t charNum;

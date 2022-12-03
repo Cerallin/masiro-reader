@@ -34,7 +34,7 @@ void GlyphInfo::AdjustAlign(GlyphInfo *glyphInfos, ssize_t len, TextAlign align,
     float offset;
     GlyphInfo *lineStart = glyphInfos, *needle = lineStart;
 
-    if (align == AlignLeft) // default
+    if (align == AlignStart) // default
         return;
 
     do {
@@ -47,7 +47,7 @@ void GlyphInfo::AdjustAlign(GlyphInfo *glyphInfos, ssize_t len, TextAlign align,
         BackSpace(needle);
 
         stringWidth = font->Scale(needle->cp, needle->x) + needle->width;
-        if (align == AlignRight) {
+        if (align == AlignEnd) {
             offset = font->Unscale(needle->cp, lineWidth - stringWidth);
             ScanLine(needle, lineStart) { needle->x += offset; }
         } else if (align == AlignCenter) {

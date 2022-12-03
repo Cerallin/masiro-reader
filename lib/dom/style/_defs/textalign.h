@@ -2,8 +2,8 @@
 #define __STYLE_TEXTALIGN_H
 
 typedef enum {
-    AlignLeft,
-    AlignRight,
+    AlignStart,
+    AlignEnd,
     AlignCenter,
     AlignJustify, // TODO: not implemented
 } TextAlign;

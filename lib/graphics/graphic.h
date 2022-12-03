@@ -46,8 +46,8 @@ Color InvertColor(Color color);
 Color InvertColor(int color);
 
 typedef enum {
-    AlignLeft,
-    AlignRight,
+    AlignStart,
+    AlignEnd,
     AlignCenter,
     AlignJustify, // TODO: not implemented
 } TextAlign;
