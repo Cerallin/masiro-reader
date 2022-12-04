@@ -29,15 +29,15 @@
 #include <new>
 #include <system_error>
 
-char LoadFontFailedException::error_msg[80];
+char FontLoadException::error_msg[128];
+char FontInitException::error_msg[128];
 
 void FontFace::LoadFont(const char *filename) {
     FILE *fontFile = fopen(filename, "rb");
     if (!fontFile) {
-        std::system_error e(errno, std::generic_category());
-        handle_exception(e);
         setState(ERROR);
-        throw LoadFontFailedException(filename);
+        throw FontLoadException(
+            std::system_error(errno, std::generic_category()), filename);
     }
 
     fseek(fontFile, 0, SEEK_END);
@@ -49,9 +49,7 @@ void FontFace::LoadFont(const char *filename) {
     fclose(fontFile);
 
     if (!stbtt_InitFont(&fontInfo, fontBuffer.get(), 0)) {
-        std::runtime_error e("init failed.");
-        handle_exception(e);
-        throw LoadFontFailedException(filename);
+        throw FontInitException(filename);
     }
 
     setState(LOADED);

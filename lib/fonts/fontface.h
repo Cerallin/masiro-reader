@@ -37,18 +37,35 @@ using stbtt_int32 = int32_t;
 #include "stb_truetype.h"
 
 #include <memory>
+#include <system_error>
 
-class LoadFontFailedException : public std::exception {
+class FontLoadException : public std::exception {
   public:
-    LoadFontFailedException(const char *str) : std::exception(), str(str){};
+    FontLoadException(std::system_error e, const char *str)
+        : std::exception(), e(e), str(str){};
 
     const char *what() const _GLIBCXX_TXN_SAFE_DYN _GLIBCXX_NOTHROW override {
-        snprintf(error_msg, 80, "Cannot load font: %s.", str);
+        snprintf(error_msg, 128, "Cannot load font: %s: %s", e.what(), str);
         return error_msg;
     };
 
   private:
-    static char error_msg[80];
+    std::system_error e;
+    static char error_msg[128];
+    const char *str;
+};
+
+class FontInitException : public std::exception {
+  public:
+    FontInitException(const char *str) : std::exception(), str(str){};
+
+    const char *what() const _GLIBCXX_TXN_SAFE_DYN _GLIBCXX_NOTHROW override {
+        snprintf(error_msg, 128, "Font init failed: %s", str);
+        return error_msg;
+    };
+
+  private:
+    static char error_msg[128];
     const char *str;
 };
 
@@ -68,7 +85,8 @@ class FontFace {
      *
      * @param filename font file
      *
-     * @throw LoadFontFailedException
+     * @throw FontLoadException
+     * @throw FontInitException
      */
     void LoadFont(const char *filename);
     const stbtt_fontinfo *GetFontInfo() const;
