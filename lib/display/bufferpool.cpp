@@ -30,11 +30,11 @@ void BufferPool::Init() {
     }
 }
 
-void BufferPool::AssignBuffer(Layer &layer) {
+void BufferPool::AssignBufferTo(Layer &layer) {
     uint8_t *buff;
 
     if (bufferQueue.size() < 2) {
-        return;
+        throw OutOfBufferException();
     }
 
     buff = bufferQueue.front();
@@ -46,7 +46,7 @@ void BufferPool::AssignBuffer(Layer &layer) {
     bufferQueue.pop();
 }
 
-void BufferPool::ReleaseLayer(Layer &layer) {
+void BufferPool::RecycleBufferFrom(Layer &layer) {
     bufferQueue.push(layer.GetOldImage());
     bufferQueue.push(layer.GetNewImage());
 }

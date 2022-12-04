@@ -28,7 +28,7 @@ int main(void) {
     BufferPool::Init();
 
     Layer layer(EPD_WIDTH, EPD_HEIGHT);
-    BufferPool::AssignBuffer(layer);
+    BufferPool::AssignBufferTo(layer);
 
     layer.Init();
 
@@ -52,7 +52,7 @@ int main(void) {
         display->Init();
         display->Forward(*(new Frame(layer.InvertColor())));
 
-        BufferPool::ReleaseLayer(layer);
+        BufferPool::RecycleBufferFrom(layer);
     } catch (EpdInitFailedException &e) {
         std::cout << e.what() << std::endl;
     } catch (const std::exception &e) {

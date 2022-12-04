@@ -27,11 +27,25 @@
 constexpr size_t EPD_BUFFER_SIZE = EPD_WIDTH * EPD_HEIGHT / 8;
 constexpr size_t LAYER_BUFFER_POOL_SIZE = 8;
 
+class OutOfBufferException : public std::exception {
+  public:
+    const char *what() const _GLIBCXX_TXN_SAFE_DYN _GLIBCXX_NOTHROW override {
+        return "No enough buffer left.";
+    }
+};
+
 class BufferPool {
   public:
     static void Init();
-    static void AssignBuffer(Layer &layer);
-    static void ReleaseLayer(Layer &layer);
+    /**
+     * @brief Assign buffer to layer
+     *
+     * @param layer
+     *
+     * @throw OutOfBufferException
+    */
+    static void AssignBufferTo(Layer &layer);
+    static void RecycleBufferFrom(Layer &layer);
 
   private:
     static uint8_t bufferPool[EPD_BUFFER_SIZE * LAYER_BUFFER_POOL_SIZE];
