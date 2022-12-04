@@ -66,16 +66,7 @@ void ImageLayer::LoadFrom(const char *imageFile) {
     assert_is_initialized(old_image);
 
     BMPImage image(GetWidth(), GetHeight(), GetNewImage(), GetOldImage());
-    try {
-        image.Load(imageFile);
-    } catch (std::exception &e) {
-        handle_exception(e);
-
-        char error_msg[256];
-        snprintf(error_msg, 256, "Cannot load image file: %s\n",
-                 SRC_DIR "/assets/lain.bmp");
-        throw std::runtime_error(error_msg);
-    }
+    image.Load(imageFile);
 
     if (invertColor) {
         InvertColor();

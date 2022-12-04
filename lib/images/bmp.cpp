@@ -17,6 +17,8 @@
  *
  */
 
+#include "debug.h"
+
 #include "bmp.h"
 
 #include <assert.h>
@@ -24,9 +26,9 @@
 #include <cstdio>
 #include <cstring>
 #include <exception>
-#include <system_error>
 
-char UnsupportedBMPImage::error_msg[80];
+char UnsupportedBMPImage::error_msg[128];
+char ImageIOException::error_msg[128];
 
 template <typename T> size_t fread__(T *num, FILE *fd) {
     return fread(num, sizeof(T), 1, fd);
@@ -51,7 +53,8 @@ BMPImage::BMPImage(int32_t width, int32_t height, uint8_t *front, uint8_t *back)
 void BMPImage::Save(const char *imageFile) {
     FILE *fd = fopen(imageFile, "wb");
     if (fd == nullptr) {
-        throw std::system_error(errno, std::generic_category());
+        throw ImageSaveException(
+            std::system_error(errno, std::generic_category()), imageFile);
     }
 
     /* Header */
@@ -123,7 +126,8 @@ void BMPImage::Load(const char *imageFile) {
 
     FILE *fd = fopen(imageFile, "rb");
     if (fd == nullptr) {
-        throw std::system_error(errno, std::generic_category());
+        throw ImageLoadException(
+            std::system_error(errno, std::generic_category()), imageFile);
     }
 
     // TODO compare width and height

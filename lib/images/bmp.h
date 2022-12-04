@@ -21,7 +21,9 @@
 
 #include <cstdint>
 #include <cstdio>
+#include <cstring>
 #include <memory>
+#include <system_error>
 
 constexpr int16_t BMP_FILE_HEADER = 0x4D42;
 constexpr int32_t BMP_FILE_INFO_SIZE = 40;
@@ -31,13 +33,57 @@ class UnsupportedBMPImage : public std::exception {
     UnsupportedBMPImage(const char *info) : std::exception(), info(info){};
 
     const char *what() const _GLIBCXX_TXN_SAFE_DYN _GLIBCXX_NOTHROW override {
-        snprintf(error_msg, 80, "Unsupported BMP image: %s.", info);
+        snprintf(error_msg, 128, "Unsupported BMP image: %s.", info);
         return error_msg;
     };
 
   private:
-    static char error_msg[80];
+    static char error_msg[128];
     const char *info;
+};
+
+class ImageIOException : public std::exception {
+  public:
+    ImageIOException(std::exception e, const char *path)
+        : e(e), path(path){};
+
+    const char *what() const _GLIBCXX_TXN_SAFE_DYN _GLIBCXX_NOTHROW override {
+        snprintf(error_msg, 128, "%s: %s", e.what(), path);
+        return error_msg;
+    };
+
+  protected:
+    static char error_msg[128];
+
+  private:
+    std::exception e;
+    const char *path;
+};
+
+class ImageLoadException : public ImageIOException {
+  public:
+    ImageLoadException(std::system_error e, const char *path)
+        : ImageIOException(e, path){};
+
+    const char *what() const _GLIBCXX_TXN_SAFE_DYN _GLIBCXX_NOTHROW override {
+        char tmp[128];
+        strncpy(tmp, ImageIOException::what(), 128);
+        snprintf(error_msg, 128, "Cannot load image: %s", tmp);
+        return error_msg;
+    };
+};
+
+class ImageSaveException : public ImageIOException {
+  public:
+    ImageSaveException(std::system_error e, const char *path)
+        : ImageIOException(e, path){};
+
+    const char *what() const _GLIBCXX_TXN_SAFE_DYN _GLIBCXX_NOTHROW override {
+        char tmp[128];
+        strncpy(tmp, ImageIOException::what(), 128);
+        snprintf(error_msg, 128, "Cannot save image: %s", tmp);
+        return error_msg;
+    };
 };
 
 class BMPImage {
@@ -52,7 +98,7 @@ class BMPImage {
      *
      * @param imageFile image filename
      *
-     * @throw std::system_error
+     * @throw ImageSaveException
      */
     void Save(const char *imageFile);
 
@@ -61,8 +107,8 @@ class BMPImage {
      *
      * @param imageFile image filename
      *
-     * @throw std::system_error
-     * @throw std::runtime_error
+     * @throw ImageLoadException
+     * @throw UnsupportedBMPImage
      */
     void Load(const char *imageFile);
 
