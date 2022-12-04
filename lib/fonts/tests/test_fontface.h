@@ -21,5 +21,5 @@ TEST(TestFontFace, TestLoadFont) {
 
 TEST(TestFontFace, TestLoadFontFail) {
     FontFace fontFace;
-    CHECK_THROWS(LoadFontFailedException, fontFace.LoadFont("/nonexist.ttf"));
+    CHECK_THROWS(FontLoadException, fontFace.LoadFont("/nonexist.ttf"));
 }

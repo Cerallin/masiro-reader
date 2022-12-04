@@ -14,17 +14,13 @@ TextLayer *textLayer;
 
 FontFace *XLWenKai;
 
-Font *font;
-
 TEST_GROUP(TestTextLayer){
     void setup() {
         XLWenKai = new FontFace();
         XLWenKai->LoadFont(font_file);
 
-        font = new Font(XLWenKai);
-
         textLayer = new TextLayer(EPD_WIDTH, EPD_HEIGHT);
-        textLayer->SetFont(font);
+        textLayer->SetFont(new Font(XLWenKai));
         textLayer->SetFrontImage(layer_front);
         textLayer->SetBackImage(layer_back);
     }
@@ -32,7 +28,6 @@ TEST_GROUP(TestTextLayer){
     void teardown() {
         delete textLayer;
         delete XLWenKai;
-        delete font;
     }
 };
 

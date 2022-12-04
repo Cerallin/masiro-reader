@@ -171,8 +171,6 @@ void BMPImage::Load(const char *imageFile) {
     fread(image.get(), 1, imageSize, fd);
     fclose(fd);
 
-    int32_t len = imageSize / bitCount;
-
     extractImage(image.get(), imageSize, bitCount / 8);
 }
 
