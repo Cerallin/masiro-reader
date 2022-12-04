@@ -45,7 +45,7 @@ int main(void) {
             .SetFont(new Font(&XLWenKai, 28.0f))
             .SetText(str)
             .SetTextPadding(0, 195, 0, 0)
-            .TypeSetting(Text::Vertical)
+            .TypeSetting()
             .Render();
 
         auto display = new Display();
