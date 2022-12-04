@@ -17,9 +17,9 @@
  *
  */
 
-#include "graphic.h"
+#include "text.h"
 
-namespace Graphic {
+namespace Text {
 
 #define ScanLine(needle, lineStart)                                            \
     for (needle = lineStart;                                                   \
@@ -28,7 +28,7 @@ namespace Graphic {
 #define BackSpace(needle)                                                      \
     { needle--; }
 
-void GlyphInfo::AdjustAlign(GlyphInfo *glyphInfos, ssize_t len, TextAlign align,
+void GlyphInfo::AdjustAlign(GlyphInfo *glyphInfos, ssize_t len, Align align,
                             int lineWidth, Font *font) {
     int stringWidth;
     float offset;

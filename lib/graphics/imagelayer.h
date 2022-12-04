@@ -31,7 +31,7 @@ class ImageLayer : public Layer {
   public:
     ImageLayer(const Layer &layer);
     ImageLayer(uint32_t width, uint32_t height,
-               int32_t rotate = ROTATE_DEFAULT);
+               Graphic::Rotate rotate = Graphic::ROTATE_DEFAULT);
     ~ImageLayer() = default;
 
 #undef _Class

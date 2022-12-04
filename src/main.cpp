@@ -41,7 +41,7 @@ int main(void) {
 
         char str[] = "Serial Experiments Lain";
         TextLayer textLayer = layer;
-        textLayer.SetTextAlign(Graphic::AlignCenter)
+        textLayer.SetTextAlign(Text::AlignCenter)
             .SetFont(new Font(&XLWenKai, 28.0f))
             .SetText(str)
             .SetTextPadding(0, 195, 0, 0)

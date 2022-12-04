@@ -45,7 +45,7 @@ _Class &_Class::Init() {
     return *this;
 }
 
-_Class &_Class::SetRotate(int32_t rotate) {
+_Class &_Class::SetRotate(Graphic::Rotate rotate) {
     this->rotate = rotate;
     return *this;
 }

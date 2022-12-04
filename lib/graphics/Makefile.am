@@ -18,6 +18,7 @@ libgraphic_la_HEADERS = graphic.h \
                         imagelayer.h \
                         layer.h \
                         shapes.h \
+                        text.h \
                         textlayer.h
 
 libgraphic_traitsdir = $(includedir)/graphics/traits

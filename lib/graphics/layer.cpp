@@ -23,9 +23,7 @@
 
 #include "traits/layersetters.cpp"
 
-Graphic::Rotate Layer::ROTATE_DEFAULT = Graphic::ROTATE_270;
-
-Layer::Layer(uint32_t width, uint32_t height, int32_t rotate,
+Layer::Layer(uint32_t width, uint32_t height, Graphic::Rotate rotate,
              bool invertColor) {
     /* 1 byte = 8 pixels, so the width should be the multiple of 8 */
     this->width = width % 8 ? width + 8 - (width % 8) : width;

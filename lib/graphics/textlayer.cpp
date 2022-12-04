@@ -51,7 +51,7 @@ TextLayer::TextLayer(const Layer &layer) : Layer(layer) {}
 
 TextLayer::TextLayer(const TextLayer &layer) : Layer(layer) {}
 
-TextLayer::TextLayer(uint32_t width, uint32_t height, int32_t rotate)
+TextLayer::TextLayer(uint32_t width, uint32_t height, Graphic::Rotate rotate)
     : Layer(width, height, rotate) {}
 
 TextLayer &TextLayer::SetText(char *str) {
@@ -69,7 +69,7 @@ TextLayer &TextLayer::SetText(char *str) {
     return *this;
 }
 
-TextLayer &TextLayer::SetTextAlign(Graphic::TextAlign textAlign) {
+TextLayer &TextLayer::SetTextAlign(Text::Align textAlign) {
     this->textAlign = textAlign;
     return *this;
 }
@@ -85,11 +85,11 @@ TextLayer &TextLayer::SetWritingMode(Text::WritingMode mode) {
 }
 
 TextLayer &TextLayer::SetFont(Font *font) {
-    this->font = font;
+    this->font.reset(font);
     return *this;
 }
 
-TextLayer &TextLayer::SetTextPadding(Graphic::TextPadding textPadding) {
+TextLayer &TextLayer::SetTextPadding(Graphic::Padding textPadding) {
     this->textPadding = textPadding;
     return *this;
 }
@@ -119,7 +119,7 @@ TextLayer &TextLayer::SetTextPadding(int paddingLeft, int paddingTop,
     return *this;
 }
 
-void TextLayer::drawGlyph(const Graphic::GlyphInfo *glyph, Font *font,
+void TextLayer::drawGlyph(const Text::GlyphInfo *glyph, Font *font,
                           const unsigned char *bitmap) {
     int32_t x, y;
     if (Text::Horizontal(mode)) {
@@ -226,7 +226,7 @@ bool TextLayer::lineFeed(const CodePoint *cp, int32_t pos, int32_t maxLine) {
     return false;
 }
 
-void TextLayer::getGlyphInfo(Graphic::GlyphInfo *glyph, const CodePoint *cp,
+void TextLayer::getGlyphInfo(Text::GlyphInfo *glyph, const CodePoint *cp,
                              float textDirection, float lineDirection) {
     int ix0, iy0, ix1, iy1;
     font->GetCodepointBitmapBox(cp, &ix0, &iy0, &ix1, &iy1);
@@ -253,7 +253,7 @@ void TextLayer::getGlyphInfo(Graphic::GlyphInfo *glyph, const CodePoint *cp,
     }
 }
 
-bool overflow(const Graphic::GlyphInfo *glyph, const Font *font, int max) {
+bool overflow(const Text::GlyphInfo *glyph, const Font *font, int max) {
     float assumedLineLength;
     assumedLineLength =
         glyph->x + glyph->sideBearing + font->Unscale(glyph->cp, glyph->width);
@@ -276,7 +276,7 @@ TextLayer &TextLayer::TypeSetting() {
     assert_is_initialized(codepoints);
 
     // initialize
-    glyphInfo.reset(new Graphic::GlyphInfo[charNum]);
+    glyphInfo.reset(new Text::GlyphInfo[charNum]);
 
     // head of arrays
     auto cps = codepoints.get() + 1;
@@ -331,7 +331,7 @@ TextLayer &TextLayer::TypeSetting() {
 
         getGlyphInfo(glyph, cp, textDirection, lineDirection);
 
-        if (overflow(glyph, font, maxText)) {
+        if (overflow(glyph, font.get(), maxText)) {
             if (*cp == CHAR_SPACE) {
                 while (*cp == CHAR_SPACE) {
                     cp++;
@@ -373,14 +373,14 @@ void TextLayer::Render() {
     } else if (Text::Vertical(mode)) {
         lineWidth = GetRelativeHeight() - textPadding.paddingBottom;
     }
-    Graphic::GlyphInfo::AdjustAlign(glyphInfo.get(), charNum, textAlign,
-                                    lineWidth, font);
+    Text::GlyphInfo::AdjustAlign(glyphInfo.get(), charNum, textAlign, lineWidth,
+                                 font.get());
 
     std::unique_ptr<unsigned char[]> bitmap;
 
     for (auto glyph = glyphInfo.get(); glyph->cp != nullptr; glyph++) {
         auto cp = glyph->cp;
         bitmap.reset(font->GetCodepointBitmap(cp, 0, 0, 0, 0));
-        drawGlyph(glyph, font, bitmap.get());
+        drawGlyph(glyph, font.get(), bitmap.get());
     }
 }

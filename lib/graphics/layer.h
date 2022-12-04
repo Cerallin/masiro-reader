@@ -43,7 +43,7 @@ extern "C" {
 
 class Layer {
   public:
-    Layer(uint32_t width, uint32_t height, int32_t rotate = ROTATE_DEFAULT,
+    Layer(uint32_t width, uint32_t height, Graphic::Rotate rotate = Graphic::ROTATE_DEFAULT,
           bool invertColor = false);
     Layer(const Layer &layer);
     ~Layer() = default;
@@ -162,10 +162,13 @@ class Layer {
     uint8_t *old_image = nullptr;
     int32_t width;
     int32_t height;
-    int32_t rotate;
-    bool invertColor;
 
-    static Graphic::Rotate ROTATE_DEFAULT;
+
+    Graphic::Rotate rotate;
+
+    Graphic::Padding textPadding;
+
+    bool invertColor;
 
   private:
     static void drawAbsolute(uint8_t *image, bool color);

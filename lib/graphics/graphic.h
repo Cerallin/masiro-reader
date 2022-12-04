@@ -34,6 +34,8 @@ enum Rotate {
     ROTATE_270 = 8,
 };
 
+constexpr Rotate ROTATE_DEFAULT = ROTATE_270;
+
 enum Color {
     WW = 0,
     WB = 1,
@@ -45,61 +47,22 @@ Color CastColor(uint8_t color);
 Color InvertColor(Color color);
 Color InvertColor(int color);
 
-typedef enum {
-    AlignStart,
-    AlignEnd,
-    AlignCenter,
-    AlignJustify, // TODO: not implemented
-} TextAlign;
-
-class TextPadding {
+class Padding {
   public:
-    int paddingLeft;
-    int paddingTop;
-    int paddingRight;
-    int paddingBottom;
+    int paddingLeft = 0;
+    int paddingTop = 0;
+    int paddingRight = 0;
+    int paddingBottom = 0;
 };
 
-class GlyphInfo {
+class Margin {
   public:
-    static void AdjustAlign(GlyphInfo *glyphInfos, ssize_t len, TextAlign align,
-                            int lineWidth, Font *font);
-
-    float x = 0;         // unscaled absolute x
-    float y = 0;         // unscaled absolute y
-    int ix0 = 0;         // x offset
-    int iy0 = 0;         // y offset
-    int width = 0;       // scaled bitmap width
-    int height = 0;      // scaled bitmap height
-    int advanced = 0;    // unscaled advance width
-    int sideBearing = 0; // unscaled left side bearing
-    int kern = 0;        // scaled kerning
-    int ascent = 0;      // ascent
-
-    bool rotate = false;
-
-    const CodePoint *cp = nullptr;
+    int marginLeft = 0;
+    int marginTop = 0;
+    int marginRight = 0;
+    int marginBottom = 0;
 };
 
 } // namespace Graphic
-
-namespace Text {
-
-enum WritingMode {
-    // Horizontal, from top to bottom
-    Horizontal_TB = 1,
-    // Vertical, from left to right
-    Vertical_LR = 2,
-    // Vertical, from right to left
-    Vertical_RL = 4,
-};
-
-constexpr bool Horizontal(WritingMode mode) { return mode == Horizontal_TB; }
-
-constexpr bool Vertical(WritingMode mode) {
-    return mode == Vertical_LR || mode == Vertical_RL;
-}
-
-} // namespace Text
 
 #endif /* GRAPHIC_GRAPHIC_H */

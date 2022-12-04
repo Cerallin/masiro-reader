@@ -22,6 +22,7 @@
 
 #include "fonts/codepoint.h"
 #include "layer.h"
+#include "text.h"
 
 #ifdef __cplusplus
 extern "C" {
@@ -31,7 +32,8 @@ class TextLayer : public Layer {
   public:
     TextLayer(const Layer &layer);
     TextLayer(const TextLayer &layer);
-    TextLayer(uint32_t width, uint32_t height, int32_t rotate = ROTATE_DEFAULT);
+    TextLayer(uint32_t width, uint32_t height,
+              Graphic::Rotate rotate = Graphic::ROTATE_DEFAULT);
 
     ~TextLayer() = default;
 
@@ -49,13 +51,13 @@ class TextLayer : public Layer {
 
     TextLayer &SetFont(Font *font);
 
-    TextLayer &SetTextAlign(Graphic::TextAlign textAlign);
+    TextLayer &SetTextAlign(Text::Align textAlign);
 
     TextLayer &SetLineHeight(float lineHeight);
 
     TextLayer &SetWritingMode(Text::WritingMode mode);
 
-    TextLayer &SetTextPadding(Graphic::TextPadding textPadding);
+    TextLayer &SetTextPadding(Graphic::Padding textPadding);
     TextLayer &SetTextPadding(int padding);
     TextLayer &SetTextPadding(int paddingX, int paddingY);
     TextLayer &SetTextPadding(int paddingLeft, int paddingTop, int paddingRight,
@@ -73,21 +75,20 @@ class TextLayer : public Layer {
     void Render();
 
   private:
-    void drawGlyph(const Graphic::GlyphInfo *glyphInfo, Font *font,
+    void drawGlyph(const Text::GlyphInfo *glyphInfo, Font *font,
                    const unsigned char *bitmap);
 
     float calcGlyphOffset(const CodePoint *start, int num);
-    void getGlyphInfo(Graphic::GlyphInfo *glyph, const CodePoint *cp, float x,
+    void getGlyphInfo(Text::GlyphInfo *glyph, const CodePoint *cp, float x,
                       float y);
 
     bool lineFeed(const CodePoint *cp, int32_t pos, int32_t maxLine);
 
     std::unique_ptr<CodePoint[]> codepoints = nullptr;
-    Font *font = nullptr;
+    std::unique_ptr<Font> font = nullptr;
 
-    std::unique_ptr<Graphic::GlyphInfo[]> glyphInfo = nullptr;
-    Graphic::TextAlign textAlign = Graphic::AlignStart;
-    Graphic::TextPadding textPadding = {0, 0, 0, 0};
+    std::unique_ptr<Text::GlyphInfo[]> glyphInfo = nullptr;
+    Text::Align textAlign = Text::AlignStart;
 
     ssize_t charNum;
 

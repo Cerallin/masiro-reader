@@ -69,7 +69,7 @@ _Class &SetRelativeHeight(int32_t height);
  *
  * @return self
  */
-_Class &SetRotate(int32_t rotate);
+_Class &SetRotate(Graphic::Rotate rotate);
 
 _Class &SetInvertColor(bool flag);
 

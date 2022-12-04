@@ -26,7 +26,7 @@
 #include <cstring>
 #include <exception>
 
-ImageLayer::ImageLayer(uint32_t width, uint32_t height, int32_t rotate)
+ImageLayer::ImageLayer(uint32_t width, uint32_t height, Graphic::Rotate rotate)
     : Layer(width, height, rotate) {}
 
 ImageLayer::ImageLayer(const Layer &layer) : Layer(layer) {}
