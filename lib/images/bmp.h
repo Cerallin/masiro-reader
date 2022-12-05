@@ -25,8 +25,31 @@
 #include <memory>
 #include <system_error>
 
-constexpr int16_t BMP_FILE_HEADER = 0x4D42;
-constexpr int32_t BMP_FILE_INFO_SIZE = 40;
+constexpr uint16_t BMP_FILE_HEADER = 0x4D42;
+constexpr uint32_t BMP_FILE_INFO_SIZE = 40;
+
+#pragma pack(1)
+struct BitmapFileHeader {
+    uint16_t bfType;
+    uint32_t bfSize;
+    uint16_t bfReserved1;
+    uint16_t bfReserved2;
+    uint32_t bfOffBits;
+};
+
+struct BitmapInfoHeader {
+    uint32_t biSize;
+    int32_t biWidth;
+    int32_t biHeight;
+    uint16_t biPlanes;
+    uint16_t biBitCount;
+    uint32_t biCompression;
+    uint32_t biSizeImage;
+    int32_t biXPelsPerMeter;
+    int32_t biYPelsPerMeter;
+    uint32_t biClrUsed;
+    uint32_t biClrImportant;
+};
 
 class UnsupportedBMPImage : public std::exception {
   public:
@@ -44,8 +67,7 @@ class UnsupportedBMPImage : public std::exception {
 
 class ImageIOException : public std::exception {
   public:
-    ImageIOException(std::exception e, const char *path)
-        : e(e), path(path){};
+    ImageIOException(std::exception e, const char *path) : e(e), path(path){};
 
     const char *what() const _GLIBCXX_TXN_SAFE_DYN _GLIBCXX_NOTHROW override {
         snprintf(error_msg, 128, "%s: %s", e.what(), path);
@@ -122,9 +144,9 @@ class BMPImage {
     int32_t GetHeight() const;
 
   private:
-    constexpr int32_t getOffset() const;
-    constexpr int32_t getImageSize() const;
-    constexpr int32_t getFileSize() const;
+    constexpr uint32_t getOffset() const;
+    constexpr uint32_t getImageSize() const;
+    constexpr uint32_t getFileSize() const;
 
     void extractImage(const uint8_t *image, int32_t len, int byteCount);
 

@@ -30,14 +30,6 @@
 char UnsupportedBMPImage::error_msg[128];
 char ImageIOException::error_msg[128];
 
-template <typename T> size_t fread__(T *num, FILE *fd) {
-    return fread(num, sizeof(T), 1, fd);
-}
-
-template <typename T> size_t fwrite__(T num, FILE *fd) {
-    return fwrite(&num, sizeof(T), 1, fd);
-}
-
 void BMPImage::SetPallette(uint8_t new_grayDegree[4]) {
     std::memcpy(grayDegree, new_grayDegree, 4);
     for (int i = 0; i < 4; i++) {
@@ -58,37 +50,31 @@ void BMPImage::Save(const char *imageFile) {
     }
 
     /* Header */
-    fwrite__<uint16_t>(BMP_FILE_HEADER, fd); // BMP file header
-    fwrite__<int32_t>(getFileSize(), fd);    // file size
-
-    fwrite__<int16_t>(0x0000, fd); // Reserved 2 bytes
-    fwrite__<int16_t>(0x0000, fd); // Another reserved 2 bytes
-
-    fwrite__<uint32_t>(getOffset(), fd); // Offset bits
+    BitmapFileHeader fileHeader = {
+        .bfType = BMP_FILE_HEADER,
+        .bfSize = getFileSize(),
+        .bfReserved1 = 0,
+        .bfReserved2 = 0,
+        .bfOffBits = getOffset(),
+    };
+    fwrite(&fileHeader, sizeof(BitmapFileHeader), 1, fd);
 
     /* Information */
-    fwrite__<int32_t>(BMP_FILE_INFO_SIZE, fd); // Info size
+    BitmapInfoHeader infoHeader = {
+        .biSize = BMP_FILE_INFO_SIZE,
+        .biWidth = width,
+        .biHeight = isUpsideDown ? -height : height,
+        .biPlanes = 0x01,
+        .biBitCount = 24,
+        .biSizeImage = getImageSize(),
+        .biXPelsPerMeter = 0x0EC4, // FIXME: why?
+        .biYPelsPerMeter = 0x0EC4,
+        .biClrUsed = 0,      // Use all colors
+        .biClrImportant = 0, // Use all colors as important
+    };
+    fwrite(&infoHeader, sizeof(BitmapInfoHeader), 1, fd);
 
-    fwrite__<int32_t>(width, fd); // Width (px)
-
-    // upside-down
-    fwrite__<int32_t>(-height, fd); // Height (px)
-
-    fwrite__<int16_t>(0x01, fd); // Planes
-
-    fwrite__<int16_t>(24, fd); // Bit count
-
-    fwrite__<int32_t>(0x00, fd); // Compression type
-
-    fwrite__<int32_t>(getImageSize(), fd); // Image size
-
-    fwrite__<int32_t>(0x0EC4, fd); // XPelsPerMeter
-    fwrite__<int32_t>(0x0EC4, fd); // YPelsPerMeter
-
-    fwrite__<int32_t>(0x00, fd); // Use all colors
-    fwrite__<int32_t>(0x00, fd); // Use all colors as important
-
-    /* Skip grayDegree */
+    /* Skip pallette */
 
     /* Image */
     for (int32_t i = 0; i < width * height / 8; i++) {
@@ -105,9 +91,9 @@ void BMPImage::Save(const char *imageFile) {
             color = grayDegree[color & 0x03];
 
             // Pretend to be a RGB Image
-            fwrite__<uint8_t>(color, fd);
-            fwrite__<uint8_t>(color, fd);
-            fwrite__<uint8_t>(color, fd);
+            fwrite(&color, sizeof(uint8_t), 1, fd);
+            fwrite(&color, sizeof(uint8_t), 1, fd);
+            fwrite(&color, sizeof(uint8_t), 1, fd);
 
             f_data <<= 1;
             b_data <<= 1;
@@ -118,10 +104,9 @@ void BMPImage::Save(const char *imageFile) {
 }
 
 void BMPImage::Load(const char *imageFile) {
-    int32_t tmp = 0; // long enough
-    int32_t fileSize, offsetToImage, infoSize, imageSize;
+    BitmapFileHeader fileHeader;
+    BitmapInfoHeader infoHeader;
 
-    int16_t bitCount;
     isUpsideDown = false;
 
     FILE *fd = fopen(imageFile, "rb");
@@ -130,48 +115,34 @@ void BMPImage::Load(const char *imageFile) {
             std::system_error(errno, std::generic_category()), imageFile);
     }
 
-    // TODO compare width and height
+    fread(&fileHeader, sizeof(BitmapFileHeader), 1, fd);
+    fread(&infoHeader, sizeof(BitmapInfoHeader), 1, fd);
 
-    fread__<int16_t>((int16_t *)&tmp, fd);
-    assert(tmp == BMP_FILE_HEADER);
-
-    fread__<int32_t>(&fileSize, fd);          // File size
-    fseek(fd, sizeof(int16_t) * 2, SEEK_CUR); // Skip reserved bytes
-    fread__<int32_t>(&offsetToImage, fd);
-    fread__<int32_t>(&infoSize, fd);
-
-    fread__<int32_t>(&width, fd);
-    fread__<int32_t>(&height, fd);
+    width = infoHeader.biWidth;
+    height = infoHeader.biHeight;
 
     if (height < 0) {
         isUpsideDown = true;
         height = -height;
     }
 
-    fseek(fd, sizeof(int16_t), SEEK_CUR); // Skip planes
-
-    fread__<int16_t>(&bitCount, fd);
-
-    if (bitCount < 8) {
+    if (infoHeader.biBitCount < 8) {
         throw UnsupportedBMPImage("bit size < 8");
     }
 
-    fread__<int32_t>(&tmp, fd); // Compression type
-
-    if (tmp) {
+    if (infoHeader.biCompression != 0) {
         throw UnsupportedBMPImage("compressed");
     }
 
-    fread__<int32_t>(&imageSize, fd);
-    imageSize++;
+    auto imageSize = infoHeader.biSizeImage + 1;
 
     // Load image
     auto image = std::make_unique<uint8_t[]>(imageSize);
-    fseek(fd, offsetToImage, SEEK_SET);
+    fseek(fd, fileHeader.bfOffBits, SEEK_SET);
     fread(image.get(), 1, imageSize, fd);
     fclose(fd);
 
-    extractImage(image.get(), imageSize, bitCount / 8);
+    extractImage(image.get(), imageSize, infoHeader.biBitCount / 8);
 }
 
 template <typename TInt>
@@ -222,13 +193,13 @@ void BMPImage::extractImage(const uint8_t *image, int32_t len, int byteCount) {
     }
 }
 
-constexpr int32_t BMPImage::getFileSize() const {
+constexpr uint32_t BMPImage::getFileSize() const {
     return getOffset() + getImageSize();
 }
 
-constexpr int32_t BMPImage::getOffset() const { return 14 + 40; }
+constexpr uint32_t BMPImage::getOffset() const { return 14 + 40; }
 
-constexpr int32_t BMPImage::getImageSize() const {
+constexpr uint32_t BMPImage::getImageSize() const {
     return 3 * width * height - 1;
 }
 
