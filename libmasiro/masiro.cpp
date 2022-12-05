@@ -17,17 +17,35 @@
  *
  */
 
-#ifndef MASIRO_TEXT_H
-#define MASIRO_TEXT_H
+#include "config.h"
+
+#include "masiro.h"
+
+#include <iostream>
 
 #ifdef __cplusplus
 extern "C" {
 #endif
 
-void print_version();
+/**
+ * Function to initialize the library.
+ */
+void __init() {
+    BufferPool::Init();
+    // TODO: check EPD
+}
+
+void masiro_version() {
+    fprintf(stderr, "Masiro-Reader Library v" PACKAGE_VERSION " (" ARCH ")\n"
+                    "Copyright 2022\tCerallin <cerallin@cerallin.top>\n\n");
+}
+
+void save_image(Layer &layer, const char *filename) {
+    BMPImage image(layer.GetWidth(), layer.GetHeight(), layer.GetNewImage(),
+                   layer.GetOldImage());
+    image.Save(filename);
+}
 
 #ifdef __cplusplus
 }
 #endif
-
-#endif /* MASIRO_TEXT_H */

@@ -21,9 +21,9 @@ libmasiro_ladir = $(includedir)
 
 libmasiro_la_HEADERS = libmasiro/display.h \
                        libmasiro/graphics.h \
-                       libmasiro/text.h
+                       libmasiro/masiro.h
 
-libmasiro_la_SOURCES = libmasiro/text.c
+libmasiro_la_SOURCES = libmasiro/masiro.cpp
 
 libmasiro_la_LIBADD = $(top_builddir)/lib/display/libdisplay.la \
                       $(top_builddir)/lib/fonts/libfont.la \

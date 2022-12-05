@@ -17,19 +17,32 @@
  *
  */
 
-#include "config.h"
+#ifndef MASIRO_H
+#define MASIRO_H
+
+#include "display.h"
+#include "graphics.h"
 
 #ifdef __cplusplus
 extern "C" {
 #endif
 
-#include <stdio.h>
+/**
+ * Function to initialize the shared library, do not call it yourself.
+*/
+void __init() __attribute__((constructor));
 
-void print_version() {
-    fprintf(stderr, "Masiro-Reader Library " PACKAGE_VERSION "\n"
-                    "Copy 2022 Cerallin <cerallin@cerallin.top>\n\n");
-}
+void masiro_version();
+
+/**
+ * save layer image to file.
+ *
+ * @throw ImageSaveException
+ */
+void save_image(Layer &layer, const char *filename);
 
 #ifdef __cplusplus
 }
 #endif
+
+#endif /* MASIRO_H */
