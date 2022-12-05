@@ -19,13 +19,13 @@
 
 #include "config.h"
 
-#include "display.h"
-#include "graphics.h"
+#include "masiro.h"
 
+#include <getopt.h>
 #include <iostream>
 
-int main(void) {
-    BufferPool::Init();
+int main(int argc, char *argv[]) {
+    masiro_version();
 
     Layer layer(EPD_WIDTH, EPD_HEIGHT);
     BufferPool::AssignBufferTo(layer);
