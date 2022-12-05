@@ -20,12 +20,10 @@
 #include "debug.h"
 
 #include "bmp.h"
+#include "exceptions.hpp"
 
-#include <assert.h>
 #include <cmath>
 #include <cstdio>
-#include <cstring>
-#include <exception>
 
 char UnsupportedBMPImage::error_msg[128];
 char ImageIOException::error_msg[128];
