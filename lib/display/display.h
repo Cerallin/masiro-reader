@@ -48,22 +48,27 @@ class Display {
      *
      * @throw EpdInitFailedException
      */
-    void Init();
+    static void Init();
 
     /**
      * @brief Display the frame last time displayed.
      */
-    void Refresh();
+    static void Refresh();
 
     /**
      * @brief Sleep, not power off.
      */
-    void Sleep();
+    static void Sleep();
 
     /**
      * @brief Power on.
      */
-    void Awake();
+    static void Awake();
+
+    /**
+     * @brief Power off.
+     */
+    static void PowerOff();
 
     /**
      * @brief Diaplay a frame.
@@ -97,7 +102,7 @@ class Display {
     size_t Count() const;
 
   private:
-    std::stack<Frame> frames;
+    static std::stack<Frame> frames;
 };
 
 #endif /* DISPLAY_H */

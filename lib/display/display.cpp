@@ -19,10 +19,12 @@
 
 #include "debug.h"
 
-#include "display/display.h"
+#include "display.h"
 
 #include <cstdint>
 #include <exception>
+
+std::stack<Frame> Display::frames;
 
 void Display::Refresh() {
     if (frames.empty()) {
@@ -74,3 +76,5 @@ void Display::Init() {
 void Display::Sleep() { Epd::GetInstance().Sleep(); }
 
 void Display::Awake() { Epd::GetInstance().PowerOn(); }
+
+void Display::PowerOff() { Epd::GetInstance().PowerOff(); }
