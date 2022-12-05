@@ -1,7 +1,16 @@
 #                                               -*- Autoconf -*-
 # Process this file with autoconf to produce a configure script.
+AC_COPYRIGHT([
+Copyright 2022      Cerallin
+
+This file is under the same license as Masiro Reader.
+])
 
 AC_PREREQ([2.69])
+
+m4_ifdef([AX_HAVE_QT], [], [
+    m4_fatal([autoconf-archive is required])
+])
 
 m4_define([v_maj], [0])
 m4_define([v_min], [0])
@@ -31,6 +40,14 @@ AC_DEFINE_UNQUOTED([SRC_DIR], ["$SRC_DIR"], [source path])
 AC_PROG_CXX
 AC_PROG_CC
 
+AX_COMPILER_FLAGS()
+AX_IS_RELEASE([git-directory])
+AX_GCC_FUNC_ATTRIBUTE(constructor)
+
+# OS
+AC_CANONICAL_HOST
+AC_DEFINE_UNQUOTED([ARCH], ["$host_os"], ["Define architecture"])
+
 # Debugging code
 AC_ARG_ENABLE(debug,
     AS_HELP_STRING([--enable-debug], [enable debugging, default: no]))
@@ -55,7 +72,7 @@ AM_CONDITIONAL([FAKE_EPD], [ test "x$with_fake_epd" = xyes ])
 
 # Checks for libraries.
 AC_CHECK_LIB([bcm2835], [bcm2835_init])
-AC_CHECK_LIB([pthread], [pthread_create])
+AX_PTHREAD()
 
 # Checks for header files.
 AC_CHECK_HEADERS([stddef.h stdint.h stdlib.h string.h sys/time.h unistd.h])

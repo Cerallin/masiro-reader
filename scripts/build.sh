@@ -4,17 +4,19 @@ enable_debug=1
 
 mkdir -p build
 
+dir=$(pwd)
+
 cd build
 
 [ -f Makefile ] && make distclean
 
-INSTALL_DIR=$(pwd)/.libmasiro
+INSTALL_DIR=$dir/build/.libmasiro
 
 CXXFLAGS="  -g -flto -O2 -Wall -Wno-unused-function"
-CXXFLAGS+=" -I$(pwd)/libbcm2835/include"
-CXXFLAGS+=" -I$(pwd)/libcpputest/include"
+CXXFLAGS+=" -I$dir/bcm2835-install/include"
+CXXFLAGS+=" -I$dir/cpputest-install/include"
 
-LDFLAGS="-L$(pwd)/libbcm2835/lib -L$(pwd)/libcpputest/lib"
+LDFLAGS="-L$dir/bcm2835-install/lib -L$dir/cpputest-install/lib"
 
 CXXFLAGS=$CXXFLAGS LDFLAGS=$LDFLAGS \
     ../configure \
