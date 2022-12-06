@@ -48,9 +48,12 @@ int main(int argc, char *argv[]) {
             .TypeSetting()
             .Render();
 
+        save_image(layer, "./test.bmp");
+
         auto display = new Display();
         display->Init();
         display->Forward(*(new Frame(layer.InvertColor())));
+        display->PowerOff();
 
         BufferPool::RecycleBufferFrom(layer);
     } catch (EpdInitFailedException &e) {

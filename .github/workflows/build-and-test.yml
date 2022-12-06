@@ -2,15 +2,19 @@ name: C/C++ CI
 
 on:
   push:
-      branches: [ master ]
+    branches: [master]
   pull_request:
-      branches: [ master ]
+    branches: [master]
 
 jobs:
   build-and-test:
-      runs-on: ubuntu-latest
+    strategy:
+      matrix:
+        host: [x86_64-linux-gnu, arm-linux-gnueabihf, aarch64-linux-gnu]
 
-      steps:
+    runs-on: ubuntu-latest
+
+    steps:
       - name: Checkout
         uses: actions/checkout@v2
         with:
@@ -19,6 +23,9 @@ jobs:
       - name: install libcap
         run: sudo apt install -y libcap2 libcap-dev
 
+      - name: install autoconf-archive
+        run: sudo apt install -y autoconf-archive
+
       - name: init submodule
         run: |
           git submodule init
@@ -26,7 +33,7 @@ jobs:
 
       - name: build and install dependencies
         run: |
-          ./scripts/build-bcm2835.sh --host=arm-linux-gnueabihf
+          ./scripts/build-bcm2835.sh --host=${{ matrix.host }}
           ./scripts/build-cpputest.sh
 
       - name: Run autoreconf
@@ -36,7 +43,7 @@ jobs:
         run: |
           CXXFLAGS="-I$(pwd)/bcm2835-install/include -I$(pwd)/cpputest-install/include" \
           LDFLAGS="-L$(pwd)/bcm2835-install/lib -L$(pwd)/cpputest-install/lib" \
-          ./configure --host=arm-linux-gnueabihf --prefix=$(pwd)/.libmasiro
+          ./configure --prefix=$(pwd)/.libmasiro
 
       - name: Make
         run: make -j16
