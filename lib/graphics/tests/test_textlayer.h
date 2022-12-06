@@ -1,9 +1,5 @@
 #include <CppUTest/TestHarness.h>
 
-#include "config.h"
-
-#include "textlayer.h"
-
 const char font_file[] = SRC_DIR "/assets/LXGWWenKaiScreen.ttf";
 char testStr[] = "hello world\n你好，世界。";
 
@@ -14,19 +10,24 @@ TextLayer *textLayer;
 
 FontFace *XLWenKai;
 
+Font *font;
+
 TEST_GROUP(TestTextLayer){
     void setup() {
         XLWenKai = new FontFace();
         XLWenKai->LoadFont(font_file);
 
+        font = new Font(XLWenKai);
+
         textLayer = new TextLayer(EPD_WIDTH, EPD_HEIGHT);
-        textLayer->SetFont(new Font(XLWenKai));
+        textLayer->SetFont(font);
         textLayer->SetFrontImage(layer_front);
         textLayer->SetBackImage(layer_back);
     }
 
     void teardown() {
         delete textLayer;
+        delete font;
         delete XLWenKai;
     }
 };

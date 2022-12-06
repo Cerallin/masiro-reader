@@ -19,6 +19,8 @@
 
 #include "debug.h"
 
+#include "layer.h"
+
 #include "textlayer.h"
 
 #include <cstdio>
@@ -85,16 +87,16 @@ TextLayer &TextLayer::SetWritingMode(Text::WritingMode mode) {
 }
 
 TextLayer &TextLayer::SetFont(Font *font) {
-    this->font.reset(font);
+    this->font = font;
     return *this;
 }
 
-TextLayer &TextLayer::SetTextPadding(Graphic::Padding textPadding) {
+TextLayer &TextLayer::SetPadding(Graphic::Padding textPadding) {
     this->textPadding = textPadding;
     return *this;
 }
 
-TextLayer &TextLayer::SetTextPadding(int padding) {
+TextLayer &TextLayer::SetPadding(int padding) {
     textPadding.paddingLeft = padding;
     textPadding.paddingRight = padding;
     textPadding.paddingTop = padding;
@@ -102,7 +104,7 @@ TextLayer &TextLayer::SetTextPadding(int padding) {
     return *this;
 }
 
-TextLayer &TextLayer::SetTextPadding(int paddingX, int paddingY) {
+TextLayer &TextLayer::SetPadding(int paddingX, int paddingY) {
     textPadding.paddingLeft = paddingX;
     textPadding.paddingRight = paddingX;
     textPadding.paddingTop = paddingY;
@@ -110,7 +112,7 @@ TextLayer &TextLayer::SetTextPadding(int paddingX, int paddingY) {
     return *this;
 }
 
-TextLayer &TextLayer::SetTextPadding(int paddingLeft, int paddingTop,
+TextLayer &TextLayer::SetPadding(int paddingLeft, int paddingTop,
                                      int paddingRight, int paddingBottom) {
     textPadding.paddingLeft = paddingLeft;
     textPadding.paddingRight = paddingRight;
@@ -331,7 +333,7 @@ TextLayer &TextLayer::TypeSetting() {
 
         getGlyphInfo(glyph, cp, textDirection, lineDirection);
 
-        if (overflow(glyph, font.get(), maxText)) {
+        if (overflow(glyph, font, maxText)) {
             if (*cp == CHAR_SPACE) {
                 while (*cp == CHAR_SPACE) {
                     cp++;
@@ -374,13 +376,13 @@ void TextLayer::Render() {
         lineWidth = GetRelativeHeight() - textPadding.paddingBottom;
     }
     Text::GlyphInfo::AdjustAlign(glyphInfo.get(), charNum, textAlign, lineWidth,
-                                 font.get());
+                                 font);
 
     std::unique_ptr<unsigned char[]> bitmap;
 
     for (auto glyph = glyphInfo.get(); glyph->cp != nullptr; glyph++) {
         auto cp = glyph->cp;
         bitmap.reset(font->GetCodepointBitmap(cp, 0, 0, 0, 0));
-        drawGlyph(glyph, font.get(), bitmap.get());
+        drawGlyph(glyph, font, bitmap.get());
     }
 }

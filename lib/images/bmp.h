@@ -26,7 +26,7 @@
 constexpr uint16_t BMP_FILE_HEADER = 0x4D42;
 constexpr uint32_t BMP_FILE_INFO_SIZE = 40;
 
-#pragma pack(1)
+#pragma pack(push, bmp, 1)
 struct BitmapFileHeader {
     uint16_t bfType;
     uint32_t bfSize;
@@ -34,6 +34,7 @@ struct BitmapFileHeader {
     uint16_t bfReserved2;
     uint32_t bfOffBits;
 };
+#pragma pack(pop)
 
 struct BitmapInfoHeader {
     uint32_t biSize;

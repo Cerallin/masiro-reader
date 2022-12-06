@@ -24,6 +24,8 @@
 #include "layer.h"
 #include "text.h"
 
+#include <memory>
+
 #ifdef __cplusplus
 extern "C" {
 #endif
@@ -57,11 +59,11 @@ class TextLayer : public Layer {
 
     TextLayer &SetWritingMode(Text::WritingMode mode);
 
-    TextLayer &SetTextPadding(Graphic::Padding textPadding);
-    TextLayer &SetTextPadding(int padding);
-    TextLayer &SetTextPadding(int paddingX, int paddingY);
-    TextLayer &SetTextPadding(int paddingLeft, int paddingTop, int paddingRight,
-                              int paddingBottom);
+    TextLayer &SetPadding(Graphic::Padding textPadding);
+    TextLayer &SetPadding(int padding);
+    TextLayer &SetPadding(int paddingX, int paddingY);
+    TextLayer &SetPadding(int paddingLeft, int paddingTop, int paddingRight,
+                          int paddingBottom);
 
     /**
      * @brief Calculate glyphs positions.
@@ -84,11 +86,11 @@ class TextLayer : public Layer {
 
     bool lineFeed(const CodePoint *cp, int32_t pos, int32_t maxLine);
 
-    std::unique_ptr<CodePoint[]> codepoints = nullptr;
-    std::unique_ptr<Font> font = nullptr;
+    std::unique_ptr<CodePoint[]> codepoints;
+    std::unique_ptr<Text::GlyphInfo[]> glyphInfo;
 
-    std::unique_ptr<Text::GlyphInfo[]> glyphInfo = nullptr;
     Text::Align textAlign = Text::AlignStart;
+    Font *font = nullptr;
 
     ssize_t charNum;
 

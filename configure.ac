@@ -21,7 +21,7 @@ m4_define([lt_cur], [m4_eval(v_maj + v_min)])
 m4_define([lt_rev], [v_mic])
 m4_define([lt_age], [v_min])
 
-AC_INIT([Masiro Reader], [project_version], [BUG-REPORT-ADDRESS])
+AC_INIT([Masiro Reader], [project_version], [https://github.com/Cerallin/masiro-reader/issues])
 
 version_info="lt_cur:lt_rev:lt_age"
 AC_SUBST([version_info])

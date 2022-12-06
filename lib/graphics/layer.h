@@ -163,9 +163,7 @@ class Layer {
     int32_t width;
     int32_t height;
 
-
     Graphic::Rotate rotate;
-
     Graphic::Padding textPadding;
 
     bool invertColor;

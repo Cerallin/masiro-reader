@@ -25,6 +25,7 @@
 #include "fontmetrics.h"
 
 #include <cstdint>
+#include <memory>
 
 class Font {
   public:

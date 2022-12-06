@@ -1,8 +1,5 @@
 #include <CppUTest/TestHarness.h>
 
-#include "config.h"
-
-#include "imagelayer.h"
 
 #include <new>
 #include <unistd.h>

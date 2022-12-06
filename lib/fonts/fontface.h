@@ -23,6 +23,7 @@
 #include "codepoint.h"
 
 #include <cstdint>
+#include <memory>
 
 #define STBTT_malloc(x, u) ((void)(u), new unsigned char[x])
 #define STBTT_free(x, u)   ((void)(u), delete[](unsigned char *) x)

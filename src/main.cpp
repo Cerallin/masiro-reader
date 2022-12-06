@@ -21,7 +21,6 @@
 
 #include "masiro.h"
 
-#include <getopt.h>
 #include <iostream>
 
 int main(int argc, char *argv[]) {
@@ -44,7 +43,7 @@ int main(int argc, char *argv[]) {
         textLayer.SetTextAlign(Text::AlignCenter)
             .SetFont(new Font(&XLWenKai, 28.0f))
             .SetText(str)
-            .SetTextPadding(0, 195, 0, 0)
+            .SetPadding(0, 195, 0, 0)
             .TypeSetting()
             .Render();
 

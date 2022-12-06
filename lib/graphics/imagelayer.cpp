@@ -19,7 +19,10 @@
 
 #include "debug.h"
 
+#include "layer.h"
+
 #include "imagelayer.h"
+
 #include "traits/layersetters.cpp"
 
 #include <cstdint>
