@@ -113,7 +113,7 @@ TextLayer &TextLayer::SetPadding(int paddingX, int paddingY) {
 }
 
 TextLayer &TextLayer::SetPadding(int paddingLeft, int paddingTop,
-                                     int paddingRight, int paddingBottom) {
+                                 int paddingRight, int paddingBottom) {
     textPadding.paddingLeft = paddingLeft;
     textPadding.paddingRight = paddingRight;
     textPadding.paddingTop = paddingTop;
@@ -122,7 +122,7 @@ TextLayer &TextLayer::SetPadding(int paddingLeft, int paddingTop,
 }
 
 void TextLayer::drawGlyph(const Text::GlyphInfo *glyph, Font *font,
-                          const unsigned char *bitmap) {
+                          const unsigned char *bitmap, float dim) {
     int32_t x, y;
     if (Text::Horizontal(mode)) {
         x = font->Scale(glyph->cp, glyph->x + glyph->sideBearing);
@@ -162,7 +162,8 @@ void TextLayer::drawGlyph(const Text::GlyphInfo *glyph, Font *font,
 #endif
 
     LoopMatrix(glyph->width, glyph->height, x, y) {
-        uint8_t iColor = GetMatrix(bitmap, glyph->width, i - x, j - y) >> 6;
+        uint8_t iColor =
+            (uint8_t)(dim * GetMatrix(bitmap, glyph->width, i - x, j - y)) >> 6;
         auto color = Graphic::CastColor(iColor);
 
         if (color != Graphic::Color::WW) {
@@ -363,7 +364,7 @@ TextLayer &TextLayer::TypeSetting() {
     return *this;
 }
 
-void TextLayer::Render() {
+void TextLayer::Render(float dim) {
     // Debug checks
     assert_is_initialized(font);
     assert_is_initialized(glyphInfo);
@@ -383,6 +384,6 @@ void TextLayer::Render() {
     for (auto glyph = glyphInfo.get(); glyph->cp != nullptr; glyph++) {
         auto cp = glyph->cp;
         bitmap.reset(font->GetCodepointBitmap(cp, 0, 0, 0, 0));
-        drawGlyph(glyph, font, bitmap.get());
+        drawGlyph(glyph, font, bitmap.get(), dim);
     }
 }

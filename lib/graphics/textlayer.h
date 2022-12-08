@@ -73,12 +73,14 @@ class TextLayer : public Layer {
     /**
      * @brief Draw glyphs.
      * Must be called after TextLayer::TypeSetting.
+     *
+     * @param dim scaled color
      */
-    void Render();
+    void Render(float dim = 1.0f);
 
   private:
     void drawGlyph(const Text::GlyphInfo *glyphInfo, Font *font,
-                   const unsigned char *bitmap);
+                   const unsigned char *bitmap, float dim);
 
     float calcGlyphOffset(const CodePoint *start, int num);
     void getGlyphInfo(Text::GlyphInfo *glyph, const CodePoint *cp, float x,
