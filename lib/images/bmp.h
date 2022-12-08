@@ -98,7 +98,7 @@ class BMPImage {
     int32_t width;
     int32_t height;
 
-    bool isUpsideDown;
+    bool isUpsideDown = true;
 
     uint8_t *front;
     uint8_t *back;
