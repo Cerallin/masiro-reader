@@ -1,0 +1,608 @@
+lib/display/display.h:102:12: performance:inconclusive: Technically the member function 'Display::Count' can be static (but you may consider moving to unnamed namespace). [functionStatic]
+    size_t Count() const;
+           ^
+lib/display/display.cpp:68:17: note: Technically the member function 'Display::Count' can be static (but you may consider moving to unnamed namespace).
+size_t Display::Count() const { return frames.size(); }
+                ^
+lib/display/display.h:102:12: note: Technically the member function 'Display::Count' can be static (but you may consider moving to unnamed namespace).
+    size_t Count() const;
+           ^
+lib/dom/domnode.cpp:24:10: warning: Member variable 'DOMNode::realWidth' is not initialized in the constructor. [uninitMemberVar]
+DOMNode::DOMNode(int32_t width, int32_t height) {
+         ^
+lib/dom/domnode.cpp:24:10: warning: Member variable 'DOMNode::realHeight' is not initialized in the constructor. [uninitMemberVar]
+DOMNode::DOMNode(int32_t width, int32_t height) {
+         ^
+lib/dom/treenode.cpp:27:11: warning: Member variable 'TreeNode::parent' is not initialized in the constructor. [uninitMemberVar]
+TreeNode::TreeNode() {
+          ^
+lib/dom/treenode.h:42:12: style:inconclusive: Technically the member function 'DOM::TreeNode::CountChildren' can be const. [functionConst]
+    size_t CountChildren();
+           ^
+lib/dom/treenode.cpp:93:18: note: Technically the member function 'DOM::TreeNode::CountChildren' can be const.
+size_t TreeNode::CountChildren() {
+                 ^
+lib/dom/treenode.h:42:12: note: Technically the member function 'DOM::TreeNode::CountChildren' can be const.
+    size_t CountChildren();
+           ^
+lib/epd37/epd2in13b.cpp:125:6: warning: Member variable 'Epd::u16CurX' is not initialized in the constructor. [uninitMemberVar]
+Epd::Epd() {
+     ^
+lib/epd37/epd2in13b.cpp:125:6: warning: Member variable 'Epd::u16CurY' is not initialized in the constructor. [uninitMemberVar]
+Epd::Epd() {
+     ^
+lib/epd37/epd2in13b.cpp:125:6: warning: Member variable 'Epd::u16CurWidth' is not initialized in the constructor. [uninitMemberVar]
+Epd::Epd() {
+     ^
+lib/epd37/epd2in13b.cpp:125:6: warning: Member variable 'Epd::u16CurHeight' is not initialized in the constructor. [uninitMemberVar]
+Epd::Epd() {
+     ^
+lib/epd37/epd2in13b.h:112:13: style:inconclusive: Technically the member function 'Epd::Init' can be const. [functionConst]
+    int32_t Init(void);
+            ^
+lib/epd37/epd2in13b.cpp:134:10: note: Technically the member function 'Epd::Init' can be const.
+int Epd::Init(void) {
+         ^
+lib/epd37/epd2in13b.h:112:13: note: Technically the member function 'Epd::Init' can be const.
+    int32_t Init(void);
+            ^
+lib/fonts/codepoint.h:29:5: style: Class 'ConvertFailedException' has a constructor with 1 argument that is not explicit. [noExplicitConstructor]
+    ConvertFailedException(const char *str) : std::exception(), str(str){};
+    ^
+lib/fonts/codepoint.h:44:5: style: Class 'CodePoint' has a constructor with 1 argument that is not explicit. [noExplicitConstructor]
+    CodePoint(uint16_t cp);
+    ^
+lib/fonts/codepoint.cpp:80:20: style: C-style pointer casting [cstyleCast]
+            return (CodePoint *)p_str;
+                   ^
+lib/fonts/codepoint.cpp:90:24: style: C-style pointer casting [cstyleCast]
+                return (CodePoint *)p_str;
+                       ^
+lib/fonts/codepoint.cpp:117:20: style: C-style pointer casting [cstyleCast]
+            return (CodePoint *)p_str;
+                   ^
+lib/fonts/codepoint.cpp:120:24: style: C-style pointer casting [cstyleCast]
+                return (CodePoint *)p_str;
+                       ^
+lib/fonts/codepoint.cpp:156:19: style: C-style pointer casting [cstyleCast]
+    *unicodeStr = (CodePoint *)buffer;
+                  ^
+lib/fonts/codepoint.cpp:158:12: style: C-style pointer casting [cstyleCast]
+    return (CodePoint *)outbuff - (CodePoint *)buffer;
+           ^
+lib/fonts/font.h:36:10: style:inconclusive: Technically the member function 'Font::GetCodepointHMetrics' can be const. [functionConst]
+    void GetCodepointHMetrics(const CodePoint *codepoint, int *advanceWidth,
+         ^
+lib/fonts/font.cpp:47:12: note: Technically the member function 'Font::GetCodepointHMetrics' can be const.
+void Font::GetCodepointHMetrics(const CodePoint *codepoint, int *advanceWidth,
+           ^
+lib/fonts/font.h:36:10: note: Technically the member function 'Font::GetCodepointHMetrics' can be const.
+    void GetCodepointHMetrics(const CodePoint *codepoint, int *advanceWidth,
+         ^
+lib/fonts/font.h:38:10: style:inconclusive: Technically the member function 'Font::GetCodepointVMetrics' can be const. [functionConst]
+    void GetCodepointVMetrics(const CodePoint *codepoint, int *advanceHeight,
+         ^
+lib/fonts/font.cpp:54:12: note: Technically the member function 'Font::GetCodepointVMetrics' can be const.
+void Font::GetCodepointVMetrics(const CodePoint *codepoint, int *advanceHeight,
+           ^
+lib/fonts/font.h:38:10: note: Technically the member function 'Font::GetCodepointVMetrics' can be const.
+    void GetCodepointVMetrics(const CodePoint *codepoint, int *advanceHeight,
+         ^
+lib/fonts/font.h:40:10: style:inconclusive: Technically the member function 'Font::GetCodepointBitmapBox' can be const. [functionConst]
+    void GetCodepointBitmapBox(const CodePoint *codepoint, int *ix0, int *iy0,
+         ^
+lib/fonts/font.cpp:61:12: note: Technically the member function 'Font::GetCodepointBitmapBox' can be const.
+void Font::GetCodepointBitmapBox(const CodePoint *codepoint, int *ix0, int *iy0,
+           ^
+lib/fonts/font.h:40:10: note: Technically the member function 'Font::GetCodepointBitmapBox' can be const.
+    void GetCodepointBitmapBox(const CodePoint *codepoint, int *ix0, int *iy0,
+         ^
+lib/fonts/font.h:44:9: style:inconclusive: Technically the member function 'Font::GetCodepointKernAdvance' can be const. [functionConst]
+    int GetCodepointKernAdvance(const CodePoint *cp1, const CodePoint *cp2);
+        ^
+lib/fonts/font.cpp:78:11: note: Technically the member function 'Font::GetCodepointKernAdvance' can be const.
+int Font::GetCodepointKernAdvance(const CodePoint *cp1, const CodePoint *cp2) {
+          ^
+lib/fonts/font.h:44:9: note: Technically the member function 'Font::GetCodepointKernAdvance' can be const.
+    int GetCodepointKernAdvance(const CodePoint *cp1, const CodePoint *cp2);
+        ^
+lib/fonts/fontface.h:61:5: style: Class 'FontInitException' has a constructor with 1 argument that is not explicit. [noExplicitConstructor]
+    FontInitException(const char *str) : std::exception(), str(str){};
+    ^
+lib/fonts/fontfamily.h:30:5: style: Class 'FontFamily' has a constructor with 1 argument that is not explicit. [noExplicitConstructor]
+    FontFamily(FontFace *defaultFontFace);
+    ^
+lib/fonts/fontmetrics.h:27:5: style: Class 'FontMetrics' has a constructor with 1 argument that is not explicit. [noExplicitConstructor]
+    FontMetrics(float scale);
+    ^
+lib/fonts/font.h:32:5: style: Class 'Font' has a constructor with 1 argument that is not explicit. [noExplicitConstructor]
+    Font(FontFace *fontFace, float = 32.0f);
+    ^
+lib/fonts/font.h:33:5: style: Class 'Font' has a constructor with 1 argument that is not explicit. [noExplicitConstructor]
+    Font(FontFamily *fontFamily, float fontSize = 32.0f);
+    ^
+lib/fonts/stb_truetype.h:3415:7: portability:inconclusive: Casting from float * to unsigned char * is not portable due to different binary data representations on different platforms. [invalidPointerCast]
+      STBTT_free(scanline, userdata);
+      ^
+lib/fonts/stb_truetype.h:4778:7: portability:inconclusive: Casting from float * to unsigned char * is not portable due to different binary data representations on different platforms. [invalidPointerCast]
+      STBTT_free(precompute, info->userdata);
+      ^
+lib/fonts/stb_truetype.h:1196:22: style: The scope of the variable 'offsize' can be reduced. [variableScope]
+   int count, start, offsize;
+                     ^
+lib/fonts/stb_truetype.h:1221:8: style: The scope of the variable 'v' can be reduced. [variableScope]
+   int v, b0 = stbtt__buf_peek8(b);
+       ^
+lib/fonts/stb_truetype.h:1374:17: style: The scope of the variable 't' can be reduced. [variableScope]
+   stbtt_uint32 t;
+                ^
+lib/fonts/stb_truetype.h:1683:17: style: The scope of the variable 'endPtsOfContours' can be reduced. [variableScope]
+   stbtt_uint8 *endPtsOfContours;
+                ^
+lib/fonts/stb_truetype.h:1826:34: style: The scope of the variable 'i' can be reduced. [variableScope]
+         int comp_num_verts = 0, i;
+                                 ^
+lib/fonts/stb_truetype.h:2374:25: style: The scope of the variable 'straw' can be reduced. [variableScope]
+   stbtt_uint32 needle, straw;
+                        ^
+lib/fonts/stb_truetype.h:2375:14: style: The scope of the variable 'm' can be reduced. [variableScope]
+   int l, r, m;
+             ^
+lib/fonts/stb_truetype.h:2409:43: style: The scope of the variable 'm' can be reduced. [variableScope]
+         stbtt_int32 l=0, r=glyphCount-1, m;
+                                          ^
+lib/fonts/stb_truetype.h:2410:14: style: The scope of the variable 'straw' can be reduced. [variableScope]
+         int straw, needle=glyph;
+             ^
+lib/fonts/stb_truetype.h:2433:43: style: The scope of the variable 'm' can be reduced. [variableScope]
+         stbtt_int32 l=0, r=rangeCount-1, m;
+                                          ^
+lib/fonts/stb_truetype.h:2434:14: style: The scope of the variable 'strawStart' can be reduced. [variableScope]
+         int strawStart, strawEnd, needle=glyph;
+             ^
+lib/fonts/stb_truetype.h:2434:26: style: The scope of the variable 'strawEnd' can be reduced. [variableScope]
+         int strawStart, strawEnd, needle=glyph;
+                         ^
+lib/fonts/stb_truetype.h:2479:48: style: The scope of the variable 'm' can be reduced. [variableScope]
+         stbtt_int32 l=0, r=classRangeCount-1, m;
+                                               ^
+lib/fonts/stb_truetype.h:2480:14: style: The scope of the variable 'strawStart' can be reduced. [variableScope]
+         int strawStart, strawEnd, needle=glyph;
+             ^
+lib/fonts/stb_truetype.h:2480:26: style: The scope of the variable 'strawEnd' can be reduced. [variableScope]
+         int strawStart, strawEnd, needle=glyph;
+                         ^
+lib/fonts/stb_truetype.h:2547:28: style: The scope of the variable 'l' can be reduced. [variableScope]
+               stbtt_int32 l, r, m;
+                           ^
+lib/fonts/stb_truetype.h:2547:31: style: The scope of the variable 'r' can be reduced. [variableScope]
+               stbtt_int32 l, r, m;
+                              ^
+lib/fonts/stb_truetype.h:2547:34: style: The scope of the variable 'm' can be reduced. [variableScope]
+               stbtt_int32 l, r, m;
+                                 ^
+lib/fonts/stb_truetype.h:2548:20: style: The scope of the variable 'straw' can be reduced. [variableScope]
+               int straw, needle;
+                   ^
+lib/fonts/stb_truetype.h:2548:27: style: The scope of the variable 'needle' can be reduced. [variableScope]
+               int straw, needle;
+                          ^
+lib/fonts/stb_truetype.h:3425:10: style: The scope of the variable 'j' can be reduced. [variableScope]
+   int i,j;
+         ^
+lib/fonts/stb_truetype.h:3446:19: style: The scope of the variable 'c' can be reduced. [variableScope]
+      int c01,c12,c,m,i,j;
+                  ^
+lib/fonts/stb_truetype.h:4527:19: style: The scope of the variable 'hits' can be reduced. [variableScope]
+            float hits[2][2];
+                  ^
+lib/fonts/stb_truetype.h:4917:20: style: The scope of the variable 'hd' can be reduced. [variableScope]
+   stbtt_uint32 nm,hd;
+                   ^
+lib/fonts/stb_truetype.h:3981:83: style:inconclusive: Function 'stbtt_PackBegin' argument 3 names different: declaration 'width' definition 'pw'. [funcArgNamesDifferent]
+STBTT_DEF int stbtt_PackBegin(stbtt_pack_context *spc, unsigned char *pixels, int pw, int ph, int stride_in_bytes, int padding, void *alloc_context)
+                                                                                  ^
+lib/fonts/stb_truetype.h:588:84: note: Function 'stbtt_PackBegin' argument 3 names different: declaration 'width' definition 'pw'.
+STBTT_DEF int  stbtt_PackBegin(stbtt_pack_context *spc, unsigned char *pixels, int width, int height, int stride_in_bytes, int padding, void *alloc_context);
+                                                                                   ^
+lib/fonts/stb_truetype.h:3981:83: note: Function 'stbtt_PackBegin' argument 3 names different: declaration 'width' definition 'pw'.
+STBTT_DEF int stbtt_PackBegin(stbtt_pack_context *spc, unsigned char *pixels, int pw, int ph, int stride_in_bytes, int padding, void *alloc_context)
+                                                                                  ^
+lib/fonts/stb_truetype.h:3981:91: style:inconclusive: Function 'stbtt_PackBegin' argument 4 names different: declaration 'height' definition 'ph'. [funcArgNamesDifferent]
+STBTT_DEF int stbtt_PackBegin(stbtt_pack_context *spc, unsigned char *pixels, int pw, int ph, int stride_in_bytes, int padding, void *alloc_context)
+                                                                                          ^
+lib/fonts/stb_truetype.h:588:95: note: Function 'stbtt_PackBegin' argument 4 names different: declaration 'height' definition 'ph'.
+STBTT_DEF int  stbtt_PackBegin(stbtt_pack_context *spc, unsigned char *pixels, int width, int height, int stride_in_bytes, int padding, void *alloc_context);
+                                                                                              ^
+lib/fonts/stb_truetype.h:3981:91: note: Function 'stbtt_PackBegin' argument 4 names different: declaration 'height' definition 'ph'.
+STBTT_DEF int stbtt_PackBegin(stbtt_pack_context *spc, unsigned char *pixels, int pw, int ph, int stride_in_bytes, int padding, void *alloc_context)
+                                                                                          ^
+lib/fonts/stb_truetype.h:4363:17: style:inconclusive: Function 'stbtt_PackFontRange' argument 5 names different: declaration 'first_unicode_char_in_range' definition 'first_unicode_codepoint_in_range'. [funcArgNamesDifferent]
+            int first_unicode_codepoint_in_range, int num_chars_in_range, stbtt_packedchar *chardata_for_range)
+                ^
+lib/fonts/stb_truetype.h:605:37: note: Function 'stbtt_PackFontRange' argument 5 names different: declaration 'first_unicode_char_in_range' definition 'first_unicode_codepoint_in_range'.
+                                int first_unicode_char_in_range, int num_chars_in_range, stbtt_packedchar *chardata_for_range);
+                                    ^
+lib/fonts/stb_truetype.h:4363:17: note: Function 'stbtt_PackFontRange' argument 5 names different: declaration 'first_unicode_char_in_range' definition 'first_unicode_codepoint_in_range'.
+            int first_unicode_codepoint_in_range, int num_chars_in_range, stbtt_packedchar *chardata_for_range)
+                ^
+lib/fonts/fontfamily.h:60:13: style:inconclusive: Technically the member function 'FontFamily::GetFontFaceIndex' can be const. [functionConst]
+    ssize_t GetFontFaceIndex(const CodePoint *codepoint, bool italic = false);
+            ^
+lib/fonts/fontfamily.cpp:46:21: note: Technically the member function 'FontFamily::GetFontFaceIndex' can be const.
+ssize_t FontFamily::GetFontFaceIndex(const CodePoint *codepoint, bool italic) {
+                    ^
+lib/fonts/fontfamily.h:60:13: note: Technically the member function 'FontFamily::GetFontFaceIndex' can be const.
+    ssize_t GetFontFaceIndex(const CodePoint *codepoint, bool italic = false);
+            ^
+lib/fonts/fontfamily.cpp:38:44: style: Consider using std::find_if algorithm instead of a raw loop. [useStlAlgorithm]
+        if (ff->FindGlyphIndex(codepoint)) {
+                                           ^
+lib/ft6336/FT6336.h:103:13: performance:inconclusive: Technically the member function 'FT6336::ReadAddrByte' can be static (but you may consider moving to unnamed namespace). [functionStatic]
+    uint8_t ReadAddrByte(uint8_t u8RegAddr);
+            ^
+lib/ft6336/FT6336.cpp:66:17: note: Technically the member function 'FT6336::ReadAddrByte' can be static (but you may consider moving to unnamed namespace).
+uint8_t FT6336::ReadAddrByte(uint8_t u8RegAddr)
+                ^
+lib/ft6336/FT6336.h:103:13: note: Technically the member function 'FT6336::ReadAddrByte' can be static (but you may consider moving to unnamed namespace).
+    uint8_t ReadAddrByte(uint8_t u8RegAddr);
+            ^
+lib/ft6336/FT6336.h:104:10: performance:inconclusive: Technically the member function 'FT6336::ReadAddrBuffer' can be static (but you may consider moving to unnamed namespace). [functionStatic]
+    void ReadAddrBuffer(uint8_t u8RegAddr, uint8_t u8Length, uint8_t *u8ReadBuf);
+         ^
+lib/ft6336/FT6336.cpp:75:14: note: Technically the member function 'FT6336::ReadAddrBuffer' can be static (but you may consider moving to unnamed namespace).
+void FT6336::ReadAddrBuffer(uint8_t u8RegAddr, uint8_t u8Length, uint8_t *u8ReadBuf)
+             ^
+lib/ft6336/FT6336.h:104:10: note: Technically the member function 'FT6336::ReadAddrBuffer' can be static (but you may consider moving to unnamed namespace).
+    void ReadAddrBuffer(uint8_t u8RegAddr, uint8_t u8Length, uint8_t *u8ReadBuf);
+         ^
+lib/ft6336/FT6336.h:105:10: performance:inconclusive: Technically the member function 'FT6336::WriteRegByte' can be static (but you may consider moving to unnamed namespace). [functionStatic]
+    void WriteRegByte(uint8_t u8RegAddr, uint8_t u8Value);
+         ^
+lib/ft6336/FT6336.cpp:81:14: note: Technically the member function 'FT6336::WriteRegByte' can be static (but you may consider moving to unnamed namespace).
+void FT6336::WriteRegByte(uint8_t u8RegAddr, uint8_t u8Value)
+             ^
+lib/ft6336/FT6336.h:105:10: note: Technically the member function 'FT6336::WriteRegByte' can be static (but you may consider moving to unnamed namespace).
+    void WriteRegByte(uint8_t u8RegAddr, uint8_t u8Value);
+         ^
+lib/ft6336/FT6336.cpp:429:13: style: The scope of the variable 'gestid' can be reduced. [variableScope]
+    uint8_t gestid = 0;
+            ^
+lib/graphics/glyphinfo.cpp:33:9: style: The scope of the variable 'stringWidth' can be reduced. [variableScope]
+    int stringWidth;
+        ^
+lib/graphics/imagelayer.h:32:5: style: Class 'ImageLayer' has a constructor with 1 argument that is not explicit. [noExplicitConstructor]
+    ImageLayer(const Layer &layer);
+    ^
+lib/graphics/traits/layersetters.cpp:71:43: style:inconclusive: Function 'SetRelativeHeight' argument 1 names different: declaration 'height' definition 'len'. [funcArgNamesDifferent]
+_Class &_Class::SetRelativeHeight(int32_t len) {
+                                          ^
+lib/graphics/traits/layersetters.h:63:35: note: Function 'SetRelativeHeight' argument 1 names different: declaration 'height' definition 'len'.
+_Class &SetRelativeHeight(int32_t height);
+                                  ^
+lib/graphics/traits/layersetters.cpp:71:43: note: Function 'SetRelativeHeight' argument 1 names different: declaration 'height' definition 'len'.
+_Class &_Class::SetRelativeHeight(int32_t len) {
+                                          ^
+lib/graphics/traits/layersetters.cpp:80:42: style:inconclusive: Function 'SetRelativeWidth' argument 1 names different: declaration 'width' definition 'len'. [funcArgNamesDifferent]
+_Class &_Class::SetRelativeWidth(int32_t len) {
+                                         ^
+lib/graphics/traits/layersetters.h:58:34: note: Function 'SetRelativeWidth' argument 1 names different: declaration 'width' definition 'len'.
+_Class &SetRelativeWidth(int32_t width);
+                                 ^
+lib/graphics/traits/layersetters.cpp:80:42: note: Function 'SetRelativeWidth' argument 1 names different: declaration 'width' definition 'len'.
+_Class &_Class::SetRelativeWidth(int32_t len) {
+                                         ^
+lib/graphics/layer.cpp:252:13: style: The scope of the variable 'e2' can be reduced. [variableScope]
+    int32_t e2;
+            ^
+lib/graphics/layer.cpp:280:13: style: The scope of the variable 'e2' can be reduced. [variableScope]
+    int32_t e2;
+            ^
+lib/graphics/layer.cpp:111:31: style:inconclusive: Function 'Draw' argument 1 names different: declaration 'point' definition 'pixel'. [funcArgNamesDifferent]
+void Layer::Draw(Shape::Point pixel, Graphic::Color color) {
+                              ^
+lib/graphics/layer.h:123:28: note: Function 'Draw' argument 1 names different: declaration 'point' definition 'pixel'.
+    void Draw(Shape::Point point, Graphic::Color color);
+                           ^
+lib/graphics/layer.cpp:111:31: note: Function 'Draw' argument 1 names different: declaration 'point' definition 'pixel'.
+void Layer::Draw(Shape::Point pixel, Graphic::Color color) {
+                              ^
+lib/graphics/textlayer.cpp:52:12: warning: Member variable 'TextLayer::charNum' is not initialized in the constructor. [uninitMemberVar]
+TextLayer::TextLayer(const Layer &layer) : Layer(layer) {}
+           ^
+lib/graphics/textlayer.cpp:54:12: warning:inconclusive: Member variable 'TextLayer::codepoints' is not assigned in the copy constructor. Should it be copied? [uninitMemberVar]
+TextLayer::TextLayer(const TextLayer &layer) : Layer(layer) {}
+           ^
+lib/graphics/textlayer.cpp:54:12: warning:inconclusive: Member variable 'TextLayer::glyphInfo' is not assigned in the copy constructor. Should it be copied? [uninitMemberVar]
+TextLayer::TextLayer(const TextLayer &layer) : Layer(layer) {}
+           ^
+lib/graphics/textlayer.cpp:54:12: warning: Member variable 'TextLayer::charNum' is not initialized in the constructor. [uninitMemberVar]
+TextLayer::TextLayer(const TextLayer &layer) : Layer(layer) {}
+           ^
+lib/graphics/textlayer.cpp:56:12: warning: Member variable 'TextLayer::charNum' is not initialized in the constructor. [uninitMemberVar]
+TextLayer::TextLayer(uint32_t width, uint32_t height, Graphic::Rotate rotate)
+           ^
+lib/graphics/textlayer.h:35:5: style: Class 'TextLayer' has a constructor with 1 argument that is not explicit. [noExplicitConstructor]
+    TextLayer(const Layer &layer);
+    ^
+lib/graphics/textlayer.cpp:124:50: style:inconclusive: Function 'drawGlyph' argument 1 names different: declaration 'glyphInfo' definition 'glyph'. [funcArgNamesDifferent]
+void TextLayer::drawGlyph(const Text::GlyphInfo *glyph, Font *font,
+                                                 ^
+lib/graphics/textlayer.h:82:43: note: Function 'drawGlyph' argument 1 names different: declaration 'glyphInfo' definition 'glyph'.
+    void drawGlyph(const Text::GlyphInfo *glyphInfo, Font *font,
+                                          ^
+lib/graphics/textlayer.cpp:124:50: note: Function 'drawGlyph' argument 1 names different: declaration 'glyphInfo' definition 'glyph'.
+void TextLayer::drawGlyph(const Text::GlyphInfo *glyph, Font *font,
+                                                 ^
+lib/graphics/textlayer.cpp:233:36: style:inconclusive: Function 'getGlyphInfo' argument 3 names different: declaration 'x' definition 'textDirection'. [funcArgNamesDifferent]
+                             float textDirection, float lineDirection) {
+                                   ^
+lib/graphics/textlayer.h:86:74: note: Function 'getGlyphInfo' argument 3 names different: declaration 'x' definition 'textDirection'.
+    void getGlyphInfo(Text::GlyphInfo *glyph, const CodePoint *cp, float x,
+                                                                         ^
+lib/graphics/textlayer.cpp:233:36: note: Function 'getGlyphInfo' argument 3 names different: declaration 'x' definition 'textDirection'.
+                             float textDirection, float lineDirection) {
+                                   ^
+lib/graphics/textlayer.cpp:233:57: style:inconclusive: Function 'getGlyphInfo' argument 4 names different: declaration 'y' definition 'lineDirection'. [funcArgNamesDifferent]
+                             float textDirection, float lineDirection) {
+                                                        ^
+lib/graphics/textlayer.h:87:29: note: Function 'getGlyphInfo' argument 4 names different: declaration 'y' definition 'lineDirection'.
+                      float y);
+                            ^
+lib/graphics/textlayer.cpp:233:57: note: Function 'getGlyphInfo' argument 4 names different: declaration 'y' definition 'lineDirection'.
+                             float textDirection, float lineDirection) {
+                                                        ^
+lib/graphics/textlayer.cpp:379:71: error: Uninitialized variable: lineWidth [uninitvar]
+    Text::GlyphInfo::AdjustAlign(glyphInfo.get(), charNum, textAlign, lineWidth,
+                                                                      ^
+lib/graphics/traits/layersetters.cpp:24:0: information: Skipping configuration '_Class' since the value of '_Class' is unknown. Use -D if you want to check it. You can use -U to skip it explicitly. [ConfigurationNotChecked]
+_Class &_Class::SetFrontImage(uint8_t *front) {
+^
+lib/graphics/traits/layersetters.cpp:29:0: information: Skipping configuration '_Class' since the value of '_Class' is unknown. Use -D if you want to check it. You can use -U to skip it explicitly. [ConfigurationNotChecked]
+_Class &_Class::SetBackImage(uint8_t *back) {
+^
+lib/graphics/traits/layersetters.cpp:34:0: information: Skipping configuration '_Class' since the value of '_Class' is unknown. Use -D if you want to check it. You can use -U to skip it explicitly. [ConfigurationNotChecked]
+_Class &_Class::SetImages(uint8_t *image) {
+^
+lib/graphics/traits/layersetters.cpp:40:0: information: Skipping configuration '_Class' since the value of '_Class' is unknown. Use -D if you want to check it. You can use -U to skip it explicitly. [ConfigurationNotChecked]
+_Class &_Class::Init() {
+^
+lib/graphics/traits/layersetters.cpp:48:0: information: Skipping configuration '_Class' since the value of '_Class' is unknown. Use -D if you want to check it. You can use -U to skip it explicitly. [ConfigurationNotChecked]
+_Class &_Class::SetRotate(Graphic::Rotate rotate) {
+^
+lib/graphics/traits/layersetters.cpp:53:0: information: Skipping configuration '_Class' since the value of '_Class' is unknown. Use -D if you want to check it. You can use -U to skip it explicitly. [ConfigurationNotChecked]
+_Class &_Class::SetInvertColor(bool flag) {
+^
+lib/graphics/traits/layersetters.cpp:61:0: information: Skipping configuration '_Class' since the value of '_Class' is unknown. Use -D if you want to check it. You can use -U to skip it explicitly. [ConfigurationNotChecked]
+_Class &_Class::InvertColor() {
+^
+lib/graphics/traits/layersetters.cpp:71:0: information: Skipping configuration '_Class' since the value of '_Class' is unknown. Use -D if you want to check it. You can use -U to skip it explicitly. [ConfigurationNotChecked]
+_Class &_Class::SetRelativeHeight(int32_t len) {
+^
+lib/graphics/traits/layersetters.cpp:80:0: information: Skipping configuration '_Class' since the value of '_Class' is unknown. Use -D if you want to check it. You can use -U to skip it explicitly. [ConfigurationNotChecked]
+_Class &_Class::SetRelativeWidth(int32_t len) {
+^
+lib/images/bmp.cpp:154:53: error: Array 'grayDegreeSquared[4]' accessed at index 7, which is out of bounds. [arrayIndexOutOfBounds]
+        TInt assumed = byteCount * grayDegreeSquared[i];
+                                                    ^
+lib/images/bmp.h:67:10: style:inconclusive: Technically the member function 'BMPImage::Save' can be const. [functionConst]
+    void Save(const char *imageFile);
+         ^
+lib/images/bmp.cpp:43:16: note: Technically the member function 'BMPImage::Save' can be const.
+void BMPImage::Save(const char *imageFile) {
+               ^
+lib/images/bmp.h:67:10: note: Technically the member function 'BMPImage::Save' can be const.
+    void Save(const char *imageFile);
+         ^
+lib/images/bmp.h:89:24: performance:inconclusive: Technically the member function 'BMPImage::getOffset' can be static (but you may consider moving to unnamed namespace). [functionStatic]
+    constexpr uint32_t getOffset() const;
+                       ^
+lib/images/bmp.cpp:198:30: note: Technically the member function 'BMPImage::getOffset' can be static (but you may consider moving to unnamed namespace).
+constexpr uint32_t BMPImage::getOffset() const { return 14 + 40; }
+                             ^
+lib/images/bmp.h:89:24: note: Technically the member function 'BMPImage::getOffset' can be static (but you may consider moving to unnamed namespace).
+    constexpr uint32_t getOffset() const;
+                       ^
+lib/images/exceptions.hpp:29:5: style: Class 'UnsupportedBMPImage' has a constructor with 1 argument that is not explicit. [noExplicitConstructor]
+    UnsupportedBMPImage(const char *info) : std::exception(), info(info){};
+    ^
+lib/images/bmp.cpp:128:9: error: Resource leak: fd [resourceLeak]
+        throw UnsupportedBMPImage("bit size < 8");
+        ^
+lib/images/bmp.cpp:132:9: error: Resource leak: fd [resourceLeak]
+        throw UnsupportedBMPImage("compressed");
+        ^
+lib/images/bmp.cpp:172:9: style: The scope of the variable 'offset' can be reduced. [variableScope]
+    int offset, wCount;
+        ^
+lib/images/bmp.cpp:172:17: style: The scope of the variable 'wCount' can be reduced. [variableScope]
+    int offset, wCount;
+                ^
+lib/images/bmp.cpp:31:36: style:inconclusive: Function 'SetPallette' argument 1 names different: declaration 'grayDegree' definition 'new_grayDegree'. [funcArgNamesDifferent]
+void BMPImage::SetPallette(uint8_t new_grayDegree[4]) {
+                                   ^
+lib/images/bmp.h:58:30: note: Function 'SetPallette' argument 1 names different: declaration 'grayDegree' definition 'new_grayDegree'.
+    void SetPallette(uint8_t grayDegree[4]);
+                             ^
+lib/images/bmp.cpp:31:36: note: Function 'SetPallette' argument 1 names different: declaration 'grayDegree' definition 'new_grayDegree'.
+void BMPImage::SetPallette(uint8_t new_grayDegree[4]) {
+                                   ^
+lib/fonts/fontfamily.cpp:31:0: style: The function 'AddFontFace' is never used. [unusedFunction]
+
+^
+lib/display/display.cpp:78:0: style: The function 'Awake' is never used. [unusedFunction]
+
+^
+lib/display/display.cpp:49:0: style: The function 'Backward' is never used. [unusedFunction]
+
+^
+lib/epd37/epd2in13b.cpp:233:0: style: The function 'ClearFullFrame' is never used. [unusedFunction]
+
+^
+lib/dom/treenode.cpp:93:0: style: The function 'CountChildren' is never used. [unusedFunction]
+
+^
+lib/graphics/layer.cpp:233:0: style: The function 'DrawFilled' is never used. [unusedFunction]
+
+^
+lib/dom/treenode.cpp:91:0: style: The function 'GetChildren' is never used. [unusedFunction]
+
+^
+lib/dom/treenode.cpp:34:0: style: The function 'GetFirstChild' is never used. [unusedFunction]
+
+^
+lib/graphics/layer.cpp:54:0: style: The function 'GetInvertColor' is never used. [unusedFunction]
+
+^
+lib/dom/treenode.cpp:36:0: style: The function 'GetLastChild' is never used. [unusedFunction]
+
+^
+lib/dom/treenode.cpp:102:0: style: The function 'GetParent' is never used. [unusedFunction]
+
+^
+lib/graphics/layer.cpp:109:0: style: The function 'GetRotate' is never used. [unusedFunction]
+
+^
+lib/fonts/fontface.cpp:64:0: style: The function 'GetState' is never used. [unusedFunction]
+
+^
+lib/epd37/epd2in13b.cpp:294:0: style: The function 'LocalRefresh' is never used. [unusedFunction]
+
+^
+lib/dom/style/textindent.cpp:24:0: style: The function 'MakeTextIndent' is never used. [unusedFunction]
+
+^
+lib/dom/treenode.cpp:51:0: style: The function 'PopChildren' is never used. [unusedFunction]
+
+^
+lib/dom/treenode.cpp:38:0: style: The function 'PushChildren' is never used. [unusedFunction]
+
+^
+lib/ft6336/FT6336.cpp:331:0: style: The function 'ReadChipSelecting' is never used. [unusedFunction]
+
+^
+lib/ft6336/FT6336.cpp:206:0: style: The function 'ReadCtrlMode' is never used. [unusedFunction]
+
+^
+lib/ft6336/FT6336.cpp:99:0: style: The function 'ReadDeviceMode' is never used. [unusedFunction]
+
+^
+lib/ft6336/FT6336.cpp:290:0: style: The function 'ReadDistanceLeftRight' is never used. [unusedFunction]
+
+^
+lib/ft6336/FT6336.cpp:302:0: style: The function 'ReadDistanceUpDown' is never used. [unusedFunction]
+
+^
+lib/ft6336/FT6336.cpp:314:0: style: The function 'ReadDistanceZoom' is never used. [unusedFunction]
+
+^
+lib/ft6336/FT6336.cpp:194:0: style: The function 'ReadFilterFunctionCoefficient' is never used. [unusedFunction]
+
+^
+lib/ft6336/FT6336.cpp:361:0: style: The function 'ReadFirmwareId' is never used. [unusedFunction]
+
+^
+lib/ft6336/FT6336.cpp:367:0: style: The function 'ReadFocaltechId' is never used. [unusedFunction]
+
+^
+lib/ft6336/FT6336.cpp:343:0: style: The function 'ReadGMode' is never used. [unusedFunction]
+
+^
+lib/ft6336/FT6336.cpp:320:0: style: The function 'ReadLIBVersion' is never used. [unusedFunction]
+
+^
+lib/ft6336/FT6336.cpp:266:0: style: The function 'ReadOffsetLeftRight' is never used. [unusedFunction]
+
+^
+lib/ft6336/FT6336.cpp:278:0: style: The function 'ReadOffsetUpDown' is never used. [unusedFunction]
+
+^
+lib/ft6336/FT6336.cpp:230:0: style: The function 'ReadPeriodActive' is never used. [unusedFunction]
+
+^
+lib/ft6336/FT6336.cpp:242:0: style: The function 'ReadPeriodMonitor' is never used. [unusedFunction]
+
+^
+lib/ft6336/FT6336.cpp:355:0: style: The function 'ReadPowerMode' is never used. [unusedFunction]
+
+^
+lib/ft6336/FT6336.cpp:254:0: style: The function 'ReadRadianValue' is never used. [unusedFunction]
+
+^
+lib/ft6336/FT6336.cpp:373:0: style: The function 'ReadReleaseCodeId' is never used. [unusedFunction]
+
+^
+lib/ft6336/FT6336.cpp:379:0: style: The function 'ReadState' is never used. [unusedFunction]
+
+^
+lib/ft6336/FT6336.cpp:182:0: style: The function 'ReadThresholdForTouchDetection' is never used. [unusedFunction]
+
+^
+lib/ft6336/FT6336.cpp:218:0: style: The function 'ReadTimeEnterMonitor' is never used. [unusedFunction]
+
+^
+lib/display/display.cpp:29:0: style: The function 'Refresh' is never used. [unusedFunction]
+
+^
+lib/graphics/textlayer.cpp:79:0: style: The function 'SetLineHeight' is never used. [unusedFunction]
+
+^
+lib/images/bmp.cpp:31:0: style: The function 'SetPallette' is never used. [unusedFunction]
+
+^
+lib/dom/treenode.cpp:100:0: style: The function 'SetParent' is never used. [unusedFunction]
+
+^
+lib/fonts/codepoint.cpp:39:0: style: The function 'SetValue' is never used. [unusedFunction]
+
+^
+lib/graphics/textlayer.cpp:84:0: style: The function 'SetWritingMode' is never used. [unusedFunction]
+
+^
+lib/dom/treenode.cpp:75:0: style: The function 'ShiftChildren' is never used. [unusedFunction]
+
+^
+lib/fonts/codepoint.cpp:86:0: style: The function 'Strpbrk' is never used. [unusedFunction]
+
+^
+lib/dom/treenode.cpp:65:0: style: The function 'UnshiftChildren' is never used. [unusedFunction]
+
+^
+lib/ft6336/FT6336.cpp:200:0: style: The function 'WriteCtrlMode' is never used. [unusedFunction]
+
+^
+lib/ft6336/FT6336.cpp:284:0: style: The function 'WriteDistanceLeftRight' is never used. [unusedFunction]
+
+^
+lib/ft6336/FT6336.cpp:296:0: style: The function 'WriteDistanceUpDown' is never used. [unusedFunction]
+
+^
+lib/ft6336/FT6336.cpp:308:0: style: The function 'WriteDistanceZoom' is never used. [unusedFunction]
+
+^
+lib/ft6336/FT6336.cpp:188:0: style: The function 'WriteFilterFunctionCoefficient' is never used. [unusedFunction]
+
+^
+lib/ft6336/FT6336.cpp:337:0: style: The function 'WriteGMode' is never used. [unusedFunction]
+
+^
+lib/ft6336/FT6336.cpp:260:0: style: The function 'WriteOffsetLeftRight' is never used. [unusedFunction]
+
+^
+lib/ft6336/FT6336.cpp:272:0: style: The function 'WriteOffsetUpDown' is never used. [unusedFunction]
+
+^
+lib/ft6336/FT6336.cpp:224:0: style: The function 'WritePeriodActive' is never used. [unusedFunction]
+
+^
+lib/ft6336/FT6336.cpp:236:0: style: The function 'WritePeriodMonitor' is never used. [unusedFunction]
+
+^
+lib/ft6336/FT6336.cpp:349:0: style: The function 'WritePowerMode' is never used. [unusedFunction]
+
+^
+lib/ft6336/FT6336.cpp:248:0: style: The function 'WriteRadianValue' is never used. [unusedFunction]
+
+^
+nofile:0:0: information: Cppcheck cannot find all the include files (use --check-config for details) [missingInclude]
+
